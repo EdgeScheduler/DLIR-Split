@@ -1,4 +1,8 @@
 .vscode
+*.onnx
+Onnxs/*
+!Onnxs/scripts
+__pycache__
 
 # Prerequisites
 *.d
