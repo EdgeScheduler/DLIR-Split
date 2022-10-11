@@ -11,7 +11,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    const char *test_onnx = "yolov2-9.onnx";
+    const char *test_onnx = "resnet50-5.onnx";
 
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test"); // log id: "test"
 
@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
     // session_options.AppendExecutionProvider_CUDA(Drivers::GPU_CUDA::GPU0);
     Ort::Session session(env, test_onnx, session_options);
 
-    cout<<"run"<<endl;
     ModelInfo modelInfo(session);
     cout<<modelInfo;
 
