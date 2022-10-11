@@ -1,6 +1,7 @@
 *.onnx
 Onnxs/*
 !Onnxs/scripts
+onnxruntime-package
 __pycache__
 
 # Prerequisites

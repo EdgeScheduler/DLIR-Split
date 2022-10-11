@@ -1,4 +1,4 @@
-#include "../../headers/common/pathmanager.h"
+#include "../../include/common/PathManager.h"
 
 #include <cstdio>
 #include <unistd.h>
@@ -27,7 +27,7 @@ std::filesystem::path OnnxPathManager::GetModelParamsSavePath(std::string model_
 
 std::filesystem::path OnnxPathManager::GetChildModelSavePath(std::string model_name, int idx)
 {
-    if(idx<0)
+    if (idx < 0)
     {
         return OnnxPathManager::GetModelSavePath(model_name);
     }
@@ -37,9 +37,9 @@ std::filesystem::path OnnxPathManager::GetChildModelSavePath(std::string model_n
 
 std::filesystem::path OnnxPathManager::GetChildModelParamsSavePath(std::string model_name, int idx)
 {
-    if(idx<0)
+    if (idx < 0)
     {
-        return  OnnxPathManager::GetModelParamsSavePath(model_name);
+        return OnnxPathManager::GetModelParamsSavePath(model_name);
     }
     std::filesystem::create_directories(OnnxPathManager::GetOnnxRootFold() / model_name / "childs" / std::to_string(idx));
     return OnnxPathManager::GetOnnxRootFold() / model_name / "childs" / std::to_string(idx) / (model_name + "-" + std::to_string(idx) + "-params.json");
@@ -47,7 +47,7 @@ std::filesystem::path OnnxPathManager::GetChildModelParamsSavePath(std::string m
 
 std::filesystem::path OnnxPathManager::GetChildModelSumParamsSavePath(std::string model_name)
 {
-    std::filesystem::create_directories(OnnxPathManager::GetOnnxRootFold() / model_name/"childs");
+    std::filesystem::create_directories(OnnxPathManager::GetOnnxRootFold() / model_name / "childs");
     return OnnxPathManager::GetOnnxRootFold() / model_name / "childs" / (model_name + "-params.json");
 }
 
@@ -56,6 +56,9 @@ std::filesystem::path OnnxPathManager::GetChildModelSumCacheSavePath(std::string
     std::filesystem::create_directories(OnnxPathManager::GetOnnxRootFold() / model_name);
     return OnnxPathManager::GetOnnxRootFold() / model_name / "childs/cache.json";
 }
+
+// BenchmarkPathManager
+std::filesystem::path BenchmarkPathManager::benchmarkRootFold="Benchmark";
 
 // RootPathManager
 std::filesystem::path RootPathManager::projectRootFold = []() -> std::filesystem::path

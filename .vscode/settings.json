@@ -65,7 +65,10 @@
     "typeindex": "cpp",
     "typeinfo": "cpp",
     "filesystem": "cpp",
-    "codecvt": "cpp"
+    "codecvt": "cpp",
+    "any": "cpp",
+    "forward_list": "cpp",
+    "valarray": "cpp"
   },
   "C_Cpp.errorSquiggles": "Disabled",
   "C_Cpp_Runner.msvcBatchPath": "",
@@ -85,7 +88,7 @@
   "C_Cpp_Runner.compilerArgs": [],
   "C_Cpp_Runner.linkerArgs": [],
   "C_Cpp_Runner.includePaths": [
-    "${workspaceFolder}/headers/*/*",
+    "${workspaceFolder}/include/*/*",
     "${workspaceFolder}/sources/*/*"
   ],
   "C_Cpp_Runner.includeSearch": [

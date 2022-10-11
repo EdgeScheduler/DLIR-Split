@@ -32,11 +32,12 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
-                "${workspaceFolder}/headers/*/*",
+                "${workspaceFolder}/include/*/*",
                 "${workspaceFolder}/sources/*/*",
                 "-o",
                 "${workspaceRoot}/bin/debug/${fileBasenameNoExtension}",
-                "-lstdc++fs"
+                "-lstdc++fs",
+                "-lonnxruntime"
             ],
             "options": {
                 "cwd": "${fileDirname}"
