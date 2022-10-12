@@ -91,7 +91,7 @@ nlohmann::json ValueInfo::ToJson()
     return obj;
 }
 
-ValueInfo::ValueInfo(const nlohmann::json json)
+ValueInfo::ValueInfo(const nlohmann::json& json)
 {
     if (json == nullptr)
     {

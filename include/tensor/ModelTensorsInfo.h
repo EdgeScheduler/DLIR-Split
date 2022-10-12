@@ -3,6 +3,7 @@
 
 #include <onnxruntime_cxx_api.h>
 #include <vector>
+#include <nlohmann/json.hpp>
 #include "ValueInfo.h"
 
 /// @brief a group of tensor-describe
@@ -10,7 +11,12 @@ class TensorsInfo
 {
 public:
     TensorsInfo(){};
+    TensorsInfo(nlohmann::json& json);
     TensorsInfo(const std::vector<std::string> &labels, const std::vector<std::vector<int64_t>> &shapes, const std::vector<ONNXTensorElementDataType> &types);
+
+    /// @brief serial to json object
+    /// @return one nlohmann::json object. if value not valid, it will be nullptr.
+    nlohmann::json ToJson();
 
     /// @brief set labels and shapes for object
     /// @param labels labels name
@@ -62,7 +68,11 @@ class ModelInfo
 {
 public:
     ModelInfo(){};
+    ModelInfo(nlohmann::json& json);
     ModelInfo(const Ort::Session &session);
+    /// @brief serial to json object
+    /// @return one nlohmann::json object.
+    nlohmann::json ToJson();
     TensorsInfo GetInput();
     TensorsInfo GetOutput();
     friend std::ostream &operator<<(std::ostream &out, const ModelInfo &value);

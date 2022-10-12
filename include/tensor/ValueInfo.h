@@ -16,7 +16,7 @@ namespace OnnxValueType
 class ValueInfo
 {
 public:
-    ValueInfo(const nlohmann::json  json);
+    ValueInfo(const nlohmann::json& json);
     ValueInfo(const std::string &name, const std::vector<int64_t> &shape, const ONNXTensorElementDataType &type = ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT);
     ValueInfo(const char *name, const std::vector<int64_t> &shape, const ONNXTensorElementDataType &type = ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT);
 

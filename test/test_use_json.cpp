@@ -1,24 +1,14 @@
 #include <nlohmann/json.hpp>
 #include <iostream>
+#include"../include/tensor/ModelTensorsInfo.h"
 using namespace std;
 
 int main()
 {
-    nlohmann::json config_json = nlohmann::json::parse(R"({"obj":null})"); //构建json对象
-
-    nlohmann::json new_json=config_json["obj"];
-    new_json["obj"]={1,2,3};
-
-    auto a=new_json["obj"];
-    std::vector<int> b=a.get<std::vector<int>>();
-
-    for(auto i=b.begin();i<b.end();i++)
-    {
-
-        cout<<*i<<endl;
-    }
-
-    cout<<new_json.contains("111")<<new_json.contains("obj")<<endl;
+    nlohmann::json config_json = nlohmann::json::parse(R"({"input":{"data":[{"name":"onnx::Conv_327","shape":[15,64,56,56],"type":"float32"},{"name":"input.8","shape":[15,64,56,56],"type":"float32"}]},"output":{"data":[{"name":"input.24","shape":[15,64,56,56],"type":"float32"},{"name":"input.8","shape":[15,64,56,56],"type":"float32"}]}})"); //构建json对象
+    ModelInfo modelInfo(config_json);
+    cout<<modelInfo<<endl;
+    
 
     return 0;
 }

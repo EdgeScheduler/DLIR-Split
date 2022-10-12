@@ -6,6 +6,15 @@ TensorsInfo::TensorsInfo(const std::vector<std::string> &labels, const std::vect
     this->SetTensorsInfo(labels, shapes, types);
 }
 
+TensorsInfo::TensorsInfo(nlohmann::json& json)
+{
+    std::vector<nlohmann::json> obj=json.get<std::vector<nlohmann::json>>();
+    for(auto iter=obj.begin();iter<obj.end();iter++)
+    {
+        this->tensors.push_back(ValueInfo(*iter));
+    }
+}
+
 int TensorsInfo::SetTensorsInfo(const std::vector<std::string> &labels, const std::vector<std::vector<int64_t>> &shapes, const std::vector<ONNXTensorElementDataType> &types)
 {
     this->tensors.clear();
@@ -17,6 +26,22 @@ int TensorsInfo::SetTensorsInfo(const std::vector<std::string> &labels, const st
     }
 
     return length;
+}
+
+nlohmann::json TensorsInfo::ToJson()
+{
+    if(this->tensors.size()<1)
+    {
+        return nullptr;
+    }
+
+    std::vector<nlohmann::json> obj;
+    for(auto iter=this->tensors.begin();iter<this->tensors.end();iter++)
+    {
+        obj.push_back(iter->ToJson());
+    }
+
+    return obj;
 }
 
 void TensorsInfo::AppendTensorInfo(const char *label, const std::vector<int64_t> &shape, const ONNXTensorElementDataType &type)
@@ -80,6 +105,23 @@ std::ostream &operator<<(std::ostream &out, const TensorsInfo &value)
 }
 
 // ModelInfo
+
+ModelInfo::ModelInfo(nlohmann::json& json)
+{
+    if(json.contains("input"))
+    {
+        this->input=TensorsInfo(json["input"]["data"]);
+
+    }
+
+    if(json.contains("output"))
+    {
+        this->output=TensorsInfo(json["output"]["data"]);
+    }
+
+
+}
+
 ModelInfo::ModelInfo(const Ort::Session &session)
 {
     Ort::AllocatorWithDefaultOptions allocator;
@@ -94,6 +136,20 @@ ModelInfo::ModelInfo(const Ort::Session &session)
         // need to get shape
         this->output.AppendTensorInfo(session.GetOutputNameAllocated(i, allocator).get(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType());
     }
+}
+
+nlohmann::json ModelInfo::ToJson()
+{
+    nlohmann::json obj;
+    nlohmann::json input;
+    nlohmann::json output;
+
+    input["data"]=this->input.ToJson();
+    output["data"]=this->output.ToJson();
+
+    obj["input"]=input;
+    obj["output"]=output;
+    return obj;
 }
 
 TensorsInfo ModelInfo::GetInput()
