@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
     Ort::Session session(env, test_onnx, session_options);
 
     ModelInfo modelInfo(session);
-    cout<<std::setw(4)<<modelInfo.ToJson();
+    cout<<modelInfo<<endl;
+    cout<<modelInfo.ToJson()<<endl;
 
     
     

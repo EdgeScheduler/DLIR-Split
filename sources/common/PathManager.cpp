@@ -58,7 +58,7 @@ std::filesystem::path OnnxPathManager::GetChildModelSumCacheSavePath(std::string
 }
 
 // BenchmarkPathManager
-std::filesystem::path BenchmarkPathManager::benchmarkRootFold="Benchmark";
+std::filesystem::path BenchmarkPathManager::benchmarkRootFold = "Benchmark";
 
 // RootPathManager
 std::filesystem::path RootPathManager::projectRootFold = []() -> std::filesystem::path

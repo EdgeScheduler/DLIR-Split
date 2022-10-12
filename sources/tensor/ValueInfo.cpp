@@ -76,7 +76,7 @@ namespace OnnxValueType
     }
 }
 
-nlohmann::json ValueInfo::ToJson()
+nlohmann::json ValueInfo::ToJson() const
 {
     nlohmann::json obj;
     if (this->name == "" && this->shape.size() < 1)
@@ -91,7 +91,7 @@ nlohmann::json ValueInfo::ToJson()
     return obj;
 }
 
-ValueInfo::ValueInfo(const nlohmann::json& json)
+void ValueInfo::LoadFromJson(const nlohmann::json &json)
 {
     if (json == nullptr)
     {
@@ -105,6 +105,11 @@ ValueInfo::ValueInfo(const nlohmann::json& json)
         this->type = OnnxValueType::StringToOnnxType(json["type"].get<std::string>());
         this->shape = json["shape"].get<std::vector<int64_t>>();
     }
+}
+
+ValueInfo::ValueInfo(const nlohmann::json &json)
+{
+    this->LoadFromJson(json);
 }
 
 ValueInfo::ValueInfo(const std::string &name, const std::vector<int64_t> &shape, const ONNXTensorElementDataType &type)
