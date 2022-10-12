@@ -45,7 +45,7 @@ namespace JsonSerializer
             }
             else
             {
-                json = nlohmann::json({});
+                json = nullptr;
             }
         }
 

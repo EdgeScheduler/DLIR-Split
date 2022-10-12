@@ -1,5 +1,5 @@
 #include "../../include/tensor/ValueInfo.h"
-
+#include <iostream>
 namespace OnnxValueType
 {
     std::string OnnxTypeToString(const ONNXTensorElementDataType type)
@@ -29,19 +29,95 @@ namespace OnnxValueType
             return "unknown";
         }
     }
+
+    ONNXTensorElementDataType StringToOnnxType(const std::string str)
+    {
+        if (str == "float32")
+        {
+            return ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT;
+        }
+        else if (str == "uint8_t")
+        {
+            return ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8;
+        }
+        else if (str == "int8_t")
+        {
+            return ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8;
+        }
+        else if (str == "uint16_t")
+        {
+            return ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16;
+        }
+        else if (str == "int16_t")
+        {
+            return ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16;
+        }
+        else if (str == "int32_t")
+        {
+            return ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32;
+        }
+        else if (str == "int64_t")
+        {
+            return ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64;
+        }
+        else if (str == "string")
+        {
+            return ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING;
+        }
+        else if (str == "double")
+        {
+            return ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE;
+        }
+        else
+        {
+            std::cout << "warning: unknown type,  use float32 instead." << std::endl;
+            return ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT;
+        }
+    }
 }
 
-ValueInfo::ValueInfo(const std::string &name, const std::vector<int64_t> &shapes, const ONNXTensorElementDataType &type)
+nlohmann::json ValueInfo::ToJson()
+{
+    nlohmann::json obj;
+    if (this->name == "" && this->shape.size() < 1)
+    {
+        return nullptr;
+    }
+
+    obj["type"] = OnnxValueType::OnnxTypeToString(this->type);
+    obj["name"] = this->name;
+    obj["shape"] = this->shape;
+
+    return obj;
+}
+
+ValueInfo::ValueInfo(const nlohmann::json json)
+{
+    if (json == nullptr)
+    {
+        this->name = "";
+        this->shape.clear();
+        this->type = ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT;
+    }
+    else
+    {
+        this->name = json["name"].get<std::string>();
+        this->type = OnnxValueType::StringToOnnxType(json["type"].get<std::string>());
+        this->shape = json["shape"].get<std::vector<int64_t>>();
+    }
+}
+
+ValueInfo::ValueInfo(const std::string &name, const std::vector<int64_t> &shape, const ONNXTensorElementDataType &type)
 {
     this->name = name;
-    this->shapes = shapes;
+    this->shape = shape;
     this->type = type;
 }
 
-ValueInfo::ValueInfo(const char *name, const std::vector<int64_t> &shapes, const ONNXTensorElementDataType &type)
+ValueInfo::ValueInfo(const char *name, const std::vector<int64_t> &shape, const ONNXTensorElementDataType &type)
 {
     this->name = std::string(name);
-    this->shapes = shapes;
+    this->shape = shape;
     this->type = type;
 }
 
@@ -52,7 +128,7 @@ std::string ValueInfo::GetName() const
 
 std::vector<int64_t> ValueInfo::GetShape() const
 {
-    return this->shapes;
+    return this->shape;
 }
 
 ONNXTensorElementDataType ValueInfo::GetType() const
@@ -67,15 +143,15 @@ std::string ValueInfo::GetTypeString() const
 
 std::size_t ValueInfo::GetDimSize() const
 {
-    return this->shapes.size();
+    return this->shape.size();
 }
 
 std::ostream &operator<<(std::ostream &out, const ValueInfo &value)
 {
     out << value.name << ": [";
-    for (auto iter = value.shapes.begin(); iter < value.shapes.end(); iter++)
+    for (auto iter = value.shape.begin(); iter < value.shape.end(); iter++)
     {
-        if (iter == value.shapes.begin())
+        if (iter == value.shape.begin())
         {
             out << *iter;
         }

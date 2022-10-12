@@ -5,17 +5,24 @@
 #include <string>
 #include <ostream>
 #include <onnxruntime_cxx_api.h>
+#include <nlohmann/json.hpp>
 
 namespace OnnxValueType
 {
     std::string OnnxTypeToString(const ONNXTensorElementDataType type);
+    ONNXTensorElementDataType StringToOnnxType(const std::string str);
 }
 
 class ValueInfo
 {
 public:
-    ValueInfo(const std::string &name, const std::vector<int64_t> &shapes, const ONNXTensorElementDataType &type = ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT);
-    ValueInfo(const char *name, const std::vector<int64_t> &shapes, const ONNXTensorElementDataType &type = ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT);
+    ValueInfo(const nlohmann::json  json);
+    ValueInfo(const std::string &name, const std::vector<int64_t> &shape, const ONNXTensorElementDataType &type = ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT);
+    ValueInfo(const char *name, const std::vector<int64_t> &shape, const ONNXTensorElementDataType &type = ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT);
+
+    /// @brief serial to json object
+    /// @return one nlohmann::json object. if value not valid, it will be nullptr.
+    nlohmann::json ToJson();
 
     /// @brief get input/output name in model
     /// @return name
@@ -36,7 +43,7 @@ public:
     friend std::ostream &operator<<(std::ostream &out, const ValueInfo &value);
 
 private:
-    std::vector<int64_t> shapes;
+    std::vector<int64_t> shape;
     std::string name;
     ONNXTensorElementDataType type;
 };
