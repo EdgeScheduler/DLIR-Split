@@ -68,7 +68,8 @@
     "codecvt": "cpp",
     "any": "cpp",
     "forward_list": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "stdio.h": "c"
   },
   "C_Cpp.errorSquiggles": "Disabled",
   "C_Cpp_Runner.msvcBatchPath": "",
