@@ -26,15 +26,38 @@ int main()
     // auto a=JsonSerializer::LoadJson("test.json");
     // JsonSerializer::StoreJson(a,"aa/test_1.json",true);
 
-    ValueInfo info("label",{1,2,20});
-    TensorValue value=TensorValue(info,false);
+    // ValueInfo info("label",{1,2,2});
+    // TensorValue value(info,true);
+    // value.Print(1,false);
+    // Ort::Value o_value=value;        // copy
     
-    for(int i=0;i<10;i++)
-    {
-        value.Random();
-        value.Print(10);
-    }
-    
+    // TensorValue v1(info,false);
+    // v1.RecordOrtValue(o_value);      // deep-copy
+
+    // value.Random();
+
+    // TensorValue v2=v1;               // deep-copy
+
+
+    // std::cout<<"--"<<*o_value.GetTensorMutableData<float>()<<endl;
+    // v1.Print(1,false);
+
+    // v2.Random();
+    // v1.Print(1,false);
+    // v2.Print(1,false);
+
+    // test override
+    ValueInfo info_new("label-new",{2,2,2});
+    ValueInfo info_old("label-old",{1,2,2});
+    TensorValue value_new(info_new,true);
+    Ort::Value v=value_new;
+
+    TensorValue v2(info_old,false);
+    v2.RecordOrtValue(v);
+    v2.Print();
+
+    v2.RecordOrtValueIgnoreShape(v);
+    v2.Print();
 
     return 0;
 }

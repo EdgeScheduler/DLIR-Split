@@ -17,11 +17,25 @@ class TensorValue
 public:
     /// @brief Init class and create random value.
     /// @param valueInfo shape and name Info
+    /// @param initByRandom whether to init data by random
     /// @param allocator ort allocator
     /// @param memType memory type
     TensorValue(const ValueInfo &valueInfo, bool initByRandom = false, OrtAllocatorType allocator = OrtAllocatorType::OrtArenaAllocator, OrtMemType memType = OrtMemType::OrtMemTypeDefault);
+    TensorValue(const TensorValue &value) = default;
+    TensorValue() = delete;
+
+    /// @brief value-copy from Ort::value to TensorValue
+    /// @param value Ort::Value
+    void RecordOrtValue(Ort::Value &value);
+
+    /// @brief
+    /// @param value ignore raw shape, override shape with Ort::Value.
+    /// @param label if label=="---", will not delete raw label.
+    void RecordOrtValueIgnoreShape(Ort::Value &value, std::string label = "---");
 
     /// @brief create random datas
+    /// @param min <= data[x]
+    /// @param max > data[x]
     void Random(int min = 0, int max = 1);
 
     /// @brief set label for tensor-info
@@ -32,9 +46,9 @@ public:
     /// @return std::vector<T> object
     std::vector<T> GetData() const;
 
-    /// @brief to  Ort::Value
+    /// @brief bind to Ort::Value. if TensorValue change, Ort::value change together.
     /// @return
-    Ort::Value &&ToTensor() const;
+    Ort::Value ToTensor();
 
     /// @brief get tensor-info
     /// @return ValueInfo Info
@@ -44,7 +58,7 @@ public:
     // template<typename ValueType=float>
     void Print(int64_t max_length = 30, bool print_tensor_info = true) const;
 
-    TensorValue<T> &operator=(Ort::Value &&value);
+    operator Ort::Value();
 
 private:
     ValueInfo valueInfo;
@@ -52,6 +66,12 @@ private:
     OrtAllocatorType allocator;
     OrtMemType memType;
 };
+
+template <class T>
+TensorValue<T>::operator Ort::Value()
+{
+    return this->ToTensor();
+}
 
 template <class T>
 TensorValue<T>::TensorValue(const ValueInfo &valueInfo, bool initByRandom, OrtAllocatorType allocator, OrtMemType memType) : data(valueInfo.GetDataCount())
@@ -79,14 +99,27 @@ void TensorValue<T>::Random(int min, int max)
 }
 
 template <class T>
-TensorValue<T> &TensorValue<T>::operator=(Ort::Value &&value)
+void TensorValue<T>::RecordOrtValue(Ort::Value &value)
 {
     std::memcpy(this->data.data(), value.GetTensorMutableData<T>(), sizeof(T) * this->valueInfo.GetDataCount());
-    return *this;
+    // value.release();
 }
 
 template <class T>
-Ort::Value &&TensorValue<T>::ToTensor() const
+void TensorValue<T>::RecordOrtValueIgnoreShape(Ort::Value &value, std::string label)
+{
+    const Ort::TensorTypeAndShapeInfo &info = value.GetTensorTypeAndShapeInfo();
+    if (label == "---")
+    {
+        label = this->valueInfo.GetName();
+    }
+
+    this->valueInfo = ValueInfo(label, info.GetShape(), info.GetElementType());
+    this->RecordOrtValue(value);
+}
+
+template <class T>
+Ort::Value TensorValue<T>::ToTensor()
 {
     return Ort::Value::CreateTensor<T>(Ort::MemoryInfo::CreateCpu(allocator, memType), data.data(), data.size(), valueInfo.GetShape().data(), valueInfo.GetDimSize());
 }
@@ -133,7 +166,7 @@ void TensorValue<T>::Print(int64_t max_length, bool print_tensor_info) const
 
     if (length < this->valueInfo.GetDataCount())
     {
-        std::cout << " ...]"<<std::endl;
+        std::cout << " ...]" << std::endl;
     }
     else
     {

@@ -122,12 +122,14 @@ ModelInfo::ModelInfo(const Ort::Session &session)
     for (int i = 0; i < session.GetInputCount(); i++)
     {
         // need to get shape
-        this->input.AppendTensorInfo(session.GetInputNameAllocated(i, allocator).get(), session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape(), session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType());
+        //const Ort::TensorTypeAndShapeInfo& info=session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo();
+        this->input.AppendTensorInfo(session.GetInputNameAllocated(i, allocator).get(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType());
     }
 
     for (int i = 0; i < session.GetOutputCount(); i++)
     {
         // need to get shape
+        //const Ort::TensorTypeAndShapeInfo& info=session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo();
         this->output.AppendTensorInfo(session.GetOutputNameAllocated(i, allocator).get(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType());
     }
 }
