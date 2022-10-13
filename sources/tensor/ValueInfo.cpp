@@ -105,6 +105,8 @@ void ValueInfo::LoadFromJson(const nlohmann::json &json)
         this->type = OnnxValueType::StringToOnnxType(json["type"].get<std::string>());
         this->shape = json["shape"].get<std::vector<int64_t>>();
     }
+
+    this->UpdateCount();
 }
 
 ValueInfo::ValueInfo(const nlohmann::json &json)
@@ -117,6 +119,7 @@ ValueInfo::ValueInfo(const std::string &name, const std::vector<int64_t> &shape,
     this->name = name;
     this->shape = shape;
     this->type = type;
+    this->UpdateCount();
 }
 
 ValueInfo::ValueInfo(const char *name, const std::vector<int64_t> &shape, const ONNXTensorElementDataType &type)
@@ -124,11 +127,34 @@ ValueInfo::ValueInfo(const char *name, const std::vector<int64_t> &shape, const 
     this->name = std::string(name);
     this->shape = shape;
     this->type = type;
+    this->UpdateCount();
+}
+
+void ValueInfo::UpdateCount()
+{
+    if (this->shape.size() < 1)
+    {
+        this->dataCount=0;
+        return;
+    }
+    else
+    {
+        this->dataCount = 1;
+        for (auto value : this->shape)
+        {
+            this->dataCount *= value;
+        }
+    }
 }
 
 std::string ValueInfo::GetName() const
 {
     return this->name;
+}
+
+void ValueInfo::SetName(std::string name)
+{
+    this->name=name;
 }
 
 std::vector<int64_t> ValueInfo::GetShape() const
@@ -139,6 +165,11 @@ std::vector<int64_t> ValueInfo::GetShape() const
 ONNXTensorElementDataType ValueInfo::GetType() const
 {
     return this->type;
+}
+
+std::int64_t ValueInfo::GetDataCount() const
+{
+    return this->dataCount;
 }
 
 std::string ValueInfo::GetTypeString() const

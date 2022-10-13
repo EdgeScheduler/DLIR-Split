@@ -59,34 +59,34 @@ void TensorsInfo::AppendTensorInfo(const std::string &label, const std::vector<i
     this->tensors.push_back(ValueInfo(label, shape, type));
 }
 
-std::vector<std::string> TensorsInfo::GetLabels() const
+std::vector<std::string>&& TensorsInfo::GetLabels() const
 {
     std::vector<std::string> labels;
     for (auto iter = this->tensors.begin(); iter < this->tensors.end(); iter++)
     {
         labels.push_back(iter->GetName());
     }
-    return labels;
+    return std::move(labels);
 }
 
-std::vector<std::vector<int64_t>> TensorsInfo::GetShapes() const
+std::vector<std::vector<int64_t>>&& TensorsInfo::GetShapes() const
 {
     std::vector<std::vector<int64_t>> shapes;
     for (auto iter = this->tensors.begin(); iter < this->tensors.end(); iter++)
     {
         shapes.push_back(iter->GetShape());
     }
-    return shapes;
+    return std::move(shapes);
 }
 
-std::vector<ONNXTensorElementDataType> TensorsInfo::GetTypes() const
+std::vector<ONNXTensorElementDataType>&& TensorsInfo::GetTypes() const
 {
     std::vector<ONNXTensorElementDataType> types;
     for (auto iter = this->tensors.begin(); iter < this->tensors.end(); iter++)
     {
         types.push_back(iter->GetType());
     }
-    return types;
+    return std::move(types);
 }
 
 int TensorsInfo::GetTensorsCount() const

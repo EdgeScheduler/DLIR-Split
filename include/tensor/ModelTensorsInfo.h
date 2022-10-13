@@ -16,7 +16,7 @@ public:
 
     /// @brief serial to json object
     /// @return one nlohmann::json object. if value not valid, it will be nullptr.
-    nlohmann::json ToJson() const;
+    virtual nlohmann::json ToJson() const;
 
     /// @brief load class to json
     /// @param nlohmann::json  object
@@ -31,15 +31,15 @@ public:
 
     /// @brief get all labels
     /// @return
-    std::vector<std::string> GetLabels() const;
+    std::vector<std::string>&& GetLabels() const;
 
     /// @brief get all shapes
     /// @return
-    std::vector<std::vector<int64_t>> GetShapes() const;
+    std::vector<std::vector<int64_t>>&& GetShapes() const;
 
     /// @brief get all types
     /// @return
-    std::vector<ONNXTensorElementDataType> GetTypes() const;
+    std::vector<ONNXTensorElementDataType>&& GetTypes() const;
 
     /// @brief get raw ValueInfos
     /// @return
@@ -55,7 +55,7 @@ public:
     /// @param type data type
     /// @return
     void AppendTensorInfo(const char *label, const std::vector<int64_t> &shape, const ONNXTensorElementDataType &type);
-    
+
     /// @brief add tensor to object
     /// @param label label name
     /// @param shape shape
@@ -79,9 +79,11 @@ public:
     /// @brief serial to json object
     /// @return one nlohmann::json object.
     virtual nlohmann::json ToJson() const;
+
     /// @brief load class to json
     /// @param nlohmann::json  object
     virtual void LoadFromJson(const nlohmann::json &json);
+
     TensorsInfo GetInput() const;
     TensorsInfo GetOutput() const;
     friend std::ostream &operator<<(std::ostream &out, const ModelInfo &value);
