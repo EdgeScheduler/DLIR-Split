@@ -12,9 +12,18 @@
 #include "../include/common/PathManager.h"
 using namespace std;
 
+// 41.6 28.3ms 24.3ms 18.5ms
 int main(int argc, char *argv[])
 {
-    auto model_path = OnnxPathManager::GetModelSavePath("squeezenetv1");
+    std::filesystem::path model_path;
+    if(argc>=3)
+    {
+        model_path=OnnxPathManager::GetChildModelSavePath(argv[1],atoi(argv[2]));
+    }
+    else
+    {
+        model_path=OnnxPathManager::GetChildModelSavePath("resnet50");
+    }
 
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test"); // log id: "test"
 
@@ -74,16 +83,16 @@ int main(int argc, char *argv[])
     }
 
     // start to test run time
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 1000; i++)
     {
-        for (auto &tensor : input_tensors)
-        {
-            tensor.Random();
-        }
+        // for (auto &tensor : input_tensors)
+        // {
+        //     tensor.Random();
+        // }
         clock_t start = clock();
         vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
         cout << "run-" << i << "(" << setiosflags(ios::fixed) << setprecision(2) << (clock() - start) * 1000.0 / CLOCKS_PER_SEC << "ms)."
-             << "=> [" << *output_values[0].GetTensorMutableData<float>() << " ...]" << endl;
+             << "=> [" << setprecision(6) <<*output_values[0].GetTensorMutableData<float>() << " ...]" << endl;
         output_values[0].release();
     }
 

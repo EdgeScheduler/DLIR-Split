@@ -156,11 +156,11 @@ void TensorValue<T>::Print(int64_t max_length, bool print_tensor_info) const
     {
         if (i == 0)
         {
-            std::cout << this->data[i];
+            std::cout<<std::setiosflags(std::ios::fixed)<<std::setprecision(6) << this->data[i];
         }
         else
         {
-            std::cout << ", " << this->data[i];
+            std::cout<<std::setiosflags(std::ios::fixed) <<std::setprecision(6) << ", " << this->data[i];
         }
     }
 
