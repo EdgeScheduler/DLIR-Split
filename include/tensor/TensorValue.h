@@ -1,5 +1,5 @@
-#ifndef TENSORVALUE_H
-#define TENSORVALUE_H
+#ifndef __TENSORVALUE_H__
+#define __TENSORVALUE_H__
 
 #include <onnxruntime_cxx_api.h>
 #include <vector>
@@ -174,4 +174,4 @@ void TensorValue<T>::Print(int64_t max_length, bool print_tensor_info) const
     }
 }
 
-#endif // !TENSORVALUE_H
+#endif // __TENSORVALUE_H__

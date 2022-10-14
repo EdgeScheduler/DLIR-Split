@@ -1,5 +1,5 @@
-#ifndef MODELTTENSORSINFO_H
-#define MODELTTENSORSINFO_H
+#ifndef __MODELTENSORSINFO_H__
+#define __MODELTENSORSINFO_H__
 
 #include <onnxruntime_cxx_api.h>
 #include <vector>
@@ -31,15 +31,15 @@ public:
 
     /// @brief get all labels
     /// @return
-    std::vector<std::string>&& GetLabels() const;
+    std::vector<std::string> &&GetLabels() const;
 
     /// @brief get all shapes
     /// @return
-    std::vector<std::vector<int64_t>>&& GetShapes() const;
+    std::vector<std::vector<int64_t>> &&GetShapes() const;
 
     /// @brief get all types
     /// @return
-    std::vector<ONNXTensorElementDataType>&& GetTypes() const;
+    std::vector<ONNXTensorElementDataType> &&GetTypes() const;
 
     /// @brief get raw ValueInfos
     /// @return
@@ -93,4 +93,4 @@ private:
     TensorsInfo output;
 };
 
-#endif // !MODELTTENSORSINFO_H
+#endif // __MODELTENSORSINFO_H__

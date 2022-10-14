@@ -1,5 +1,5 @@
-#ifndef PATHManager_H
-#define PATHManager_H
+#ifndef __PATHMANAGER_H__
+#define __PATHMANAGER_H__
 
 #include <iostream>
 #include <filesystem>
@@ -66,5 +66,4 @@ public:
 private:
     static std::filesystem::path projectRootFold;
 };
-
-#endif // !PATHManager_H
+#endif // __PATHMANAGER_H__

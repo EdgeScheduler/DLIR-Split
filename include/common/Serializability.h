@@ -1,5 +1,5 @@
-#ifndef SERIALIZE_H
-#define SERIALIZE_H
+#ifndef __SERIALIZABILITY_H__
+#define __SERIALIZABILITY_H__
 
 #include <nlohmann/json.hpp>
 
@@ -26,4 +26,4 @@ public:
     virtual bool StoreJsonWithPath(const std::filesystem::path &path) const;
 };
 
-#endif // !SERIALIZE_H
+#endif // __SERIALIZABILITY_H__

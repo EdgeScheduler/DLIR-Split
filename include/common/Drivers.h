@@ -1,5 +1,5 @@
-#ifndef DRIVERS_H
-#define DRIVERS_H
+#ifndef __DRIVERS_H__
+#define __DRIVERS_H__
 
 #include <onnxruntime_cxx_api.h>
 
@@ -17,4 +17,4 @@ namespace Drivers
     };
 };
 
-#endif // !DRIVERS_H
+#endif // __DRIVERS_H__

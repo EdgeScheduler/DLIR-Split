@@ -59,7 +59,7 @@ void TensorsInfo::AppendTensorInfo(const std::string &label, const std::vector<i
     this->tensors.push_back(ValueInfo(label, shape, type));
 }
 
-std::vector<std::string>&& TensorsInfo::GetLabels() const
+std::vector<std::string> &&TensorsInfo::GetLabels() const
 {
     std::vector<std::string> labels;
     for (auto iter = this->tensors.begin(); iter < this->tensors.end(); iter++)
@@ -69,7 +69,7 @@ std::vector<std::string>&& TensorsInfo::GetLabels() const
     return std::move(labels);
 }
 
-std::vector<std::vector<int64_t>>&& TensorsInfo::GetShapes() const
+std::vector<std::vector<int64_t>> &&TensorsInfo::GetShapes() const
 {
     std::vector<std::vector<int64_t>> shapes;
     for (auto iter = this->tensors.begin(); iter < this->tensors.end(); iter++)
@@ -79,7 +79,7 @@ std::vector<std::vector<int64_t>>&& TensorsInfo::GetShapes() const
     return std::move(shapes);
 }
 
-std::vector<ONNXTensorElementDataType>&& TensorsInfo::GetTypes() const
+std::vector<ONNXTensorElementDataType> &&TensorsInfo::GetTypes() const
 {
     std::vector<ONNXTensorElementDataType> types;
     for (auto iter = this->tensors.begin(); iter < this->tensors.end(); iter++)
@@ -122,14 +122,14 @@ ModelInfo::ModelInfo(const Ort::Session &session)
     for (int i = 0; i < session.GetInputCount(); i++)
     {
         // need to get shape
-        //const Ort::TensorTypeAndShapeInfo& info=session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo();
+        // const Ort::TensorTypeAndShapeInfo& info=session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo();
         this->input.AppendTensorInfo(session.GetInputNameAllocated(i, allocator).get(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType());
     }
 
     for (int i = 0; i < session.GetOutputCount(); i++)
     {
         // need to get shape
-        //const Ort::TensorTypeAndShapeInfo& info=session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo();
+        // const Ort::TensorTypeAndShapeInfo& info=session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo();
         this->output.AppendTensorInfo(session.GetOutputNameAllocated(i, allocator).get(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType());
     }
 }

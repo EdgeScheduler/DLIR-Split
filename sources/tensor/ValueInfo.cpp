@@ -134,7 +134,7 @@ void ValueInfo::UpdateCount()
 {
     if (this->shape.size() < 1)
     {
-        this->dataCount=0;
+        this->dataCount = 0;
         return;
     }
     else
@@ -154,7 +154,7 @@ std::string ValueInfo::GetName() const
 
 void ValueInfo::SetName(std::string name)
 {
-    this->name=name;
+    this->name = name;
 }
 
 std::vector<int64_t> ValueInfo::GetShape() const

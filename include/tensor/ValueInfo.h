@@ -1,5 +1,5 @@
-#ifndef TENSORINFO_H
-#define TENSORINFO_H
+#ifndef __VALUEINFO_H__
+#define __VALUEINFO_H__
 
 #include <vector>
 #include <string>
@@ -43,7 +43,7 @@ public:
     std::vector<int64_t> GetShape() const;
 
     /// @brief get total value count with this shape
-    /// @return 
+    /// @return
     std::int64_t GetDataCount() const;
 
     /// @brief get get input/output dim-size in model
@@ -69,4 +69,4 @@ private:
     ONNXTensorElementDataType type;
 };
 
-#endif // !TENSORINFO_H
+#endif // __VALUEINFO_H__
