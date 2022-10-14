@@ -81,7 +81,7 @@ nlohmann::json ValueInfo::ToJson() const
     nlohmann::json obj;
     if (this->name == "" && this->shape.size() < 1)
     {
-        return nullptr;
+        return std::move(nullptr);
     }
 
     obj["type"] = OnnxValueType::OnnxTypeToString(this->type);
@@ -147,7 +147,7 @@ void ValueInfo::UpdateCount()
     }
 }
 
-std::string ValueInfo::GetName() const
+const std::string& ValueInfo::GetName() const
 {
     return this->name;
 }
@@ -157,17 +157,17 @@ void ValueInfo::SetName(std::string name)
     this->name = name;
 }
 
-std::vector<int64_t> ValueInfo::GetShape() const
+const std::vector<int64_t>& ValueInfo::GetShape() const
 {
     return this->shape;
 }
 
-ONNXTensorElementDataType ValueInfo::GetType() const
+const ONNXTensorElementDataType& ValueInfo::GetType() const
 {
     return this->type;
 }
 
-std::int64_t ValueInfo::GetDataCount() const
+const std::int64_t& ValueInfo::GetDataCount() const
 {
     return this->dataCount;
 }

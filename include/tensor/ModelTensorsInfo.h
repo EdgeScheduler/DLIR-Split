@@ -29,21 +29,21 @@ public:
     /// @return how many item was set.
     int SetTensorsInfo(const std::vector<std::string> &labels, const std::vector<std::vector<int64_t>> &shapes, const std::vector<ONNXTensorElementDataType> &types);
 
-    /// @brief get all labels
+    /// @brief get all labels with deep-copy, if you need to get raw-labels, use GetAllTensors()[x].GetName()
     /// @return
-    std::vector<std::string> &&GetLabels() const;
+    std::vector<std::string> GetLabels() const;
 
-    /// @brief get all shapes
+    /// @brief get all shapes with deep-copy
     /// @return
-    std::vector<std::vector<int64_t>> &&GetShapes() const;
+    std::vector<std::vector<int64_t>> GetShapes() const;
 
-    /// @brief get all types
+    /// @brief get all types with deep-copy
     /// @return
-    std::vector<ONNXTensorElementDataType> &&GetTypes() const;
+    std::vector<ONNXTensorElementDataType> GetTypes() const;
 
     /// @brief get raw ValueInfos
     /// @return
-    std::vector<ValueInfo> GetAllTensors() const;
+    const std::vector<ValueInfo> &GetAllTensors() const;
 
     /// @brief get how many items here
     /// @return count
@@ -84,8 +84,8 @@ public:
     /// @param nlohmann::json  object
     virtual void LoadFromJson(const nlohmann::json &json);
 
-    TensorsInfo GetInput() const;
-    TensorsInfo GetOutput() const;
+    const TensorsInfo &GetInput() const;
+    const TensorsInfo &GetOutput() const;
     friend std::ostream &operator<<(std::ostream &out, const ModelInfo &value);
 
 private:

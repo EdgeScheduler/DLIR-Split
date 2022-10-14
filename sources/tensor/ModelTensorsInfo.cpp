@@ -59,34 +59,34 @@ void TensorsInfo::AppendTensorInfo(const std::string &label, const std::vector<i
     this->tensors.push_back(ValueInfo(label, shape, type));
 }
 
-std::vector<std::string> &&TensorsInfo::GetLabels() const
+std::vector<std::string> TensorsInfo::GetLabels() const
 {
     std::vector<std::string> labels;
     for (auto iter = this->tensors.begin(); iter < this->tensors.end(); iter++)
     {
         labels.push_back(iter->GetName());
     }
-    return std::move(labels);
+    return labels;
 }
 
-std::vector<std::vector<int64_t>> &&TensorsInfo::GetShapes() const
+std::vector<std::vector<int64_t>> TensorsInfo::GetShapes() const
 {
     std::vector<std::vector<int64_t>> shapes;
     for (auto iter = this->tensors.begin(); iter < this->tensors.end(); iter++)
     {
         shapes.push_back(iter->GetShape());
     }
-    return std::move(shapes);
+    return shapes;
 }
 
-std::vector<ONNXTensorElementDataType> &&TensorsInfo::GetTypes() const
+std::vector<ONNXTensorElementDataType> TensorsInfo::GetTypes() const
 {
     std::vector<ONNXTensorElementDataType> types;
     for (auto iter = this->tensors.begin(); iter < this->tensors.end(); iter++)
     {
         types.push_back(iter->GetType());
     }
-    return std::move(types);
+    return types;
 }
 
 int TensorsInfo::GetTensorsCount() const
@@ -94,7 +94,7 @@ int TensorsInfo::GetTensorsCount() const
     return this->tensors.size();
 }
 
-std::vector<ValueInfo> TensorsInfo::GetAllTensors() const
+const std::vector<ValueInfo>& TensorsInfo::GetAllTensors() const
 {
     return this->tensors;
 }
@@ -123,7 +123,7 @@ ModelInfo::ModelInfo(const Ort::Session &session)
     {
         // need to get shape
         // const Ort::TensorTypeAndShapeInfo& info=session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo();
-        this->input.AppendTensorInfo(session.GetInputNameAllocated(i, allocator).get(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType());
+        this->input.AppendTensorInfo(session.GetInputNameAllocated(i, allocator).get(), session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape(), session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType());
     }
 
     for (int i = 0; i < session.GetOutputCount(); i++)
@@ -161,12 +161,12 @@ void ModelInfo::LoadFromJson(const nlohmann::json &json)
     }
 }
 
-TensorsInfo ModelInfo::GetInput() const
+const TensorsInfo& ModelInfo::GetInput() const
 {
     return this->input;
 }
 
-TensorsInfo ModelInfo::GetOutput() const
+const TensorsInfo& ModelInfo::GetOutput() const
 {
     return this->output;
 }

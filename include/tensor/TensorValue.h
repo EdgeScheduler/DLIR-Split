@@ -24,7 +24,7 @@ public:
     TensorValue(const TensorValue &value) = default;
     TensorValue() = delete;
 
-    /// @brief value-copy from Ort::value to TensorValue
+    /// @brief deep-copy from Ort::value to TensorValue
     /// @param value Ort::Value
     void RecordOrtValue(Ort::Value &value);
 
@@ -44,15 +44,15 @@ public:
 
     /// @brief get raw data
     /// @return std::vector<T> object
-    std::vector<T> GetData() const;
+    const std::vector<T> &GetData() const;
 
-    /// @brief bind to Ort::Value. if TensorValue change, Ort::value change together.
+    /// @brief bind to Ort::Value, it is similar to shallow-copy. if TensorValue change, Ort::value change together.
     /// @return
     Ort::Value ToTensor();
 
     /// @brief get tensor-info
     /// @return ValueInfo Info
-    ValueInfo GetValueInfo() const;
+    const ValueInfo &GetValueInfo() const;
 
     /// @brief print Tensor-info
     // template<typename ValueType=float>
@@ -131,13 +131,13 @@ void TensorValue<T>::SetLabel(std::string label)
 }
 
 template <class T>
-std::vector<T> TensorValue<T>::GetData() const
+const std::vector<T> &TensorValue<T>::GetData() const
 {
     return this->data;
 }
 
 template <class T>
-ValueInfo TensorValue<T>::GetValueInfo() const
+const ValueInfo &TensorValue<T>::GetValueInfo() const
 {
     return this->valueInfo;
 }

@@ -33,18 +33,19 @@ public:
 
     /// @brief get input/output name in model
     /// @return name
-    std::string GetName() const;
+    const std::string &GetName() const;
+
     /// @brief set input/output name in model
     /// @return name
     void SetName(std::string name);
 
     /// @brief get get input/output shapes in model
     /// @return shapes
-    std::vector<int64_t> GetShape() const;
+    const std::vector<int64_t> &GetShape() const;
 
     /// @brief get total value count with this shape
     /// @return
-    std::int64_t GetDataCount() const;
+    const std::int64_t &GetDataCount() const;
 
     /// @brief get get input/output dim-size in model
     /// @return dim size
@@ -52,7 +53,7 @@ public:
 
     /// @brief get raw element data-type
     /// @return ONNXTensorElementDataType
-    ONNXTensorElementDataType GetType() const;
+    const ONNXTensorElementDataType &GetType() const;
 
     /// @brief get element data-type
     /// @return std::string
