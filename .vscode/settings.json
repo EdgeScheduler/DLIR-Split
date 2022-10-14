@@ -69,7 +69,8 @@
     "any": "cpp",
     "forward_list": "cpp",
     "valarray": "cpp",
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "cassert": "cpp"
   },
   "C_Cpp.errorSquiggles": "Disabled",
   "C_Cpp_Runner.msvcBatchPath": "",
