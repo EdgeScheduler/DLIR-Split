@@ -8,7 +8,7 @@ Develop Environment:
 * C++ compiler support:
   * g++ -std=c++17
   * `-lstdc++fs` support
-  > example: g++ -std=c++17 main.cpp -o exec -lstdc++fs -lonnxruntime
+  > example: g++ -std=c++17 main.cpp -o exec -lstdc++fs -lonnxruntime -lprotobuf
 * [nlohmann::json](https://github.com/nlohmann/json) library install.
 * onnxruntime-gpu driver.
 
