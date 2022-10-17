@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     {
         clock_t start = clock();
         vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
-        cout << "raw-" << i << ": "  << (clock() - start) * 1000.0 / CLOCKS_PER_SEC << "ms." << endl;
+        cout << "raw-" << i << ": " << (clock() - start) * 1000.0 / CLOCKS_PER_SEC << "ms." << endl;
 
         if (i == 0)
         {
