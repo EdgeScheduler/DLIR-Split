@@ -3,6 +3,7 @@
 Onnxs/*
 !Onnxs/scripts
 onnxruntime-package
+tempCodeRunnerFile*
 __pycache__
 
 # Prerequisites
