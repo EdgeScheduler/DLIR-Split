@@ -26,14 +26,14 @@ ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *sessio
 
     for (auto &modelInfo : modelInfos)
     {
-        std::vector<const char*>  inputs;
+        std::vector<const char *> inputs;
         for (const ValueInfo &info : modelInfo.GetInput().GetAllTensors())
         {
             inputs.push_back(info.GetName().c_str());
         }
         this->inputLabels.push_back(inputs);
 
-        std::vector<const char*>  outputs;
+        std::vector<const char *> outputs;
         for (const ValueInfo &info : modelInfo.GetOutput().GetAllTensors())
         {
             outputs.push_back(info.GetName().c_str());
@@ -45,22 +45,22 @@ ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *sessio
 void ModelExecutor::ToNext()
 {
     this->todo = (this->todo + 1) % this->modelCount;
-    if(this->todo==0)
+    if (this->todo == 0)
     {
         this->current_task->SetOutputs(this->current_task->_input_datas);
         // Task& result=;
         this->finish_queue.push(std::move(this->task_queue.front()));
         this->task_queue.pop();
-        this->current_task=nullptr;
+        this->current_task = nullptr;
     }
 }
 
 void ModelExecutor::LoadTask()
 {
-    if(this->todo==0)
+    if (this->todo == 0)
     {
         // how to block
-        this->current_task=&this->task_queue.front();
+        this->current_task = &this->task_queue.front();
     }
 
     current_task->_session = &this->sessions[this->todo];
@@ -71,37 +71,37 @@ void ModelExecutor::LoadTask()
 void ModelExecutor::RunOnce()
 {
     this->LoadTask();
-    if(this->current_task==nullptr)
+    if (this->current_task == nullptr)
     {
-        std::cout<<"warning: meet no input."<<std::endl;
+        std::cout << "warning: meet no input." << std::endl;
         return;
     }
 
-    current_task->_input_datas = current_task->_session->Run(Ort::RunOptions{nullptr},current_task->_input_labels->data(), current_task->_input_datas.data(), current_task->_input_labels->size(), current_task->_output_labels->data(), current_task->_output_labels->size());
+    current_task->_input_datas = current_task->_session->Run(Ort::RunOptions{nullptr}, current_task->_input_labels->data(), current_task->_input_datas.data(), current_task->_input_labels->size(), current_task->_output_labels->data(), current_task->_output_labels->size());
     this->ToNext();
 }
 
-void ModelExecutor::AddTask(std::map<std::string,TensorValue<float>>& datas)
+void ModelExecutor::AddTask(std::map<std::string, TensorValue<float>> &datas)
 {
-    Task new_task(this->modelName,&this->rawModelInfo);
+    Task new_task(this->modelName, &this->rawModelInfo);
     new_task.SetInputs(datas);
     this->task_queue.emplace(std::move(new_task));
 }
 
 void ModelExecutor::RunCycle()
 {
-    while(true)
+    while (true)
     {
         this->RunOnce();
     }
 }
 
-std::queue<Task>& ModelExecutor::GetResultQueue()
+std::queue<Task> &ModelExecutor::GetResultQueue()
 {
     return this->finish_queue;
 }
 
-std::queue<Task>& ModelExecutor::GetTaskQueue()
+std::queue<Task> &ModelExecutor::GetTaskQueue()
 {
     return this->task_queue;
 }

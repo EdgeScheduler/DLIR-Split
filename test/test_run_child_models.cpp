@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     {
         output_tensors[i].RecordOrtValue(output_values_child[i]);
     }
-    cout << (clock() - start) * 1.0 / CLOCKS_PER_SEC*1000.0 << "ms)." << endl;
+    cout << (clock() - start) * 1.0 / CLOCKS_PER_SEC * 1000.0 << "ms)." << endl;
 
     for (auto &tensor : output_tensors)
     {

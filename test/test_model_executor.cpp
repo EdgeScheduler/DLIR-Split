@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 {
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test"); // log id: "test"
     Ort::SessionOptions session_options;
-    // session_options.SetIntraOpNumThreads(1);
+    session_options.SetIntraOpNumThreads(1);
     session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
     session_options.AppendExecutionProvider_CUDA(Drivers::GPU_CUDA::GPU0);
 
@@ -54,12 +54,11 @@ int main(int argc, char *argv[])
     }
 
     // run raw:
-
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 500; i++)
     {
         clock_t start = clock();
         vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
-        cout << "raw-" << i << ": "  << (clock() - start) * 1000.0 / CLOCKS_PER_SEC << "ms)." << endl;
+        cout << "raw-" << i << ": "  << (clock() - start) * 1000.0 / CLOCKS_PER_SEC << "ms." << endl;
 
         if (i == 0)
         {
@@ -74,7 +73,8 @@ int main(int argc, char *argv[])
             }
         }
     }
-    cout << "input:" << endl;
+
+    // run by childs
     std::map<std::string, TensorValue<float>> data;
     for (int i = 0; i < input_labels.size(); i++)
     {
@@ -85,10 +85,9 @@ int main(int argc, char *argv[])
 
     // executor.AddTask(data);
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 500; i++)
     {
         executor.AddTask(data);
-        cout << "run task: " << i << endl;
         executor.RunOnce();
         executor.RunOnce();
         executor.RunOnce();
