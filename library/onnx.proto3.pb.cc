@@ -2,7 +2,7 @@
 // source: onnx.proto3
 
 #define INTERNAL_SUPPRESS_PROTOBUF_FIELD_DEPRECATION
-#include "../../include/common/onnx.proto3.pb.h"
+#include "onnx.proto3.pb.h"
 
 #include <algorithm>
 

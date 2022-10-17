@@ -34,6 +34,7 @@
                 "${file}",
                 "${workspaceFolder}/include/*/*",
                 "${workspaceFolder}/sources/*/*",
+                "${workspaceFolder}/library/*",
                 "-o",
                 "${workspaceRoot}/bin/debug/${fileBasenameNoExtension}",
                 "-lstdc++fs",

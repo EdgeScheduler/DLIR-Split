@@ -1,7 +1,7 @@
 #include <filesystem>
 #include <iostream>
 #include "../include/SplitToChilds/ModelAnalyzer.h"
-#include "../include/common/onnx.proto3.pb.h"
+#include "../library/onnx.proto3.pb.h"
 using namespace std;
 
 int main()
@@ -10,7 +10,10 @@ int main()
     // static filesystem::path p = "./";
     // string modelname = "resnet";
     // ModelAnalyzer a = ModelAnalyzer(modelname, p);
-    onnx::ModelProto model;
+
+    // ModelAnalyzer analyzer = ModelAnalyzer("resnet50", "../Onnxs/resnet50/resnet50.onnx");
+    // onnx::ModelProto model = analyzer.onnx_load();
+    
     std::cout << "end" << std::endl;
     
 
