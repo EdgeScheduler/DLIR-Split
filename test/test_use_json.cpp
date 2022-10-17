@@ -12,8 +12,8 @@ int main()
     cout<<modelInfo<<endl;
     modelInfo.StoreJsonWithPath("test_config.json");
     ModelInfo m;
-    m.LoadFromJsonFile("test_config.json");
+    m.LoadFromJsonFile("test_config.json"); 
     cout<<m<<endl;
 
-    return 0;
+    return 0; 
 }
