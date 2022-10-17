@@ -147,7 +147,7 @@ void ValueInfo::UpdateCount()
     }
 }
 
-const std::string& ValueInfo::GetName() const
+const std::string &ValueInfo::GetName() const
 {
     return this->name;
 }
@@ -157,17 +157,17 @@ void ValueInfo::SetName(std::string name)
     this->name = name;
 }
 
-const std::vector<int64_t>& ValueInfo::GetShape() const
+const std::vector<int64_t> &ValueInfo::GetShape() const
 {
     return this->shape;
 }
 
-const ONNXTensorElementDataType& ValueInfo::GetType() const
+const ONNXTensorElementDataType &ValueInfo::GetType() const
 {
     return this->type;
 }
 
-const std::int64_t& ValueInfo::GetDataCount() const
+const std::int64_t &ValueInfo::GetDataCount() const
 {
     return this->dataCount;
 }

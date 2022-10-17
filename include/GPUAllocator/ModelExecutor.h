@@ -8,18 +8,21 @@
 class ModelExecutor
 {
 public:
-    ModelExecutor(std::string model_name,Ort::SessionOptions* session_opt,Ort::Env* env);
+    ModelExecutor(std::string model_name, Ort::SessionOptions *session_opt, Ort::Env *env);
+
+    /// @brief record current task to the end.
+    void ToNext();
 
 private:
-    int modelCount=0;
-    Ort::Env* onnxruntimeEnv;
-    Ort::SessionOptions* sessionOption;
+    int modelCount = 0;
+    Ort::Env *onnxruntimeEnv;
+    Ort::SessionOptions *sessionOption;
     std::vector<Ort::Session> sessions;
     std::vector<ModelInfo> modelInfos;
     ModelInfo rawModelInfo;
 
-    std::vector<Ort::Value> modelOutputs;   // model-0 output to modelOutputs[0] and can be used as input by model-1
-    std::vector<Ort::Value> modelInputs;    // used by model-0
+    std::vector<Ort::Value> modelOutputs; // model-0 output to modelOutputs[0] and can be used as input by model-1
+    std::vector<Ort::Value> modelInputs;  // used by model-0
     int todo;
     std::string modelName;
 };

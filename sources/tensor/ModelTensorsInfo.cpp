@@ -95,7 +95,7 @@ int TensorsInfo::GetTensorsCount() const
     return this->tensors.size();
 }
 
-const std::vector<ValueInfo>& TensorsInfo::GetAllTensors() const
+const std::vector<ValueInfo> &TensorsInfo::GetAllTensors() const
 {
     return this->tensors;
 }
@@ -117,7 +117,7 @@ ModelInfo::ModelInfo(const nlohmann::json &json)
     this->LoadFromJson(json);
 }
 
-ModelInfo::ModelInfo(const Ort::Session &session,std::filesystem::path model_path)
+ModelInfo::ModelInfo(const Ort::Session &session, std::filesystem::path model_path)
 {
     Ort::AllocatorWithDefaultOptions allocator;
     for (int i = 0; i < session.GetInputCount(); i++)
@@ -134,12 +134,12 @@ ModelInfo::ModelInfo(const Ort::Session &session,std::filesystem::path model_pat
         this->output.AppendTensorInfo(session.GetOutputNameAllocated(i, allocator).get(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType());
     }
 
-    this->modelPath=model_path;
+    this->modelPath = model_path;
 }
 
 void ModelInfo::SetModelPath(std::filesystem::path model_path)
 {
-    this->modelPath=model_path;
+    this->modelPath = model_path;
 }
 
 std::filesystem::path ModelInfo::GetModelPath()
@@ -174,23 +174,22 @@ void ModelInfo::LoadFromJson(const nlohmann::json &json)
         this->output = TensorsInfo(json["output"]["data"]);
     }
 
-    if(json.contains("model_path"))
+    if (json.contains("model_path"))
     {
-        this->modelPath=json["model_path"].get<std::string>();
+        this->modelPath = json["model_path"].get<std::string>();
     }
     else
     {
-        this->modelPath="";
+        this->modelPath = "";
     }
-    
 }
 
-const TensorsInfo& ModelInfo::GetInput() const
+const TensorsInfo &ModelInfo::GetInput() const
 {
     return this->input;
 }
 
-const TensorsInfo& ModelInfo::GetOutput() const
+const TensorsInfo &ModelInfo::GetOutput() const
 {
     return this->output;
 }

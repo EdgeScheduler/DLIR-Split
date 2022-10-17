@@ -75,14 +75,14 @@ class ModelInfo : public virtual Serializability
 public:
     ModelInfo(){};
     ModelInfo(const nlohmann::json &json);
-    ModelInfo(const Ort::Session &session,std::filesystem::path model_path="");
+    ModelInfo(const Ort::Session &session, std::filesystem::path model_path = "");
 
     /// @brief set where to save onnx-model.
-    /// @param model_path 
-    void SetModelPath(std::filesystem::path model_path="");
+    /// @param model_path
+    void SetModelPath(std::filesystem::path model_path = "");
 
     /// @brief get where to save onnx-model.
-    /// @return 
+    /// @return
     std::filesystem::path GetModelPath();
 
     /// @brief serial to json object
@@ -94,10 +94,10 @@ public:
     virtual void LoadFromJson(const nlohmann::json &json);
 
     /// @brief get reference to all inputs, you can use by "const TensorsInfo &inputs = obj.GetInput();"
-    /// @return 
+    /// @return
     const TensorsInfo &GetInput() const;
     /// @brief get reference to all outputs, you can use by "const TensorsInfo &inputs = obj.GetOutput();"
-    /// @return 
+    /// @return
     const TensorsInfo &GetOutput() const;
     friend std::ostream &operator<<(std::ostream &out, const ModelInfo &value);
 
