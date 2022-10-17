@@ -1,5 +1,6 @@
 #include "../../include/tensor/ModelTensorsInfo.h"
 #include <iostream>
+#include <string>
 // TensorsInfo
 TensorsInfo::TensorsInfo(const std::vector<std::string> &labels, const std::vector<std::vector<int64_t>> &shapes, const std::vector<ONNXTensorElementDataType> &types)
 {
@@ -116,7 +117,7 @@ ModelInfo::ModelInfo(const nlohmann::json &json)
     this->LoadFromJson(json);
 }
 
-ModelInfo::ModelInfo(const Ort::Session &session)
+ModelInfo::ModelInfo(const Ort::Session &session,std::filesystem::path model_path)
 {
     Ort::AllocatorWithDefaultOptions allocator;
     for (int i = 0; i < session.GetInputCount(); i++)
@@ -132,6 +133,18 @@ ModelInfo::ModelInfo(const Ort::Session &session)
         // const Ort::TensorTypeAndShapeInfo& info=session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo();
         this->output.AppendTensorInfo(session.GetOutputNameAllocated(i, allocator).get(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape(), session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType());
     }
+
+    this->modelPath=model_path;
+}
+
+void ModelInfo::SetModelPath(std::filesystem::path model_path)
+{
+    this->modelPath=model_path;
+}
+
+std::filesystem::path ModelInfo::GetModelPath()
+{
+    return this->modelPath;
 }
 
 nlohmann::json ModelInfo::ToJson() const
@@ -145,6 +158,7 @@ nlohmann::json ModelInfo::ToJson() const
 
     obj["input"] = input;
     obj["output"] = output;
+    obj["model_path"] = std::string(this->modelPath);
     return obj;
 }
 
@@ -159,6 +173,16 @@ void ModelInfo::LoadFromJson(const nlohmann::json &json)
     {
         this->output = TensorsInfo(json["output"]["data"]);
     }
+
+    if(json.contains("model_path"))
+    {
+        this->modelPath=json["model_path"].get<std::string>();
+    }
+    else
+    {
+        this->modelPath="";
+    }
+    
 }
 
 const TensorsInfo& ModelInfo::GetInput() const
