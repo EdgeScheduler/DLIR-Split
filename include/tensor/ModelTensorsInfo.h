@@ -84,7 +84,11 @@ public:
     /// @param nlohmann::json  object
     virtual void LoadFromJson(const nlohmann::json &json);
 
+    /// @brief get reference to all inputs, you can use by "const TensorsInfo &inputs = obj.GetInput();"
+    /// @return 
     const TensorsInfo &GetInput() const;
+    /// @brief get reference to all outputs, you can use by "const TensorsInfo &inputs = obj.GetOutput();"
+    /// @return 
     const TensorsInfo &GetOutput() const;
     friend std::ostream &operator<<(std::ostream &out, const ModelInfo &value);
 
