@@ -18,6 +18,8 @@ using namespace std;
 // 41.6 28.3ms 24.3ms 18.5ms
 int main(int argc, char *argv[])
 {
+    std::string model_name="resnet50";
+
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test"); // log id: "test"
     Ort::SessionOptions session_options;
     session_options.SetIntraOpNumThreads(1);
@@ -25,7 +27,7 @@ int main(int argc, char *argv[])
     session_options.AppendExecutionProvider_CUDA(Drivers::GPU_CUDA::GPU0);
 
     std::filesystem::path model_path;
-    model_path = OnnxPathManager::GetChildModelSavePath("vgg19");
+    model_path = OnnxPathManager::GetChildModelSavePath(model_name);
     Ort::Session session(env, model_path.c_str(), session_options);
 
     ModelInfo modelInfo(session);
@@ -81,14 +83,14 @@ int main(int argc, char *argv[])
         data.insert(pair<std::string, TensorValue<float>>(input_labels[i], input_tensors[i]));
     }
 
-    ModelExecutor executor("vgg19", &session_options, &env, 1, nullptr);
+    ModelExecutor executor(model_name, &session_options, &env, 1, nullptr);
 
     // executor.AddTask(data);
 
     for (int i = 0; i < 500; i++)
     {
         executor.AddTask(data);
-        executor.RunOnce();
+        //executor.RunOnce();
         executor.RunOnce();
         executor.RunOnce();
 
