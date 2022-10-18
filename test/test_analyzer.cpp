@@ -15,8 +15,6 @@ int main()
     ModelAnalyzer analyzer = ModelAnalyzer("vgg19");
     onnx::ModelProto model = onnxUtil.load(analyzer.GetModelPath());
     auto graph = model.graph();
-    
-
 
     // initializer
     // std::cout<<graph.initializer_size()<<std::endl;
@@ -26,23 +24,21 @@ int main()
     // }
 
     // node
-    // for(auto data: graph.node())
-    // {
-    //     for(auto inp: data.input())
-    //     {
-    //         std::cout<<inp<<std::endl;
-    //     }
-    //     std::cout<<std::endl;
-    // }
-
-    for(auto data: graph.node())
+    for (auto data : graph.node())
     {
-        std::cout<<data.name()<<std::endl;
+        for (auto inp : data.output())
+        {
+            std::cout << inp << std::endl;
+        }
+        std::cout << std::endl;
     }
 
-    
-    std::cout << "test end" << std::endl;
+    // for(auto data: graph.node())
+    // {
+    //     std::cout<<data.output(0)<<std::endl;
+    // }
 
+    std::cout << "test end" << std::endl;
 
     return 0;
 }
