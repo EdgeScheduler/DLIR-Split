@@ -4,6 +4,7 @@
 #include "../../include/SplitToChilds/ModelAnalyzer.h"
 #include "../../include/Common/PathManager.h"
 #include "../../library/onnx.proto3.pb.h"
+#include "../../include/utils/OnnxUtil.h"
 
 // some tool function
 
@@ -47,7 +48,7 @@ void print_io_info(const ::google::protobuf::RepeatedPtrField<::onnx::ValueInfoP
 
 // ModelAnalyzer
 
-ModelAnalyzer::ModelAnalyzer(std::string model_name, std::filesystem::path onnx_path)
+ModelAnalyzer::ModelAnalyzer(std::string model_name, const std::filesystem::path &onnx_path)
 {
     this->modelName = model_name;
     this->manager = OnnxPathManager();
@@ -64,45 +65,28 @@ ModelAnalyzer::ModelAnalyzer(std::string model_name, std::filesystem::path onnx_
         return;
 }
 
-onnx::ModelProto ModelAnalyzer::onnx_load()
+std::filesystem::path ModelAnalyzer::getModelPath()
 {
-    std::ifstream input(this -> onnxPath, std::ios::ate | std::ios::binary); // open file and move current position in file to the end
-
-    std::cout<<input.fail()<<std::endl;
-
-    std::streamsize size = input.tellg(); // get current position in file
-
-    input.seekg(0, std::ios::beg);        // move to start of file
-
-    std::vector<char> buffer(size);
-    input.read(buffer.data(), size); // read raw data
-
-    onnx::ModelProto model;
-    model.ParseFromArray(buffer.data(), size); // parse protobuf
-
-    auto graph = model.graph();
-
-    std::cout << "graph inputs:\n";
-    print_io_info(graph.input());
-
-    std::cout << "graph outputs:\n";
-    print_io_info(graph.output());
-
-    return model;
+    return this -> onnxPath;
 }
 
 bool ModelAnalyzer::Init()
 {
-    // try
-    // {
+
+    onnx::ModelProto model;
+    try
+    {
+        model = onnxUtil.load(onnxPath);
+
+
         
-    //     /* code */
-    //     // std::ifstream input(onnxpath,std::ios::ate | std::ios::binary);
-    // }
-    // catch (const std::exception &e)
-    // {
-    //     std::cerr << e.what() << '\n';
-    // }
+        /* code */
+        // std::ifstream input(onnxpath,std::ios::ate | std::ios::binary);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
     return true;
 }
 

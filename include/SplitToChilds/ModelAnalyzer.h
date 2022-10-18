@@ -21,16 +21,15 @@ public:
     /// @brief 
     /// @param model_name 
     /// @param onnx_path 
-    ModelAnalyzer(std::string model_name, std::filesystem::path onnx_path);
+    ModelAnalyzer(std::string model_name, const std::filesystem::path &onnx_path="");
 
-    /// @brief 
-    /// @param onnx_path 
-    /// @return 
-    onnx::ModelProto onnx_load(); 
+    std::filesystem::path getModelPath();
 
     /// @brief 
     /// @return 
     bool Init();
+
+    
 
 //     /// @brief 
 //     /// @param enable 
@@ -88,7 +87,7 @@ private:
     std::string modelName;
 
     /// @brief 
-    std::string onnxPath;
+    std::filesystem::path onnxPath;
 
     /// @brief 
     OnnxPathManager manager;
