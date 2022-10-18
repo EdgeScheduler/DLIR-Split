@@ -43,6 +43,12 @@ public:
     /// @return
     std::map<std::string, std::shared_ptr<ExecutorDescribe>> &GetExecutorInformation();
 
+    /// @brief give token to xx
+    /// @param token ID, 0 means free
+    /// @param block if token is still there, block or not.
+    /// @return 
+    bool Grant(int token, bool block=true);
+
     /// @brief join all thread to current-thread
     void Join();
 

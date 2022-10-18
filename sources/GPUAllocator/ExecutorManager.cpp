@@ -2,7 +2,7 @@
 #include "../../include/Common/Drivers.h"
 #include <iostream>
 
-ExecutorManager::ExecutorManager() : environment(ORT_LOGGING_LEVEL_WARNING, "test")
+ExecutorManager::ExecutorManager() : environment(ORT_LOGGING_LEVEL_WARNING, "test"), executorCount(0)
 {
     sessionOption.SetIntraOpNumThreads(1);
     sessionOption.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
@@ -60,4 +60,11 @@ void ExecutorManager::Join()
     {
         thread->join();
     }
+}
+
+bool ExecutorManager::Grant(int token, bool block)
+{
+    bool flag=this->tokenManager.Grant(token,block);
+    this->dealTask.notify_all();
+    return flag;
 }

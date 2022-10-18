@@ -17,6 +17,7 @@ public:
     /// @param block if token is still there, block or not.
     /// @return 
     bool Grant(int token, bool block=true);
+    int GetFlag();
 
     operator int();
 private:

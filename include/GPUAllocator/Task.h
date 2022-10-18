@@ -41,6 +41,8 @@ public:
     /// @param cost
     void RecordTimeCosts(clock_t cost);
 
+    std::string& GetTag();
+
     /// @brief get how much time cost by run for each child-model.(clock_t)
     /// @return
     std::vector<clock_t> &GetTimeCosts();

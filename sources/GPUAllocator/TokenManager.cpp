@@ -15,7 +15,6 @@ void TokenManager::Release()
 
 bool TokenManager::Grant(int token, bool block)
 {
-
     std::unique_lock<std::mutex> lock(mutex);
     if(this->flag>0)
     {
@@ -41,6 +40,11 @@ bool TokenManager::Grant(int token, bool block)
 }
 
 TokenManager::operator int()
+{
+    return this->flag;
+}
+
+int TokenManager::GetFlag()
 {
     return this->flag;
 }

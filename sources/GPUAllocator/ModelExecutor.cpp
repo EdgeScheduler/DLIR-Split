@@ -80,12 +80,11 @@ void ModelExecutor::RunOnce()
 
     std::unique_lock<std::mutex> lock(*gpuMutex);
     dealTask->wait(lock, [this]() -> bool
-                   { return int(*tokenManager) == tokenID; });
+                   { return this->tokenManager->GetFlag() == tokenID; });
     // use token already
     this->tokenManager->Release();
 
 #endif // !ALLOW_GPU_Parallel
-
     clock_t start = clock();
     current_task->_input_datas = current_task->_session->Run(Ort::RunOptions{nullptr}, current_task->_input_labels->data(), current_task->_input_datas.data(), current_task->_input_labels->size(), current_task->_output_labels->data(), current_task->_output_labels->size());
     current_task->RecordTimeCosts(clock() - start);

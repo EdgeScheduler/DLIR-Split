@@ -73,3 +73,8 @@ std::vector<float> Task::GetTimeCostsByMs()
 
     return result;
 }
+
+std::string& Task::GetTag()
+{
+    return this->tag;
+}
