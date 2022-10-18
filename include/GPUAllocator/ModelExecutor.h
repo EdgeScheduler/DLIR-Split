@@ -4,7 +4,7 @@
 #include <onnxruntime_cxx_api.h>
 #include <vector>
 #include <map>
-#include <queue>
+#include "../ThreadSafe/SafeQueue.hpp"
 #include "../Tensor/ModelTensorsInfo.h"
 #include "Task.h"
 
@@ -28,8 +28,8 @@ public:
     /// @brief run all model automatically.
     void RunCycle();
 
-    std::queue<Task> &GetResultQueue();
-    std::queue<Task> &GetTaskQueue();
+    SafeQueue<Task> &GetResultQueue();
+    SafeQueue<Task> &GetTaskQueue();
 
 private:
     int modelCount = 0;
@@ -41,8 +41,8 @@ private:
     std::vector<std::vector<const char *>> outputLabels;
     ModelInfo rawModelInfo;
 
-    std::queue<Task> task_queue;
-    std::queue<Task> finish_queue;
+    SafeQueue<Task> task_queue;
+    SafeQueue<Task> finish_queue;
 
     int todo;
     std::string modelName;

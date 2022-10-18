@@ -3,6 +3,7 @@
 #include "../../include/Common/PathManager.h"
 #include <vector>
 #include <iostream>
+#include <ctime>
 
 ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *session_opt, Ort::Env *env, int token_id, int *token_manager) : modelName(model_name), sessionOption(session_opt), onnxruntimeEnv(env), todo(0), modelCount(0), tokenID(token_id), tokenManager(token_manager)
 {
@@ -48,9 +49,7 @@ void ModelExecutor::ToNext()
     if (this->todo == 0)
     {
         this->current_task->SetOutputs(this->current_task->_input_datas);
-        // Task& result=;
-        this->finish_queue.push(std::move(this->task_queue.front()));
-        this->task_queue.pop();
+        this->finish_queue.Emplace(std::move(this->task_queue.Pop()));
         this->current_task = nullptr;
     }
 }
@@ -77,7 +76,10 @@ void ModelExecutor::RunOnce()
         return;
     }
 
+    clock_t start=clock();
     current_task->_input_datas = current_task->_session->Run(Ort::RunOptions{nullptr}, current_task->_input_labels->data(), current_task->_input_datas.data(), current_task->_input_labels->size(), current_task->_output_labels->data(), current_task->_output_labels->size());
+    current_task->RecordTimeCosts(clock()-start);
+
     this->ToNext();
 }
 
@@ -85,7 +87,7 @@ void ModelExecutor::AddTask(std::map<std::string, TensorValue<float>> &datas)
 {
     Task new_task(this->modelName, &this->rawModelInfo);
     new_task.SetInputs(datas);
-    this->task_queue.emplace(std::move(new_task));
+    this->task_queue.Emplace(std::move(new_task));
 }
 
 void ModelExecutor::RunCycle()
@@ -96,12 +98,12 @@ void ModelExecutor::RunCycle()
     }
 }
 
-std::queue<Task> &ModelExecutor::GetResultQueue()
+SafeQueue<Task> &ModelExecutor::GetResultQueue()
 {
     return this->finish_queue;
 }
 
-std::queue<Task> &ModelExecutor::GetTaskQueue()
+SafeQueue<Task> &ModelExecutor::GetTaskQueue()
 {
     return this->task_queue;
 }

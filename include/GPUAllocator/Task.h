@@ -17,7 +17,7 @@ public:
     /// @param modelInfo
     void SetModelInfo(ModelInfo *modelInfo);
 
-    /// @brief get how much time cost by task
+    /// @brief get how much time cost by task.(ms)
     /// @return
     float TimeCost();
 
@@ -37,9 +37,22 @@ public:
     /// @return
     const std::vector<TensorValue<float>> &GetOutputs();
 
+    /// @brief record how mush time cost for each child-module.
+    /// @param cost 
+    void RecordTimeCosts(clock_t cost);
+
+    /// @brief get how much time cost by run for each child-model.(clock_t)
+    /// @return 
+    std::vector<clock_t>& GetTimeCosts();
+
+    /// @brief get how much time cost by run for each child-model.(ms)
+    /// @return 
+    std::vector<float> GetTimeCostsByMs();
+
 public:
     std::vector<TensorValue<float>> Inputs;
     std::vector<TensorValue<float>> Outputs;
+    std::vector<clock_t> timeCosts;
 
     // runtime args
 public:

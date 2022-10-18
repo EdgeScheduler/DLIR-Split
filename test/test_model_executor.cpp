@@ -18,7 +18,7 @@ using namespace std;
 // 41.6 28.3ms 24.3ms 18.5ms
 int main(int argc, char *argv[])
 {
-    std::string model_name="resnet50";
+    std::string model_name = "resnet50";
 
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test"); // log id: "test"
     Ort::SessionOptions session_options;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     }
 
     // run raw:
-    for (int i = 0; i < 500; i++)
+    for (int i = 0; i < 5; i++)
     {
         clock_t start = clock();
         vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
@@ -87,17 +87,20 @@ int main(int argc, char *argv[])
 
     // executor.AddTask(data);
 
-    for (int i = 0; i < 500; i++)
+    for (int i = 0; i < 5; i++)
     {
         executor.AddTask(data);
-        //executor.RunOnce();
+        // executor.RunOnce();
         executor.RunOnce();
         executor.RunOnce();
 
-        Task task = std::move(executor.GetResultQueue().front());
-        executor.GetResultQueue().pop();
+        Task task = executor.GetResultQueue().Pop();
 
         cout << "childs-" << i << ": " << task.TimeCost() << "ms" << endl;
+        for (auto &value : task.GetTimeCostsByMs())
+        {
+            cout << "--:" << value << endl;
+        }
         if (i == 0)
         {
             for (auto &value : task.GetOutputs())

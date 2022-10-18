@@ -1,87 +1,132 @@
-// #ifndef __SAFEQUEUE_H__
-// #define __SAFEQUEUE_H__
+#ifndef __SAFEQUEUE_H__
+#define __SAFEQUEUE_H__
 
-// #include <deque>
-// #include <thread>
-// #include <queue>
-// #include <mutex>
-// #include <condition_variable>
+#include <deque>
+#include <thread>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
 
-// template <class T>
-// class SafeQueue
-// {
-//     SafeQueue(int maxSize) : capacity(maxSize), size(0){}
-//     ~SafeQueue(){}
+template <class T>
+class SafeQueue
+{
+public:
+    SafeQueue(int capacity = -1) : capacity(capacity), size(0)  {}
+    ~SafeQueue() {}
 
-//     void Push(const T &x)
-//     {
-//         std::unique_lock<std::mutex> lock(mutex);
-//         //有一个判断谓词,等价于while(!Pred){m_notFull.wait()}
-//         m_notFull.wait(lock, std::bind(&CBoundedQueue::CanPut, this));
-//         dequeDatas.push_back(x);
-//         ++size;
-//         if (size > capacity)
-//         {
-//             size = capacity;
-//         }
+    /// @brief returns a read/write reference to the data at the front-element of the qeque.
+    /// @return
+    T &front();
 
-//         //手动释放锁，减小锁的范围
-//         lock.unlock();
+    /// @brief add an element to queue tail.
+    /// @param x element to add-into
+    void Push(T &x);
 
-//         // m_notEmpty.notify_one();
-//         m_notEmpty.notify_all();
-//     }
+    /// @brief add an element to queue tail.
+    /// @param x element to add-into
+    void Emplace(T &&x);
 
-//     T Pop()
-//     {
-//         std::unique_lock<std::mutex> lock(mutex);
-//         //有一个判断谓词,等价于while(!Pred){m_notEmpty.wait()}
-//         m_notEmpty.wait(lock, std::bind(&CBoundedQueue::CanGet, this));
-//         T front(dequeDatas.front());
-//         dequeDatas.pop_front();
-//         --size;
-//         //手动释放锁，减小锁的范围
-//         lock.unlock();
+    /// @brief pop the front element of the queue
+    /// @return rvalue of the first-element
+    T Pop();
 
-//         // m_notFull.notify_one();
-//         m_notFull.notify_all();
-//         return front;
-//     }
+    /// @brief is the queue empty
+    /// @return
+    bool Empty() const;
+    /// @brief
+    /// @return
+    bool Full() const;
 
-//     bool Empty() const
-//     {
-//         std::lock_guard<std::mutex> lock;
-//         return dequeDatas.empty();
-//     }
+private:
+    /// @brief current item count of queue.
+    int size;
 
-//     bool Full() const
-//     {
-//         std::lock_guard<std::mutex> lock;
-//         return size == capacity;
-//     }
+    /// @brief the capacity of queue, -1 means no limit.
+    int capacity;
 
-// private:
-//     //判断谓词
-//     bool CanPut() { return size < capacity; }
-//     bool CanGet() { return size > 0; }
+    /// @brief used to save items.
+    std::deque<T> dequeDatas;
 
-// private:
+    /// @brief for lock.
+    std::mutex mutex;
+    /// @brief add restrictions on producers-threads
+    std::condition_variable m_notFull;
+    /// @brief add restrictions on consumer-threads
+    std::condition_variable m_notEmpty;
+};
 
-//     /// @brief current item count of queue.
-//     int size;
+template <class T>
+void SafeQueue<T>::Push(T &x)
+{
+    std::unique_lock<std::mutex> lock(mutex);
+    //有一个判断谓词,等价于while(!Pred){m_notFull.wait()}
+    m_notFull.wait(lock, [this]() -> bool
+                   { return capacity < 0 || size < capacity; });
+    dequeDatas.push_back(x);
+    size++;
 
-//     /// @brief the capacity of queue, -1 means no limit.
-//     int capacity;
-    
-//     /// @brief save items
-//     std::deque<T> dequeDatas;
+    // relese lock
+    lock.unlock();
 
-//     //互斥量，对队列进行同步保护
-//     std::mutex mutex;
-//     //用于限制生产者线程
-//     std::condition_variable m_notFull;
-//     //用于限制消费者线程
-//     std::condition_variable m_notEmpty;
-// };
+    m_notEmpty.notify_all();
+}
 
-// #endif // __SAFEQUEUE_H__
+template <class T>
+void SafeQueue<T>::Emplace(T &&x)
+{
+    std::unique_lock<std::mutex> lock(mutex);
+    //有一个判断谓词,等价于while(!Pred){m_notFull.wait()}
+    m_notFull.wait(lock, [this]() -> bool
+                   { return capacity < 0 || size < capacity; });
+    dequeDatas.emplace_back(std::move(x));
+    size++;
+
+    // relese lock
+    lock.unlock();
+
+    m_notEmpty.notify_all();
+}
+
+template <class T>
+T SafeQueue<T>::Pop()
+{
+    std::unique_lock<std::mutex> lock(mutex);
+    m_notEmpty.wait(lock, [this]() -> bool
+                    { return size > 0; });
+    T front = std::move(dequeDatas.front());
+    dequeDatas.pop_front();
+    size--;
+
+    // release lock
+    lock.unlock();
+
+    m_notFull.notify_all();
+
+    return std::move(front);
+}
+
+template <class T>
+T &SafeQueue<T>::front()
+{
+    std::unique_lock<std::mutex> lock(mutex);
+    m_notEmpty.wait(lock, [this]() -> bool
+                    { return size > 0; });
+    lock.unlock();
+
+    return dequeDatas.front();
+}
+
+template <class T>
+bool SafeQueue<T>::Empty() const
+{
+    return size<1;
+}
+
+template <class T>
+bool SafeQueue<T>::Full() const
+{
+    // if capacity==-1, always return false.
+    return size >= capacity;
+}
+
+#endif // __SAFEQUEUE_H__
