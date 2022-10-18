@@ -2,7 +2,7 @@
 #include <iostream>
 #include "../include/SplitToChilds/ModelAnalyzer.h"
 #include "../library/onnx.proto3.pb.h"
-#include "../include/utils/OnnxUtil.h"
+#include "../include/Utils/OnnxUtil.h"
 using namespace std;
 
 int main()

@@ -4,7 +4,7 @@
 #include "../../include/SplitToChilds/ModelAnalyzer.h"
 #include "../../include/Common/PathManager.h"
 #include "../../library/onnx.proto3.pb.h"
-#include "../../include/utils/OnnxUtil.h"
+#include "../../include/Utils/OnnxUtil.h"
 
 // some tool function
 
