@@ -3,15 +3,18 @@
 
 #include <onnxruntime_cxx_api.h>
 #include <vector>
+#include <mutex>
+#include <condition_variable>
 #include <map>
 #include "../ThreadSafe/SafeQueue.hpp"
 #include "../Tensor/ModelTensorsInfo.h"
+#include "TokenManager.h"
 #include "Task.h"
 
 class ModelExecutor
 {
 public:
-    ModelExecutor(std::string model_name, Ort::SessionOptions *session_opt, Ort::Env *env, int token_id, int *token_manager);
+    ModelExecutor(std::string model_name, Ort::SessionOptions *session_opt, Ort::Env *env, int token_id, TokenManager *token_manager, std::mutex *gpu_mutex, std::condition_variable *deal_task);
 
     /// @brief add new task to executor
     void AddTask(std::map<std::string, TensorValue<float>> &datas);
@@ -48,8 +51,10 @@ private:
     std::string modelName;
 
     int tokenID;
-    int *tokenManager;
+    TokenManager *tokenManager;
 
+    std::mutex *gpuMutex;
+    std::condition_variable *dealTask;
     // runtime args
 private:
     Task *current_task;

@@ -18,7 +18,7 @@ using namespace std;
 // 41.6 28.3ms 24.3ms 18.5ms
 int main(int argc, char *argv[])
 {
-    std::string model_name = "resnet50";
+    std::string model_name = "vgg19";
 
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test"); // log id: "test"
     Ort::SessionOptions session_options;
@@ -83,14 +83,14 @@ int main(int argc, char *argv[])
         data.insert(pair<std::string, TensorValue<float>>(input_labels[i], input_tensors[i]));
     }
 
-    ModelExecutor executor(model_name, &session_options, &env, 1, nullptr);
+    ModelExecutor executor(model_name, &session_options, &env, 1, nullptr,nullptr,nullptr);
 
     // executor.AddTask(data);
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 50; i++)
     {
         executor.AddTask(data);
-        // executor.RunOnce();
+        executor.RunOnce();
         executor.RunOnce();
         executor.RunOnce();
 

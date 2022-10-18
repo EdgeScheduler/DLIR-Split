@@ -58,7 +58,7 @@ void Task::RecordTimeCosts(clock_t cost)
     this->timeCosts.push_back(cost);
 }
 
-std::vector<clock_t>& Task::GetTimeCosts()
+std::vector<clock_t> &Task::GetTimeCosts()
 {
     return this->timeCosts;
 }
@@ -66,9 +66,9 @@ std::vector<clock_t>& Task::GetTimeCosts()
 std::vector<float> Task::GetTimeCostsByMs()
 {
     std::vector<float> result(timeCosts.size());
-    for(int i=0;i< timeCosts.size();i++)
+    for (int i = 0; i < timeCosts.size(); i++)
     {
-        result[i]=double(timeCosts[i])/ CLOCKS_PER_SEC * 1000.0;
+        result[i] = double(timeCosts[i]) / CLOCKS_PER_SEC * 1000.0;
     }
 
     return result;

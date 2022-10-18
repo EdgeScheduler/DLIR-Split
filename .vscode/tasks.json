@@ -39,7 +39,8 @@
                 "${workspaceRoot}/bin/debug/${fileBasenameNoExtension}",
                 "-lstdc++fs",
                 "-lonnxruntime",
-                "-lprotobuf"
+                "-lprotobuf",
+                "-lpthread"
             ],
             "options": {
                 "cwd": "${fileDirname}"

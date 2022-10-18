@@ -5,7 +5,7 @@
 #include <iostream>
 #include <ctime>
 
-ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *session_opt, Ort::Env *env, int token_id, int *token_manager) : modelName(model_name), sessionOption(session_opt), onnxruntimeEnv(env), todo(0), modelCount(0), tokenID(token_id), tokenManager(token_manager)
+ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *session_opt, Ort::Env *env, int token_id, TokenManager *token_manager, std::mutex *gpu_mutex, std::condition_variable *deal_task) : modelName(model_name), sessionOption(session_opt), onnxruntimeEnv(env), todo(0), modelCount(0), tokenID(token_id), tokenManager(token_manager), gpuMutex(gpu_mutex), dealTask(deal_task)
 {
     std::filesystem::path rawModelPath = OnnxPathManager::GetModelSavePath(modelName);
     Ort::Session rawSession(*onnxruntimeEnv, rawModelPath.c_str(), *sessionOption);
@@ -76,9 +76,26 @@ void ModelExecutor::RunOnce()
         return;
     }
 
-    clock_t start=clock();
+#ifndef ALLOW_GPU_Parallel
+
+    std::unique_lock<std::mutex> lock(*gpuMutex);
+    dealTask->wait(lock, [this]() -> bool
+                   { return int(*tokenManager) == tokenID; });
+    // use token already
+    this->tokenManager->Release();
+
+#endif // !ALLOW_GPU_Parallel
+
+    clock_t start = clock();
     current_task->_input_datas = current_task->_session->Run(Ort::RunOptions{nullptr}, current_task->_input_labels->data(), current_task->_input_datas.data(), current_task->_input_labels->size(), current_task->_output_labels->data(), current_task->_output_labels->size());
-    current_task->RecordTimeCosts(clock()-start);
+    current_task->RecordTimeCosts(clock() - start);
+
+#ifndef ALLOW_GPU_Parallel
+
+    lock.unlock();
+    dealTask->notify_all();
+
+#endif // !ALLOW_GPU_Parallel
 
     this->ToNext();
 }

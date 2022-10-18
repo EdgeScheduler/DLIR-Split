@@ -38,15 +38,15 @@ public:
     const std::vector<TensorValue<float>> &GetOutputs();
 
     /// @brief record how mush time cost for each child-module.
-    /// @param cost 
+    /// @param cost
     void RecordTimeCosts(clock_t cost);
 
     /// @brief get how much time cost by run for each child-model.(clock_t)
-    /// @return 
-    std::vector<clock_t>& GetTimeCosts();
+    /// @return
+    std::vector<clock_t> &GetTimeCosts();
 
     /// @brief get how much time cost by run for each child-model.(ms)
-    /// @return 
+    /// @return
     std::vector<float> GetTimeCostsByMs();
 
 public:
