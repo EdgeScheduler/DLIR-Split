@@ -13,17 +13,36 @@ int main()
     // ModelAnalyzer a = ModelAnalyzer(modelname, p);
 
     ModelAnalyzer analyzer = ModelAnalyzer("vgg19");
-    onnx::ModelProto model = onnxUtil.load(analyzer.getModelPath());
+    onnx::ModelProto model = onnxUtil.load(analyzer.GetModelPath());
     auto graph = model.graph();
+    
 
-    for(auto data: graph.initializer())
+
+    // initializer
+    // std::cout<<graph.initializer_size()<<std::endl;
+    // for(auto data: graph.initializer())
+    // {
+    //     std::cout<<data.name()<<","<<std::endl;
+    // }
+
+    // node
+    // for(auto data: graph.node())
+    // {
+    //     for(auto inp: data.input())
+    //     {
+    //         std::cout<<inp<<std::endl;
+    //     }
+    //     std::cout<<std::endl;
+    // }
+
+    for(auto data: graph.node())
     {
-        std::cout<<data.name()<<","<<std::endl;
+        std::cout<<data.name()<<std::endl;
     }
-    // std::cout<<graph.initializer().data()<<std::endl; //要用tensorproto输出
+
     
     std::cout << "test end" << std::endl;
-    
+
 
     return 0;
 }
