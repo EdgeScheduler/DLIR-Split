@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <cassert>
+#include <string>
 #include "../../include/SplitToChilds/ModelAnalyzer.h"
 #include "../../include/Common/PathManager.h"
 #include "../../library/onnx.proto3.pb.h"
@@ -44,6 +44,12 @@ void print_io_info(const ::google::protobuf::RepeatedPtrField<::onnx::ValueInfoP
     }
 }
 
+// GraphNode
+GraphNode::GraphNode(onnx::NodeProto node, std::vector<std::string> TotalParams, int idx)
+{
+    
+}
+
 
 
 // ModelAnalyzer
@@ -65,7 +71,7 @@ ModelAnalyzer::ModelAnalyzer(std::string model_name, const std::filesystem::path
         return;
 }
 
-std::filesystem::path ModelAnalyzer::getModelPath()
+const std::filesystem::path ModelAnalyzer::GetModelPath() const
 {
     return this -> onnxPath;
 }
@@ -77,7 +83,16 @@ bool ModelAnalyzer::Init()
     try
     {
         model = onnxUtil.load(onnxPath);
+        auto graph = model.graph();
+        
+        int params_size = graph.initializer_size();
 
+        for(int i = 0; i < params_size; i++)
+        {
+            params.insert(std::to_string(i));
+        }
+
+        
 
         
         /* code */

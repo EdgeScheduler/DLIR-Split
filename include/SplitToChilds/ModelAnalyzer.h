@@ -4,13 +4,29 @@
 #include <iostream>
 #include <filesystem>
 #include <cstdio>
+#include <set>
+#include <vector>
 #include <nlohmann/json.hpp>
 #include "../Common/PathManager.h"
 #include "../../library/onnx.proto3.pb.h"
 
 class GraphNode
 {
+    public:
+        /// @brief 
+        /// @param node 
+        /// @param TotalParams 
+        /// @param idx 
+        GraphNode(onnx::NodeProto node, std::vector<std::string> TotalParams=std::vector<std::string>(), int idx=1);
 
+    private:
+        std::string name;
+        std::string type;
+        std::vector<std::string> inputs;
+        std::vector<std::string> outputs;
+        std::set<std::string> params;
+        nlohmann::json input_info;
+        int idx;
 };
 
 
@@ -23,7 +39,9 @@ public:
     /// @param onnx_path 
     ModelAnalyzer(std::string model_name, const std::filesystem::path &onnx_path="");
 
-    std::filesystem::path getModelPath();
+    /// @brief 
+    /// @return 
+    const std::filesystem::path GetModelPath() const;
 
     /// @brief 
     /// @return 
@@ -96,10 +114,10 @@ private:
     std::vector<GraphNode> nodes;
 
     /// @brief 
-    GraphNode start_node;
+    // GraphNode start_node;
 
     /// @brief 
-    std::vector<std::string> params;
+    std::set<std::string> params;
 
     /// @brief 
     bool use_cache;
