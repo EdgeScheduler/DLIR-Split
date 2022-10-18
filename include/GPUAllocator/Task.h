@@ -6,7 +6,7 @@
 #include <string>
 #include <onnxruntime_cxx_api.h>
 #include "../Tensor/ModelTensorsInfo.h"
-#include "../Tensor/TensorValue.h"
+#include "../Tensor/TensorValue.hpp"
 #include "../Tensor/ValueInfo.h"
 
 class Task
