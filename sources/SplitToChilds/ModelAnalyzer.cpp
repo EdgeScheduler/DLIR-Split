@@ -2,7 +2,7 @@
 #include <fstream>
 #include <cassert>
 #include "../../include/SplitToChilds/ModelAnalyzer.h"
-#include "../../include/common/PathManager.h"
+#include "../../include/Common/PathManager.h"
 #include "../../library/onnx.proto3.pb.h"
 
 // some tool function

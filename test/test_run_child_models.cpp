@@ -5,11 +5,11 @@
 #include <memory>
 #include <time.h>
 #include <onnxruntime_cxx_api.h>
-#include "../include/common/Drivers.h"
-#include "../include/tensor/ValueInfo.h"
-#include "../include/tensor/TensorValue.h"
-#include "../include/tensor/ModelTensorsInfo.h"
-#include "../include/common/PathManager.h"
+#include "../include/Common/Drivers.h"
+#include "../include/Tensor/ValueInfo.h"
+#include "../include/Tensor/TensorValue.h"
+#include "../include/Tensor/ModelTensorsInfo.h"
+#include "../include/Common/PathManager.h"
 using namespace std;
 
 // 41.6 28.3ms 24.3ms 18.5ms

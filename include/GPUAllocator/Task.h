@@ -5,9 +5,9 @@
 #include <vector>
 #include <string>
 #include <onnxruntime_cxx_api.h>
-#include "../tensor/ModelTensorsInfo.h"
-#include "../tensor/TensorValue.h"
-#include "../tensor/ValueInfo.h"
+#include "../Tensor/ModelTensorsInfo.h"
+#include "../Tensor/TensorValue.h"
+#include "../Tensor/ValueInfo.h"
 
 class Task
 {

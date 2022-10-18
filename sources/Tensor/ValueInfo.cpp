@@ -1,4 +1,4 @@
-#include "../../include/tensor/ValueInfo.h"
+#include "../../include/Tensor/ValueInfo.h"
 #include <iostream>
 namespace OnnxValueType
 {

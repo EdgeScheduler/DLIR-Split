@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include "../../include/GPUAllocator/task.h"
+#include "../../include/GPUAllocator/Task.h"
 
 Task::Task(std::string tag, ModelInfo *modelInfo) : tag(tag), modelInfo(modelInfo) {}
 

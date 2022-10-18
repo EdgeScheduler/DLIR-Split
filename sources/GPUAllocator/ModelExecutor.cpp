@@ -1,6 +1,6 @@
 #include "../../include/GPUAllocator/ModelExecutor.h"
-#include "../../include/common/JsonSerializer.h"
-#include "../../include/common/PathManager.h"
+#include "../../include/Common/JsonSerializer.h"
+#include "../../include/Common/PathManager.h"
 #include <vector>
 #include <iostream>
 

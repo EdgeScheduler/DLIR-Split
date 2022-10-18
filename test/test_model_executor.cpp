@@ -6,12 +6,12 @@
 #include <time.h>
 #include <map>
 #include <onnxruntime_cxx_api.h>
-#include "../include/common/Drivers.h"
-#include "../include/tensor/ValueInfo.h"
-#include "../include/tensor/TensorValue.h"
-#include "../include/tensor/ModelTensorsInfo.h"
-#include "../include/common/PathManager.h"
-#include "../include/GPUAllocator/task.h"
+#include "../include/Common/Drivers.h"
+#include "../include/Tensor/ValueInfo.h"
+#include "../include/Tensor/TensorValue.h"
+#include "../include/Tensor/ModelTensorsInfo.h"
+#include "../include/Common/PathManager.h"
+#include "../include/GPUAllocator/Task.h"
 #include "../include/GPUAllocator/ModelExecutor.h"
 using namespace std;
 

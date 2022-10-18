@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <cstdio>
 #include <nlohmann/json.hpp>
-#include "../common/PathManager.h"
+#include "../Common/PathManager.h"
 #include "../../library/onnx.proto3.pb.h"
 
 class GraphNode
