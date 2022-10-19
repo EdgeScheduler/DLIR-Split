@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <python3.6/Python.h>
 #include "../../include/SplitToChilds/ModelAnalyzer.h"
 #include "../../include/Common/PathManager.h"
 #include "../../library/onnx.proto3.pb.h"
@@ -198,6 +199,31 @@ nlohmann::json ModelAnalyzer::LoadCache()
 //     try
 //     {
 //         /* code */
+//         Py_Initialize();
+//         PyObject* pModule = PyImport_ImportModule("onnx");
+//         PyObject* pFunc = PyObject_GetAttrString(pModule, "utils.extract_model");
+//         PyObject* pArgs = PyTuple_New(4);
+//         PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", raw_onnx_path.c_str())); 
+//         PyTuple_SetItem(pArgs, 1, Py_BuildValue("s", new_onnx_path.c_str()));
+        
+//         int input_size = start_node.dependencies_inputs.size();
+//         int output_size = end_node.dependencies_outputs.size();
+
+//         PyObject* inputs = PyList_New(input_size);
+//         PyObject* outputs = PyList_New(output_size);
+//         int i = 0;
+//         std::vector<std::string>::iterator iList;
+//         for(i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
+//         {
+//             PyList_SetItem(inputs, i, PyBytes_FromString(*iList));
+//         } 
+
+//         for(i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
+//         {
+//             PyList_SetItem(outputs, i, PyBytes_FromString(*iList));
+//         } 
+
+
 //     }
 //     catch(const std::exception& e)
 //     {
