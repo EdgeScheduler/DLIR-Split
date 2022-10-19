@@ -10,7 +10,7 @@ ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *sessio
 {
     std::filesystem::path rawModelPath = OnnxPathManager::GetModelSavePath(modelName);
     Ort::Session rawSession(*onnxruntimeEnv, rawModelPath.c_str(), *sessionOption);
-    this->rawModelInfo = ModelInfo(rawSession, rawModelPath);
+    this->rawModelInfo = std::make_shared<ModelInfo>(rawSession, rawModelPath);
 
     std::filesystem::path modelSumParamsPath = OnnxPathManager::GetChildModelSumParamsSavePath(modelName);
     nlohmann::json json = JsonSerializer::LoadJson(modelSumParamsPath);
@@ -44,46 +44,46 @@ ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *sessio
     }
 
     // run test to skip cold-run
-    std::cout<<"start to run "<<modelName<<" test."<<std::endl;
+    std::cout << "start to run " << modelName << " test." << std::endl;
     std::vector<const char *> input_labels;
     for (int i = 0; i < modelCount; i++)
     {
         std::vector<TensorValue<float>> input_Tensors;
         std::vector<Ort::Value> input_values;
-        for(auto& info: modelInfos[i].GetInput().GetAllTensors())
+        for (auto &info : modelInfos[i].GetInput().GetAllTensors())
         {
             input_Tensors.push_back(TensorValue(info, true));
         }
 
-        for(auto& tensor: input_Tensors)
+        for (auto &tensor : input_Tensors)
         {
             input_values.push_back(tensor);
         }
 
         for (int k = 0; k < 3; k++)
         {
-            this->sessions[i].Run(Ort::RunOptions{nullptr}, inputLabels[i].data(),input_values.data(),inputLabels[i].size(),outputLabels[i].data(),outputLabels[i].size());
+            this->sessions[i].Run(Ort::RunOptions{nullptr}, inputLabels[i].data(), input_values.data(), inputLabels[i].size(), outputLabels[i].data(), outputLabels[i].size());
         }
     }
-    std::cout<<"run "<<modelName<<" test to end."<<std::endl;
+    std::cout << "run " << modelName << " test to end." << std::endl;
     // test end
 
     if (modelCount > 0)
     {
         // replace model-0 by raw-input
         std::vector<const char *> inputs;
-        for (const ValueInfo &info : rawModelInfo.GetInput().GetAllTensors())
+        for (const ValueInfo &info : rawModelInfo->GetInput().GetAllTensors())
         {
             inputs.push_back(info.GetName().c_str());
         }
         this->inputLabels[0] = inputs;
 
         std::vector<const char *> outputs;
-        for (const ValueInfo &info : rawModelInfo.GetOutput().GetAllTensors())
+        for (const ValueInfo &info : rawModelInfo->GetOutput().GetAllTensors())
         {
             outputs.push_back(info.GetName().c_str());
         }
-        this->outputLabels[modelCount-1]=outputs;
+        this->outputLabels[modelCount - 1] = outputs;
     }
 }
 
@@ -103,7 +103,7 @@ void ModelExecutor::LoadTask()
     if (this->todo == 0)
     {
         // how to block
-        this->current_task = &this->task_queue.front();
+        this->current_task = this->task_queue.front();
     }
 
     current_task->_session = &this->sessions[this->todo];
@@ -121,7 +121,6 @@ void ModelExecutor::RunOnce()
     }
 
 #ifndef ALLOW_GPU_PARALLEL
-
     std::unique_lock<std::mutex> lock(*gpuMutex);
     dealTask->wait(lock, [this]() -> bool
                    { return this->tokenManager->GetFlag() == tokenID; });
@@ -131,7 +130,7 @@ void ModelExecutor::RunOnce()
 #endif // !ALLOW_GPU_PARALLEL
     clock_t start = clock();
     current_task->_input_datas = current_task->_session->Run(Ort::RunOptions{nullptr}, current_task->_input_labels->data(), current_task->_input_datas.data(), current_task->_input_labels->size(), current_task->_output_labels->data(), current_task->_output_labels->size());
-    current_task->RecordTimeCosts(clock() - start);
+    current_task->RecordTimeCosts(start, clock());
 
 #ifndef ALLOW_GPU_PARALLEL
 
@@ -143,27 +142,32 @@ void ModelExecutor::RunOnce()
     this->ToNext();
 }
 
-void ModelExecutor::AddTask(std::map<std::string, TensorValue<float>> &datas,std::string tag)
+void ModelExecutor::AddTask(std::shared_ptr<std::map<std::string, std::shared_ptr<TensorValue<float>>>> datas, std::string tag)
 {
-    Task new_task(this->modelName, &this->rawModelInfo,tag);
-    new_task.SetInputs(datas);
-    this->task_queue.Emplace(std::move(new_task));
+    std::shared_ptr<Task> new_task = std::make_shared<Task>(this->modelName, this->rawModelInfo, tag);
+    new_task->SetInputs(datas);
+    this->task_queue.Push(new_task);
 }
 
 void ModelExecutor::RunCycle()
 {
+    if (gpuMutex == nullptr || tokenManager == nullptr)
+    {
+        std::cout << "you give no device-mutex and token-manager info, system exit. This mode is only only allow while compiler with \"-DALLOW_GPU_PARALLEL\"" << std::endl;
+        return;
+    }
     while (true)
     {
         this->RunOnce();
     }
 }
 
-SafeQueue<Task> &ModelExecutor::GetResultQueue()
+SafeQueue<std::shared_ptr<Task>> &ModelExecutor::GetResultQueue()
 {
     return this->finish_queue;
 }
 
-SafeQueue<Task> &ModelExecutor::GetTaskQueue()
+SafeQueue<std::shared_ptr<Task>> &ModelExecutor::GetTaskQueue()
 {
     return this->task_queue;
 }

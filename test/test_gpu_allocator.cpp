@@ -7,6 +7,7 @@
 #include "../include/Tensor/ModelInputCreator.h"
 #include "../include/Common/PathManager.h"
 using namespace std;
+using DatasType = std::shared_ptr<std::map<std::string, std::shared_ptr<TensorValue<float>>>>;
 
 // g++ -DALLOW_GPU_PARALLEL for parallel
 int main(int argc, char *argv[])
@@ -37,9 +38,9 @@ int main(int argc, char *argv[])
     ModelInputCreator googlenetCreator(googlenetInfo.GetInput());
     executorManager.RunExecutor("googlenet"); // 3
 
-    std::vector<std::map<std::string, TensorValue<float>>> vgg19Datas;
-    std::vector<std::map<std::string, TensorValue<float>>> resnet50Datas;
-    std::vector<std::map<std::string, TensorValue<float>>> googlenetDatas;
+    std::vector<DatasType> vgg19Datas;
+    std::vector<DatasType> resnet50Datas;
+    std::vector<DatasType> googlenetDatas;
     for (int i = 0; i < 2; i++)
     {
         vgg19Datas.push_back(vgg19Creator.CreateInput());
@@ -53,17 +54,17 @@ int main(int argc, char *argv[])
         googlenetDatas.push_back(googlenetCreator.CreateInput());
     }
 
-    for (auto &data : vgg19Datas)
+    for (int i = 0; i < 2; i++)
     {
-        executorManager.AddTask("vgg19", data);
+        executorManager.AddTask("vgg19", vgg19Datas[i], std::to_string(i));
     }
-    for (auto &data : resnet50Datas)
+    for (int i = 0; i < 2; i++)
     {
-        executorManager.AddTask("resnet50", data);
+        executorManager.AddTask("resnet50", resnet50Datas[i], std::to_string(i));
     }
-    for (auto &data : googlenetDatas)
+    for (int i = 0; i < 2; i++)
     {
-        executorManager.AddTask("googlenet", data);
+        executorManager.AddTask("googlenet", googlenetDatas[i], std::to_string(i));
     }
 
 #ifndef ALLOW_GPU_PARALLEL
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
     }
     cout << endl;
 #else
-    cout << "tokens deprecated, you have allow GPU parallel."<<endl;
+    cout << "tokens deprecated, you have allow GPU parallel." << endl;
 #endif // !1
 
     auto executorInfo = executorManager.GetExecutorInformation();
@@ -85,12 +86,16 @@ int main(int argc, char *argv[])
         for (int i = 0; i < 2; i++)
         {
             auto result = results.Pop();
-            cout << result.GetModelName() << "-" << i << ": " << result.TimeCost() << "ms start=" << result.GetStartTime() << "," << result.GetEndTime() << endl;
-            for (auto t : result.GetTimeCostsByMs())
-            {
-                cout << t << " ";
-            }
-            cout << endl
+            // cout << result->GetModelName() << "-" << i << ": " << result->TimeCost() << "ms start=" << result->GetStartTime() << "," << result->GetEndTime() << endl;
+            // for (auto t : result->GetTimeCostsByMs())
+            // {
+            //     cout << t << " ";
+            // }
+
+            // cout << setw(4) << result->GetDescribe();
+            nlohmann::json describe = result->GetDescribe();
+            cout << describe["model_name"].get<std::string>() << "-" << describe["tag"].get<std::string>() << ":" << endl;
+            cout << "total(ms): " << describe["total_cost_by_ms"].get<float>() << " wait (ms): " << describe["wait_cost"].get<float>() << " execute (ms): " << describe["execute_cost"].get<float>() << endl
                  << endl;
         }
     }
@@ -100,3 +105,24 @@ int main(int argc, char *argv[])
 }
 
 // 3 3   2 2   2 2   1 1 1   1 1 1
+/*
+
+googlenet-0: 83.763ms start=6166155,6249918
+83.731
+
+googlenet-1: 119.054ms start=6173647,6292701
+42.745
+
+resnet50-0: 95.105ms start=6151218,6246323
+55.3 39.781
+
+resnet50-1: 159.077ms start=6158750,6317827
+43.933 27.516
+
+vgg19-0: 106.114ms start=6140261,6246375
+36.04 31.432 38.623
+
+vgg19-1: 193.785ms start=6143842,6337627
+46.164 20.74 24.315
+
+*/

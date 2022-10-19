@@ -17,7 +17,7 @@ struct ExecutorDescribe
     std::shared_ptr<ModelExecutor> executor;
     int executorID;
     std::string modelName;
-    std::thread threadHandle;
+    std::shared_ptr<std::thread> threadHandle;
 };
 
 class ExecutorManager
@@ -28,7 +28,7 @@ public:
 
     /// @brief get all executor threads
     /// @return
-    std::vector<std::thread *> GetAllThreads();
+    std::vector<std::shared_ptr<std::thread>> GetAllThreads();
 
     /// @brief start an executor
     /// @param model_name
@@ -37,7 +37,7 @@ public:
     /// @brief add task to executor
     /// @param model_name executor/model name
     /// @param datas model inputs data
-    void AddTask(std::string model_name, std::map<std::string, TensorValue<float>> &datas,std::string tag="");
+    void AddTask(std::string model_name, std::shared_ptr<std::map<std::string, std::shared_ptr<TensorValue<float>>>> datas, std::string tag = "");
 
     /// @brief get executor describes
     /// @return
@@ -46,8 +46,8 @@ public:
     /// @brief give token to xx
     /// @param token ID, 0 means free
     /// @param block if token is still there, block or not.
-    /// @return 
-    bool Grant(int token, bool block=true);
+    /// @return
+    bool Grant(int token, bool block = true);
 
     /// @brief join all thread to current-thread
     void Join();

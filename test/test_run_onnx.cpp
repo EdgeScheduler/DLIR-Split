@@ -7,7 +7,7 @@
 #include <onnxruntime_cxx_api.h>
 #include "../include/Common/Drivers.h"
 #include "../include/Tensor/ValueInfo.h"
-#include "../include/Tensor/TensorValue.h"
+#include "../include/Tensor/TensorValue.hpp"
 #include "../include/Tensor/ModelTensorsInfo.h"
 #include "../include/Common/PathManager.h"
 using namespace std;
@@ -16,13 +16,13 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     std::filesystem::path model_path;
-    if(argc>=3)
+    if (argc >= 3)
     {
-        model_path=OnnxPathManager::GetChildModelSavePath(argv[1],atoi(argv[2]));
+        model_path = OnnxPathManager::GetChildModelSavePath(argv[1], atoi(argv[2]));
     }
     else
     {
-        model_path=OnnxPathManager::GetChildModelSavePath("resnet50");
+        model_path = OnnxPathManager::GetChildModelSavePath("resnet50");
     }
 
     Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test"); // log id: "test"
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
         clock_t start = clock();
         vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
         cout << "run-" << i << "(" << setiosflags(ios::fixed) << setprecision(2) << (clock() - start) * 1000.0 / CLOCKS_PER_SEC << "ms)."
-             << "=> [" << setprecision(6) <<*output_values[0].GetTensorMutableData<float>() << " ...]" << endl;
+             << "=> [" << setprecision(6) << *output_values[0].GetTensorMutableData<float>() << " ...]" << endl;
         output_values[0].release();
     }
 

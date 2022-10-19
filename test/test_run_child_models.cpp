@@ -7,7 +7,7 @@
 #include <onnxruntime_cxx_api.h>
 #include "../include/Common/Drivers.h"
 #include "../include/Tensor/ValueInfo.h"
-#include "../include/Tensor/TensorValue.h"
+#include "../include/Tensor/TensorValue.hpp"
 #include "../include/Tensor/ModelTensorsInfo.h"
 #include "../include/Common/PathManager.h"
 using namespace std;

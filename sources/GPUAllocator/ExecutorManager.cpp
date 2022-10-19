@@ -20,13 +20,11 @@ void ExecutorManager::RunExecutor(std::string model_name)
     executorDescribe->executor = std::make_shared<ModelExecutor>(model_name, &sessionOption, &environment, executorCount, &tokenManager, &gpuMutex, &dealTask);
     executorDescribe->executorID = executorCount;
     executorDescribe->modelName = model_name;
-    std::thread runThread(&ModelExecutor::RunCycle, executorDescribe->executor);
-    executorDescribe->threadHandle = std::move(runThread);
-
+    executorDescribe->threadHandle = std::make_shared<std::thread>(&ModelExecutor::RunCycle, executorDescribe->executor);
     this->executorMap.insert(std::pair<std::string, std::shared_ptr<ExecutorDescribe>>(model_name, executorDescribe));
 }
 
-void ExecutorManager::AddTask(std::string model_name, std::map<std::string, TensorValue<float>> &datas,std::string tag)
+void ExecutorManager::AddTask(std::string model_name, std::shared_ptr<std::map<std::string, std::shared_ptr<TensorValue<float>>>> datas, std::string tag)
 {
     auto iter = this->executorMap.find(model_name);
     if (iter == this->executorMap.end())
@@ -35,7 +33,7 @@ void ExecutorManager::AddTask(std::string model_name, std::map<std::string, Tens
         return;
     }
 
-    iter->second->executor->AddTask(datas);
+    iter->second->executor->AddTask(datas, tag);
 }
 
 std::map<std::string, std::shared_ptr<ExecutorDescribe>> &ExecutorManager::GetExecutorInformation()
@@ -43,19 +41,19 @@ std::map<std::string, std::shared_ptr<ExecutorDescribe>> &ExecutorManager::GetEx
     return this->executorMap;
 }
 
-std::vector<std::thread *> ExecutorManager::GetAllThreads()
+std::vector<std::shared_ptr<std::thread>> ExecutorManager::GetAllThreads()
 {
-    std::vector<std::thread *> result;
+    std::vector<std::shared_ptr<std::thread>> result;
     for (auto iter = executorMap.begin(); iter != executorMap.end(); iter++)
     {
-        result.push_back(&iter->second->threadHandle);
+        result.push_back(iter->second->threadHandle);
     }
     return result;
 }
 
 void ExecutorManager::Join()
 {
-    std::vector<std::thread *> threads = this->GetAllThreads();
+    std::vector<std::shared_ptr<std::thread>> threads = this->GetAllThreads();
     for (auto &thread : threads)
     {
         thread->join();
@@ -64,7 +62,7 @@ void ExecutorManager::Join()
 
 bool ExecutorManager::Grant(int token, bool block)
 {
-    bool flag=this->tokenManager.Grant(token,block);
+    bool flag = this->tokenManager.Grant(token, block);
     this->dealTask.notify_all();
     return flag;
 }

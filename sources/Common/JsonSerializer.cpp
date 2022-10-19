@@ -14,7 +14,7 @@ refer to website: https://github.com/nlohmann/json#serialization--deserializatio
 
 namespace JsonSerializer
 {
-    nlohmann::json LoadJson(const std::filesystem::path& path)
+    nlohmann::json LoadJson(const std::filesystem::path &path)
     {
         nlohmann::json obj = nlohmann::json::value_t::discarded;
         try
@@ -34,9 +34,9 @@ namespace JsonSerializer
         return obj;
     }
 
-    bool StoreJson(const nlohmann::json& json, const std::filesystem::path& path, bool enable_null_json)
+    bool StoreJson(const nlohmann::json &json, const std::filesystem::path &path, bool enable_null_json)
     {
-        if (json==nullptr || json.is_discarded())
+        if (json == nullptr || json.is_discarded())
         {
             if (!enable_null_json)
             {
@@ -54,16 +54,15 @@ namespace JsonSerializer
             }
 
             std::ofstream o(path);
-            if(json.is_discarded())
+            if (json.is_discarded())
             {
-                nlohmann::json tmp=nullptr;
+                nlohmann::json tmp = nullptr;
                 o << std::setw(4) << tmp << std::endl;
             }
             else
             {
                 o << std::setw(4) << json << std::endl;
             }
-            
         }
         catch (const std::exception &error)
         {

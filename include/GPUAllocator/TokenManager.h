@@ -15,11 +15,12 @@ public:
     /// @brief give token to xx
     /// @param token ID, 0 means free
     /// @param block if token is still there, block or not.
-    /// @return 
-    bool Grant(int token, bool block=true);
+    /// @return
+    bool Grant(int token, bool block = true);
     int GetFlag();
 
     operator int();
+
 private:
     int flag; // 0: free 1~n: token_id
     std::mutex mutex;

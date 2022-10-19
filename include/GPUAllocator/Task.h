@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <onnxruntime_cxx_api.h>
+#include <onnxruntime_cxx_api.h>
 #include "../Tensor/ModelTensorsInfo.h"
 #include "../Tensor/TensorValue.hpp"
 #include "../Tensor/ValueInfo.h"
@@ -12,10 +13,10 @@
 class Task
 {
 public:
-    Task(std::string modelName, ModelInfo *modelInfo=nullptr,std::string tag="");
+    Task(std::string modelName, std::shared_ptr<ModelInfo> modelInfo = nullptr, std::string tag = "");
     /// @brief set model-infos
     /// @param modelInfo
-    void SetModelInfo(ModelInfo *modelInfo);
+    void SetModelInfo(std::shared_ptr<ModelInfo> modelInfo);
 
     /// @brief get how much time cost by task.(ms)
     /// @return
@@ -23,11 +24,11 @@ public:
 
     /// @brief Set model-input-value (data)
     /// @param tensors
-    void SetInputs(std::map<std::string, TensorValue<float>> &datas);
+    void SetInputs(std::shared_ptr<std::map<std::string, std::shared_ptr<TensorValue<float>>>> datas);
 
     /// @brief Get model-input reference (data)
     /// @return
-    const std::vector<TensorValue<float>> &GetInputs();
+    const std::vector<std::shared_ptr<TensorValue<float>>> &GetInputs();
 
     /// @brief record model inference resul (model-output)
     /// @param tensors
@@ -35,36 +36,44 @@ public:
 
     /// @brief Get model-output reference
     /// @return
-    const std::vector<TensorValue<float>> &GetOutputs();
+    const std::vector<std::shared_ptr<TensorValue<float>>> &GetOutputs();
 
-    /// @brief record how mush time cost for each child-module.
+    /// @brief record (start_time, end_time) for each child-module. (clock_t, us)
     /// @param cost
-    void RecordTimeCosts(clock_t cost);
+    void RecordTimeCosts(clock_t start_time, clock_t end_time);
 
     /// @brief get tag
-    /// @return 
-    std::string& GetTag();
+    /// @return
+    std::string &GetTag();
 
     /// @brief get this task is make for which model
-    /// @return 
-    std::string& GetModelName();
-
-    /// @brief get how much time cost by run for each child-model.(clock_t)
     /// @return
-    std::vector<clock_t> &GetTimeCosts();
+    std::string &GetModelName();
+
+    /// @brief get (start_time, end_time) for each child-model.(clock_t, us)
+    /// @return
+    std::vector<std::pair<clock_t, clock_t>> &GetTimeCosts();
 
     /// @brief get how much time cost by run for each child-model.(ms)
     /// @return
     std::vector<float> GetTimeCostsByMs();
 
+    /// @brief get when the task received
+    /// @return
     clock_t GetStartTime();
 
+    /// @brief get when the task get result.
+    /// @return
     clock_t GetEndTime();
 
+    nlohmann::json GetDescribe();
+
+    void PrintDescribe();
+
 public:
-    std::vector<TensorValue<float>> Inputs;
-    std::vector<TensorValue<float>> Outputs;
-    std::vector<clock_t> timeCosts;
+    std::vector<std::shared_ptr<TensorValue<float>>> Inputs;
+    std::vector<std::shared_ptr<TensorValue<float>>> Outputs;
+    std::vector<std::pair<clock_t, clock_t>> timeCosts;
 
     // runtime args
 public:
@@ -78,7 +87,7 @@ private:
     clock_t endTime;
     std::string tag;
     std::string modelName;
-    ModelInfo *modelInfo;
+    std::shared_ptr<ModelInfo> modelInfo;
 };
 
 #endif // __TASK_H__

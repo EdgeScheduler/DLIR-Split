@@ -4,6 +4,7 @@
 #include <onnxruntime_cxx_api.h>
 #include <vector>
 #include <mutex>
+#include <memory>
 #include <condition_variable>
 #include <map>
 #include "../ThreadSafe/SafeQueue.hpp"
@@ -16,8 +17,10 @@ class ModelExecutor
 public:
     ModelExecutor(std::string model_name, Ort::SessionOptions *session_opt, Ort::Env *env, int token_id, TokenManager *token_manager, std::mutex *gpu_mutex, std::condition_variable *deal_task);
 
-    /// @brief add new task to executor
-    void AddTask(std::map<std::string, TensorValue<float>> &datas,std::string tag="");
+    /// @brief add new task to executor by share_ptr
+    /// @param datas model inputs
+    /// @param tag add some information to task
+    void AddTask(std::shared_ptr<std::map<std::string, std::shared_ptr<TensorValue<float>>>> datas, std::string tag = "");
 
     /// @brief record current task to the end.
     void ToNext();
@@ -31,8 +34,8 @@ public:
     /// @brief run all model automatically.
     void RunCycle();
 
-    SafeQueue<Task> &GetResultQueue();
-    SafeQueue<Task> &GetTaskQueue();
+    SafeQueue<std::shared_ptr<Task>> &GetResultQueue();
+    SafeQueue<std::shared_ptr<Task>> &GetTaskQueue();
 
 private:
     int modelCount = 0;
@@ -42,10 +45,10 @@ private:
     std::vector<ModelInfo> modelInfos;
     std::vector<std::vector<const char *>> inputLabels;
     std::vector<std::vector<const char *>> outputLabels;
-    ModelInfo rawModelInfo;
+    std::shared_ptr<ModelInfo> rawModelInfo;
 
-    SafeQueue<Task> task_queue;
-    SafeQueue<Task> finish_queue;
+    SafeQueue<std::shared_ptr<Task>> task_queue;
+    SafeQueue<std::shared_ptr<Task>> finish_queue;
 
     int todo;
     std::string modelName;
@@ -57,7 +60,7 @@ private:
     std::condition_variable *dealTask;
     // runtime args
 private:
-    Task *current_task;
+    std::shared_ptr<Task> current_task;
     // Ort::Session* _session;
     // std::vector<const char*>* _input_labels;
     // std::vector<const char*>* _output_labels;
