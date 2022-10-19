@@ -1,4 +1,5 @@
 {
+  "search.followSymlinks": false,
   "files.associations": {
     "*.rmd": "markdown",
     "chrono": "cpp",

@@ -26,7 +26,7 @@ void ExecutorManager::RunExecutor(std::string model_name)
     this->executorMap.insert(std::pair<std::string, std::shared_ptr<ExecutorDescribe>>(model_name, executorDescribe));
 }
 
-void ExecutorManager::AddTask(std::string model_name, std::map<std::string, TensorValue<float>> &datas)
+void ExecutorManager::AddTask(std::string model_name, std::map<std::string, TensorValue<float>> &datas,std::string tag)
 {
     auto iter = this->executorMap.find(model_name);
     if (iter == this->executorMap.end())

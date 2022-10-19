@@ -12,7 +12,7 @@
 class Task
 {
 public:
-    Task(std::string tag, ModelInfo *modelInfo = nullptr);
+    Task(std::string modelName, ModelInfo *modelInfo=nullptr,std::string tag="");
     /// @brief set model-infos
     /// @param modelInfo
     void SetModelInfo(ModelInfo *modelInfo);
@@ -41,7 +41,13 @@ public:
     /// @param cost
     void RecordTimeCosts(clock_t cost);
 
+    /// @brief get tag
+    /// @return 
     std::string& GetTag();
+
+    /// @brief get this task is make for which model
+    /// @return 
+    std::string& GetModelName();
 
     /// @brief get how much time cost by run for each child-model.(clock_t)
     /// @return
@@ -50,6 +56,10 @@ public:
     /// @brief get how much time cost by run for each child-model.(ms)
     /// @return
     std::vector<float> GetTimeCostsByMs();
+
+    clock_t GetStartTime();
+
+    clock_t GetEndTime();
 
 public:
     std::vector<TensorValue<float>> Inputs;
@@ -67,6 +77,7 @@ private:
     clock_t startTime;
     clock_t endTime;
     std::string tag;
+    std::string modelName;
     ModelInfo *modelInfo;
 };
 

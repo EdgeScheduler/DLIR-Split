@@ -37,7 +37,7 @@ public:
     /// @brief add task to executor
     /// @param model_name executor/model name
     /// @param datas model inputs data
-    void AddTask(std::string model_name, std::map<std::string, TensorValue<float>> &datas);
+    void AddTask(std::string model_name, std::map<std::string, TensorValue<float>> &datas,std::string tag="");
 
     /// @brief get executor describes
     /// @return

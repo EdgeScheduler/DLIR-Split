@@ -16,7 +16,7 @@
 #include "../include/Tensor/ModelInputCreator.h"
 using namespace std;
 
-// g++ -DALLOW_GPU_Parallel for parallel
+// g++ -DALLOW_GPU_PARALLEL for parallel
 
 // 41.6 28.3ms 24.3ms 18.5ms
 int main(int argc, char *argv[])

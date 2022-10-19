@@ -17,7 +17,7 @@ public:
     ModelExecutor(std::string model_name, Ort::SessionOptions *session_opt, Ort::Env *env, int token_id, TokenManager *token_manager, std::mutex *gpu_mutex, std::condition_variable *deal_task);
 
     /// @brief add new task to executor
-    void AddTask(std::map<std::string, TensorValue<float>> &datas);
+    void AddTask(std::map<std::string, TensorValue<float>> &datas,std::string tag="");
 
     /// @brief record current task to the end.
     void ToNext();

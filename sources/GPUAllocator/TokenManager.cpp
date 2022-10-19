@@ -1,27 +1,28 @@
 #include "../../include/GPUAllocator/TokenManager.h"
 
-TokenManager::TokenManager():flag(0)
+TokenManager::TokenManager() : flag(0)
 {
-
 }
 
 void TokenManager::Release()
 {
     std::unique_lock<std::mutex> lock(mutex);
-    this->flag=0;
+    this->flag = 0;
     lock.unlock();
     needWrite.notify_all();
 }
 
 bool TokenManager::Grant(int token, bool block)
 {
+#ifndef ALLOW_GPU_PARALLEL
     std::unique_lock<std::mutex> lock(mutex);
-    if(this->flag>0)
+    if (this->flag > 0)
     {
-        if(block)
+        if (block)
         {
-            needWrite.wait(lock,[this]()->bool{return this->flag<1;});
-            this->flag=token;
+            needWrite.wait(lock, [this]() -> bool
+                           { return this->flag < 1; });
+            this->flag = token;
             lock.unlock();
             return true;
         }
@@ -33,10 +34,14 @@ bool TokenManager::Grant(int token, bool block)
     }
     else
     {
-        this->flag=token;
+        this->flag = token;
         lock.unlock();
         return true;
     }
+#else
+    return true;
+
+#endif
 }
 
 TokenManager::operator int()

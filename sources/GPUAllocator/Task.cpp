@@ -2,7 +2,7 @@
 
 #include "../../include/GPUAllocator/Task.h"
 
-Task::Task(std::string tag, ModelInfo *modelInfo) : tag(tag), modelInfo(modelInfo) {}
+Task::Task(std::string modelName, ModelInfo *modelInfo,std::string tag) : modelName(modelName),tag(tag), modelInfo(modelInfo) {}
 
 void Task::SetModelInfo(ModelInfo *modelInfo)
 {
@@ -77,4 +77,20 @@ std::vector<float> Task::GetTimeCostsByMs()
 std::string& Task::GetTag()
 {
     return this->tag;
+}
+
+
+std::string& Task::GetModelName()
+{
+    return this->modelName;
+}
+
+clock_t Task::GetStartTime()
+{
+    return this->startTime;
+}
+
+clock_t Task::GetEndTime()
+{
+    return this->endTime;
 }
