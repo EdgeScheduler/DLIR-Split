@@ -19,7 +19,7 @@ onnx::ModelProto OnnxUtil::load(const std::filesystem::path &onnx_path)
         google::protobuf::io::IstreamInputStream rawInput(&input);
         google::protobuf::io::CodedInputStream coded_input(&rawInput);
 
-        coded_input.SetTotalBytesLimit(std::numeric_limits<int>::max(), std::numeric_limits<int>::max() / 4); //cancel the limit
+        coded_input.SetTotalBytesLimit(std::numeric_limits<int>::max(), std::numeric_limits<int>::max() / 6 * 5); //cancel the limit
 
         model.ParseFromCodedStream(&coded_input);
 

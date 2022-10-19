@@ -14,11 +14,23 @@ class GraphNode
 {
     friend class ModelAnalyzer;
     public:
+        /// @brief 
+        GraphNode();
+
         /// @brief
         /// @param node
         /// @param TotalParams
         /// @param idx
         GraphNode(onnx::NodeProto node, std::set<std::string> TotalParams = std::set<std::string>(), int index = -1);
+
+        /// @brief 
+        /// @param node 
+        GraphNode(const GraphNode &node);
+
+        /// @brief 
+        /// @param node 
+        /// @return 
+        bool operator==(GraphNode &node);
 
         /// @brief 
         /// @return 
@@ -36,6 +48,10 @@ class GraphNode
         int idx;
 };
 
+
+
+
+
 /// @brief
 class ModelAnalyzer
 {
@@ -47,40 +63,48 @@ class ModelAnalyzer
 
         /// @brief
         /// @return
-        const std::filesystem::path &GetModelPath() const;
+        bool Init();
 
         /// @brief
         /// @return
-        bool Init();
-        
-        void RecordDependency();
+        const std::filesystem::path &GetModelPath() const;
 
-        //     /// @brief
-        //     /// @param enable
-        //     void SetEnableCache(bool enable = true);
+        /// @brief 
+        /// @param enable 
+        void SetEnableCache(bool enable=true);
 
-        //     /// @brief
-        //     /// @param node
-        //     /// @return
-        //     bool EnableStart(GraphNode node);
+        /// @brief 
+        /// @param node 
+        /// @return 
+        bool EnableStart(GraphNode &node);
 
-        //     /// @brief
-        //     /// @return
-        //     nlohmann::json LoadCache();
+        /// @brief
+        /// @return
+        nlohmann::json LoadCache();
 
         //     /// @brief
         //     void RuntimeAnalyze();
 
-        //     /// @brief
-        //     /// @param raw_onnx_path
-        //     /// @param new_onnx_path
-        //     /// @param new_onnx_param_path
-        //     /// @param start_node
-        //     /// @param end_node
-        //     /// @param print_error
-        //     /// @return
-        //     nlohmann::json ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,
-        //                                       GraphNode start_node, GraphNode end_node, bool print_error = true);
+        // /// @brief
+        // /// @param raw_onnx_path
+        // /// @param new_onnx_path
+        // /// @param new_onnx_param_path
+        // /// @param start_node
+        // /// @param end_node
+        // /// @param print_error
+        // /// @return
+        // nlohmann::json ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,
+        //                                     GraphNode start_node, GraphNode end_node, bool print_error = true);
+        
+        /// @brief 
+        void RecordDependency();
+
+
+
+
+
+
+
 
         //     /// @brief
         //     void RecordDependency();
@@ -119,7 +143,7 @@ class ModelAnalyzer
         std::vector<GraphNode> nodes;
 
         /// @brief
-        // GraphNode start_node;
+        GraphNode start_node;
 
         /// @brief
         std::set<std::string> params;
@@ -127,5 +151,12 @@ class ModelAnalyzer
         /// @brief
         bool use_cache;
 };
+
+
+
+
+
+
+
 
 #endif // !MODELANALYZER_H

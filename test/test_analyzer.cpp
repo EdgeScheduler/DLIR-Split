@@ -24,14 +24,14 @@ int main()
     // }
 
     // node
-    for (auto data : graph.node())
-    {
-        for (auto inp : data.output())
-        {
-            std::cout << inp << std::endl;
-        }
-        std::cout << std::endl;
-    }
+    // for (auto data : graph.node())
+    // {
+    //     for (auto inp : data.output())
+    //     {
+    //         std::cout << inp << std::endl;
+    //     }
+    //     std::cout << std::endl;
+    // }
 
     // for(auto data: graph.node())
     // {
