@@ -23,6 +23,14 @@ int main()
     //     std::cout<<data.name()<<","<<std::endl;
     // }
 
+    // graph
+    // std::cout<<graph.initializer_size()<<std::endl;
+    for(auto data: graph.input())
+    {
+        for(auto i: data.type().tensor_type().shape().dim())
+        std::cout<< i.dim_value() <<","<<std::endl;
+    }
+
     // node
     // for (auto data : graph.node())
     // {

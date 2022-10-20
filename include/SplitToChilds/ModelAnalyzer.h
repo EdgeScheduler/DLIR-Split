@@ -82,8 +82,8 @@ class ModelAnalyzer
         /// @return
         nlohmann::json LoadCache();
 
-        //     /// @brief
-        //     void RuntimeAnalyze();
+        // /// @brief
+        // void RuntimeAnalyze();
 
         // /// @brief
         // /// @param raw_onnx_path
@@ -99,6 +99,12 @@ class ModelAnalyzer
         /// @brief 
         void RecordDependency();
 
+        /// @brief 
+        /// @param onnx_path 
+        /// @param params_path 
+        /// @param default_batch 
+        /// @return 
+        static nlohmann::json CreateParamsInfo(std::filesystem::path onnx_path, std::filesystem::path params_path, int default_batch=15);
 
 
 
@@ -151,6 +157,8 @@ class ModelAnalyzer
         /// @brief
         bool use_cache;
 };
+
+
 
 
 

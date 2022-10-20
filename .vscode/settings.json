@@ -113,6 +113,8 @@
     "oneof",
     "opset",
     "protoc",
+    "resnet",
+    "tennsors",
     "Varint",
     "Winvalid"
   ]

@@ -196,9 +196,7 @@ nlohmann::json ModelAnalyzer::LoadCache()
 // nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,
 //                                             GraphNode start_node, GraphNode end_node, bool print_error)
 // {
-//     try
-//     {
-//         /* code */
+
 //         Py_Initialize();
 //         PyObject* pModule = PyImport_ImportModule("onnx");
 //         PyObject* pFunc = PyObject_GetAttrString(pModule, "utils.extract_model");
@@ -215,20 +213,20 @@ nlohmann::json ModelAnalyzer::LoadCache()
 //         std::vector<std::string>::iterator iList;
 //         for(i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
 //         {
-//             PyList_SetItem(inputs, i, PyBytes_FromString(*iList));
+//             PyList_SetItem(inputs, i, PyBytes_FromString((*iList).c_str()));
 //         } 
 
 //         for(i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
 //         {
-//             PyList_SetItem(outputs, i, PyBytes_FromString(*iList));
+//             PyList_SetItem(outputs, i, PyBytes_FromString((*iList).c_str()));
 //         } 
+//         PyTuple_SetItem(pArgs, 2, inputs);
+//         PyTuple_SetItem(pArgs, 3, outputs);
+//         // PyObject* pReturn = PyEval_CallObject(pFunc, pArgs);
+//         PyEval_CallObject(pFunc, pArgs);
+//         Py_Finalize();
 
-
-//     }
-//     catch(const std::exception& e)
-//     {
-//         std::cerr << e.what() << '\n';
-//     }
+//         return
     
 // }
 
@@ -258,4 +256,61 @@ void ModelAnalyzer::RecordDependency()
         if (idx > 0)
             nodes[idx - 1].dependencies_outputs = nodes[idx].dependencies_inputs;
     }
+}
+
+nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, std::filesystem::path params_path, int default_batch)
+{
+    onnx::ModelProto model = onnxUtil.load(onnx_path);
+    onnx::GraphProto graph = model.graph();
+
+    nlohmann::json params_dict =
+    {
+        {
+            "input", 
+            {
+                {"data", std::vector<nlohmann::json>()},
+                {"cost", 0}
+            }
+        },
+        {
+            "output",
+            {
+                {"data", std::vector<nlohmann::json>()},
+                {"cost", 0}
+            },
+            
+        },
+        {"model_path", onnx_path}
+    };
+
+    std::set<std::string> weight_params;
+    for(auto &v: graph.initializer())
+        weight_params.emplace(v.name());
+    
+    auto CreateParamsDict = [weight_params, default_batch](std::string k, google::protobuf::RepeatedPtrField<onnx::ValueInfoProto> tennsors) -> nlohmann::json
+    {
+        for(auto &m: tennsors)
+        {
+            nlohmann::json param;
+
+            if (std::find(weight_params.begin(), weight_params.end(), m.name()) != weight_params.end())
+                continue;
+            
+            param["type"] = m.type().tensor_type().elem_type();
+            param["name"] = m.name();
+
+            std::vector<int> shape_list = std::vector<int>();
+            int mul_value = 1;
+            google::protobuf::RepeatedPtrField<onnx::TensorShapeProto_Dimension> dim = m.type().tensor_type().shape().dim();
+            for(auto &v: dim)
+            {
+                shape_list.emplace_back((typeid(v.dim_value()) == typeid(int) && v.dim_value() > 0) ? v.dim_value() : -1);
+                mul_value *= ((typeid(v.dim_value()) == typeid(int) && v.dim_value() > 0) ? v.dim_value() : default_batch);
+            }
+            // param[shape] = std::tuple<>
+            
+        }
+    };
+
+
 }
