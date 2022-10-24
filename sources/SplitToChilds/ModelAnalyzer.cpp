@@ -8,44 +8,7 @@
 #include "../../library/onnx.proto3.pb.h"
 #include "../../include/Utils/OnnxUtil.h"
 #include "../../include/Common/JsonSerializer.h"
-
-// some tool function
-
-void print_dim(const ::onnx::TensorShapeProto_Dimension &dim)
-{
-    switch (dim.value_case())
-    {
-    case onnx::TensorShapeProto_Dimension::ValueCase::kDimParam:
-        std::cout << dim.dim_param();
-        break;
-    case onnx::TensorShapeProto_Dimension::ValueCase::kDimValue:
-        std::cout << dim.dim_value();
-        break;
-    default:
-        assert(false && "should never happen");
-    }
-}
-
-void print_io_info(const ::google::protobuf::RepeatedPtrField<::onnx::ValueInfoProto> &info)
-{
-    for (auto input_data : info)
-    {
-        auto shape = input_data.type().tensor_type().shape();
-        std::cout << "  " << input_data.name() << ":";
-        std::cout << "[";
-        if (shape.dim_size() != 0)
-        {
-            int size = shape.dim_size();
-            for (int i = 0; i < size - 1; ++i)
-            {
-                print_dim(shape.dim(i));
-                std::cout << ", ";
-            }
-            print_dim(shape.dim(size - 1));
-        }
-        std::cout << "]\n";
-    }
-}
+#include "../../include/Common/PathManager.h"
 
 // GraphNode
 GraphNode::GraphNode()
@@ -186,49 +149,48 @@ nlohmann::json ModelAnalyzer::LoadCache()
     {
         return JsonSerializer::LoadJson(OnnxPathManager::GetChildModelSumCacheSavePath(this->modelName));
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cerr << "Warning" << e.what() << '\n';
         return nlohmann::json({});
     }
 }
 
-// nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,
-//                                             GraphNode start_node, GraphNode end_node, bool print_error)
-// {
+nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,
+                                                 GraphNode start_node, GraphNode end_node, bool print_error)
+{
 
-//         Py_Initialize();
-//         PyObject* pModule = PyImport_ImportModule("onnx");
-//         PyObject* pFunc = PyObject_GetAttrString(pModule, "utils.extract_model");
-//         PyObject* pArgs = PyTuple_New(4);
-//         PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", raw_onnx_path.c_str())); 
-//         PyTuple_SetItem(pArgs, 1, Py_BuildValue("s", new_onnx_path.c_str()));
-        
-//         int input_size = start_node.dependencies_inputs.size();
-//         int output_size = end_node.dependencies_outputs.size();
+    Py_Initialize();
+    PyObject *pModule = PyImport_ImportModule("onnx");
+    PyObject *pFunc = PyObject_GetAttrString(pModule, "utils.extract_model");
+    PyObject *pArgs = PyTuple_New(4);
+    PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", raw_onnx_path.c_str()));
+    PyTuple_SetItem(pArgs, 1, Py_BuildValue("s", new_onnx_path.c_str()));
 
-//         PyObject* inputs = PyList_New(input_size);
-//         PyObject* outputs = PyList_New(output_size);
-//         int i = 0;
-//         std::vector<std::string>::iterator iList;
-//         for(i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
-//         {
-//             PyList_SetItem(inputs, i, PyBytes_FromString((*iList).c_str()));
-//         } 
+    int input_size = start_node.dependencies_inputs.size();
+    int output_size = end_node.dependencies_outputs.size();
 
-//         for(i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
-//         {
-//             PyList_SetItem(outputs, i, PyBytes_FromString((*iList).c_str()));
-//         } 
-//         PyTuple_SetItem(pArgs, 2, inputs);
-//         PyTuple_SetItem(pArgs, 3, outputs);
-//         // PyObject* pReturn = PyEval_CallObject(pFunc, pArgs);
-//         PyEval_CallObject(pFunc, pArgs);
-//         Py_Finalize();
+    PyObject *inputs = PyList_New(input_size);
+    PyObject *outputs = PyList_New(output_size);
+    int i = 0;
+    std::vector<std::string>::iterator iList;
+    for (i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
+    {
+        PyList_SetItem(inputs, i, PyBytes_FromString((*iList).c_str()));
+    }
 
-//         return
-    
-// }
+    for (i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
+    {
+        PyList_SetItem(outputs, i, PyBytes_FromString((*iList).c_str()));
+    }
+    PyTuple_SetItem(pArgs, 2, inputs);
+    PyTuple_SetItem(pArgs, 3, outputs);
+    // PyObject* pReturn = PyEval_CallObject(pFunc, pArgs);
+    PyEval_CallObject(pFunc, pArgs);
+    Py_Finalize();
+
+    return this->CreateParamsInfo(new_onnx_path, new_onnx_param_path);
+}
 
 void ModelAnalyzer::RecordDependency()
 {
@@ -258,59 +220,158 @@ void ModelAnalyzer::RecordDependency()
     }
 }
 
+nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_childs)
+{
+    nlohmann::json total_param;
+    std::vector<GraphNode> childs = std::vector<GraphNode>();
+    for (auto &child : input_childs)
+        if (EnableStart(child))
+            childs.emplace_back(child);
+    sort(childs.begin(), childs.end(), [](GraphNode x, GraphNode y)
+         { return x.idx <= y.idx; });
+    if (childs.size() < 1 || childs[0].idx != 0)
+        childs.emplace(childs.begin(), nodes[0]);
+
+    std::vector<GraphNode> childs_ = std::vector<GraphNode>();
+    int tmp = -1;
+    for (auto &child : childs)
+    {
+        if (child.idx > tmp)
+        {
+            childs_.emplace_back(child);
+            tmp = child.idx;
+        }
+    }
+    childs = childs_;
+
+    nlohmann::json info = CreateParamsInfo(onnxPath, OnnxPathManager::GetModelParamsSavePath(modelName));
+    info["from"] = nodes[0].idx;
+    info["to"] = nodes.back().idx;
+    total_param[-1] = info;
+
+    int childs_size = childs.size();
+    for (int child_idx = 0; child_idx < childs_size; child_idx++)
+    {
+        GraphNode start_node = childs[child_idx];
+        GraphNode end_node = nodes.back();
+        if (child_idx + 1 < childs.size())
+            end_node = nodes[childs[child_idx + 1].idx - 1];
+
+        std::cout << modelName << "-" << child_idx << " ==|> " << start_node.name << " --> " << end_node.name << std::endl;
+
+        std::filesystem::path child_onnx_path = OnnxPathManager::GetChildModelSavePath(modelName, child_idx);
+        std::filesystem::path child_params_path = OnnxPathManager::GetChildModelParamsSavePath(modelName, child_idx);
+        info = ExtractModelByNode(onnxPath, child_onnx_path, child_params_path, start_node, end_node);
+        info["from"] = start_node.idx;
+        info["to"] = end_node.idx;
+        total_param[child_idx] = info;
+    }
+
+    JsonSerializer::StoreJson(total_param, OnnxPathManager::GetChildModelSumParamsSavePath(modelName));
+
+    return total_param;
+}
+
 nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, std::filesystem::path params_path, int default_batch)
 {
     onnx::ModelProto model = onnxUtil.load(onnx_path);
     onnx::GraphProto graph = model.graph();
 
-    nlohmann::json params_dict =
-    {
-        {
-            "input", 
-            {
-                {"data", std::vector<nlohmann::json>()},
-                {"cost", 0}
-            }
-        },
-        {
-            "output",
-            {
-                {"data", std::vector<nlohmann::json>()},
-                {"cost", 0}
-            },
-            
-        },
-        {"model_path", onnx_path}
-    };
+    nlohmann::json params_dict;
+    params_dict["model_path"] = onnx_path;
 
     std::set<std::string> weight_params;
-    for(auto &v: graph.initializer())
+    for (auto &v : graph.initializer())
         weight_params.emplace(v.name());
-    
-    auto CreateParamsDict = [weight_params, default_batch](std::string k, google::protobuf::RepeatedPtrField<onnx::ValueInfoProto> tennsors) -> nlohmann::json
+
+    auto CreateParamsDict = [weight_params, default_batch, params_path](nlohmann::json params_dict, google::protobuf::RepeatedPtrField<onnx::ValueInfoProto> tennsors) -> nlohmann::json
     {
-        for(auto &m: tennsors)
+        std::vector<nlohmann::json> k_data = std::vector<nlohmann::json>();
+        for (auto &m : tennsors)
         {
             nlohmann::json param;
 
             if (std::find(weight_params.begin(), weight_params.end(), m.name()) != weight_params.end())
                 continue;
-            
+
             param["type"] = m.type().tensor_type().elem_type();
             param["name"] = m.name();
 
             std::vector<int> shape_list = std::vector<int>();
             int mul_value = 1;
             google::protobuf::RepeatedPtrField<onnx::TensorShapeProto_Dimension> dim = m.type().tensor_type().shape().dim();
-            for(auto &v: dim)
+            for (auto &v : dim)
             {
                 shape_list.emplace_back((typeid(v.dim_value()) == typeid(int) && v.dim_value() > 0) ? v.dim_value() : -1);
                 mul_value *= ((typeid(v.dim_value()) == typeid(int) && v.dim_value() > 0) ? v.dim_value() : default_batch);
             }
-            // param[shape] = std::tuple<>
-            
+
+            param["shape"] = shape_list;
+
+            k_data.emplace_back(param);
+
+            // cost部分
+
+            // double cost = 0.0;
+            // if (param["type"].get<std::string>().find("int") != std::string::npos)
+            // {
+            //     cost = mul_value * 4;
+            // } else
+            // {
+            //     cost = mul_value * 4;
+            // }
+            // param["cost"] = cost / (1024 * 1024);
+            // params_dict[k]["cost"] += cost;
+            // params_dict[k]["data"]
         }
+        return k_data;
     };
 
+    params_dict["input"]["data"] = CreateParamsDict(params_dict, graph.input());
+    params_dict["output"]["data"] = CreateParamsDict(params_dict, graph.output());
+    JsonSerializer::StoreJson(params_dict, params_path, true);
 
+    return params_dict;
+}
+
+std::vector<GraphNode> ModelAnalyzer::GetConvergeNodes()
+{
+    std::vector<GraphNode> result = std::vector<GraphNode>();
+    for (auto &node : nodes)
+        if (node.IsConvergeNode())
+            result.emplace_back(node);
+    return result;
+}
+
+const std::vector<GraphNode> &ModelAnalyzer::GetAllNodes() const
+{
+    return nodes;
+}
+
+std::ostream &operator<<(std::ostream &os, const GraphNode &node)
+{
+    // input_info 是RuntimeAnalyze里面的
+    os << "id=" << node.idx << ", name=" << node.name << ", inputs=" << node.inputs << ", outputs=" << node.outputs << ", dependencies_inputs=" << node.dependencies_inputs << ", dependencies_outputs=" << node.dependencies_outputs << std::endl;
+    return os;
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::vector<T> &v)
+{
+    if (!v.empty())
+    {
+        os << '[';
+        std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, ", "));
+        os << "\b\b]";
+    }
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const ModelAnalyzer &analyzer)
+{
+    for (auto &node : analyzer.GetAllNodes())
+    {
+        os << node << std::endl;
+    }
+    return os;
 }

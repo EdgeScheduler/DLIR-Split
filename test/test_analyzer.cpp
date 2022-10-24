@@ -25,11 +25,13 @@ int main()
 
     // graph
     // std::cout<<graph.initializer_size()<<std::endl;
-    for(auto data: graph.input())
-    {
-        for(auto i: data.type().tensor_type().shape().dim())
-        std::cout<< i.dim_value() <<","<<std::endl;
-    }
+    // for(auto data: graph.input())
+    // {
+    //     for(auto i: data.type().tensor_type().shape().dim())
+    //     std::cout<< i.dim_value() <<","<<std::endl;
+    // }
+
+    // std::cout << __cplusplus << std::endl;
 
     // node
     // for (auto data : graph.node())
@@ -46,7 +48,10 @@ int main()
     //     std::cout<<data.output(0)<<std::endl;
     // }
 
+    std::cout<<analyzer;
     std::cout << "test end" << std::endl;
+    
+    // std::filesystem::create_directories(RootPathManager::GetRunRootFold() / "123456789.json");
 
     return 0;
 }
