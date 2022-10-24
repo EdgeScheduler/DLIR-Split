@@ -26,8 +26,8 @@ We find that many types of computing-resources (such as CUDA-GPU and FPGA) have 
 * Operation System
   * Linux (Ubuntu test)
 * Hardware Support
-  * CUDA-GPU
-  * To-Do
+  * CUDA-GPU (GTX 2080Ti and Tesla-T4 test)
+  * to-do
     * Mali-GPU
     * FPGA
     * DSP
