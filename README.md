@@ -4,7 +4,7 @@ We find that many types of computing-resources (such as CUDA-GPU and FPGA) have 
 
 ## architecture
 
-![architecture](./doc/resource/images/allocate-architecture.svg)
+![architecture](doc/resource/images/allocate-architecture.svg)
 
 
 ## Develop Environment
