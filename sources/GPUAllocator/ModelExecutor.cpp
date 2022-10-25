@@ -9,6 +9,7 @@
 ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *session_opt, Ort::Env *env, int token_id, TokenManager *token_manager, std::mutex *gpu_mutex, std::condition_variable *deal_task) : modelName(model_name), sessionOption(session_opt), onnxruntimeEnv(env), todo(0), modelCount(0), tokenID(token_id), tokenManager(token_manager), gpuMutex(gpu_mutex), dealTask(deal_task)
 {
     std::filesystem::path rawModelPath = OnnxPathManager::GetModelSavePath(modelName);
+    this->executeTime = std::make_shared<std::vector<float>>();
     Ort::Session rawSession(*onnxruntimeEnv, rawModelPath.c_str(), *sessionOption);
     this->rawModelInfo = std::make_shared<ModelInfo>(rawSession, rawModelPath);
 
@@ -45,7 +46,6 @@ ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *sessio
 
     // run test to skip cold-run
     std::cout << "start to run " << modelName << " test." << std::endl;
-    std::vector<const char *> input_labels;
     for (int i = 0; i < modelCount; i++)
     {
         std::vector<TensorValue<float>> input_Tensors;
@@ -60,10 +60,20 @@ ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *sessio
             input_values.push_back(tensor);
         }
 
+        // run to skip cold-run
         for (int k = 0; k < 3; k++)
         {
             this->sessions[i].Run(Ort::RunOptions{nullptr}, inputLabels[i].data(), input_values.data(), inputLabels[i].size(), outputLabels[i].data(), outputLabels[i].size());
         }
+
+        // evaluate the time-cost
+        clock_t start = clock();
+        for (int k = 0; k < 3; k++)
+        {
+            this->sessions[i].Run(Ort::RunOptions{nullptr}, inputLabels[i].data(), input_values.data(), inputLabels[i].size(), outputLabels[i].data(), outputLabels[i].size());
+        }
+        this->executeTime->push_back((clock() - start) / CLOCKS_PER_SEC / 3000.0);
+        // evaluate end
     }
     std::cout << "run " << modelName << " test to end." << std::endl;
     // test end
@@ -85,6 +95,37 @@ ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *sessio
         }
         this->outputLabels[modelCount - 1] = outputs;
     }
+
+    // test raw-model
+    // run to skip cold-run
+    {
+        std::vector<TensorValue<float>> input_Tensors;
+        std::vector<Ort::Value> input_values;
+        for (auto &info : modelInfos[0].GetInput().GetAllTensors())
+        {
+            input_Tensors.push_back(TensorValue(info, true));
+        }
+
+        for (auto &tensor : input_Tensors)
+        {
+            input_values.push_back(tensor);
+        }
+
+        // skip cold-run
+        for (int k = 0; k < 3; k++)
+        {
+            rawSession.Run(Ort::RunOptions{nullptr}, inputLabels[0].data(), input_values.data(), inputLabels[0].size(), outputLabels[modelCount - 1].data(), outputLabels[modelCount - 1].size());
+        }
+
+        // evaluate the time-cost
+        clock_t start_raw = clock();
+        for (int k = 0; k < 3; k++)
+        {
+            rawSession.Run(Ort::RunOptions{nullptr}, inputLabels[0].data(), input_values.data(), inputLabels[0].size(), outputLabels[modelCount - 1].data(), outputLabels[modelCount - 1].size());
+        }
+        this->modelExecuteTime = (clock() - start_raw) / CLOCKS_PER_SEC / 3000.0;
+    }
+    // evaluate end
 }
 
 void ModelExecutor::ToNext()

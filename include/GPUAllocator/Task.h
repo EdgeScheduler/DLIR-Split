@@ -1,7 +1,7 @@
 #ifndef __TASK_H__
 #define __TASK_H__
 
-#include <time.h>
+#include <ctime>
 #include <vector>
 #include <string>
 #include <onnxruntime_cxx_api.h>

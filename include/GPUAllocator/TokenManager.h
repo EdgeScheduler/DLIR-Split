@@ -2,6 +2,7 @@
 #define __TOKENMANAGER_H__
 
 #include <mutex>
+#include <vector>
 #include <condition_variable>
 
 class TokenManager
@@ -23,7 +24,7 @@ public:
 
 private:
     int flag; // 0: free 1~n: token_id
-    std::mutex mutex;
+    std::mutex mutex;  
     std::condition_variable needWrite;
 };
 

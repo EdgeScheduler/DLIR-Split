@@ -11,6 +11,7 @@
 #include <condition_variable>
 #include "TokenManager.h"
 #include "ModelExecutor.h"
+#include "TaskRegistration.h"
 
 struct ExecutorDescribe
 {
@@ -59,6 +60,7 @@ private:
     int executorCount;
     std::mutex gpuMutex;
     std::condition_variable dealTask;
+    TaskRegistration taskRegistration;
 
     std::map<std::string, std::shared_ptr<ExecutorDescribe>> executorMap;
 };

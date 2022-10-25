@@ -61,10 +61,10 @@ private:
     // runtime args
 private:
     std::shared_ptr<Task> current_task;
-    // Ort::Session* _session;
-    // std::vector<const char*>* _input_labels;
-    // std::vector<const char*>* _output_labels;
-    // std::vector<Ort::Value> _input_datas;
+
+    // record how long will models run cost.
+    std::shared_ptr<std::vector<float>> executeTime;
+    float modelExecuteTime;
 };
 
 #endif // __MODELEXECUTOR_H__
