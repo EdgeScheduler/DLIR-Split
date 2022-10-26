@@ -1,22 +1,22 @@
 #include "../../include/GPUAllocator/TaskRegistration.h"
+#include <iostream>
 
-TaskRegistration::TaskRegistration() : queueLength(0.0F)
+TaskRegistration::TaskRegistration(TokenManager *tokenManager, std::condition_variable *dealTask) : queueLength(0.0F), tokenManager(tokenManager), dealTask(dealTask)
 {
 }
 
-void TaskRegistration::RegisteTask(std::shared_ptr<std::vector<float>> executeTime, int requiredToken, int requiredTokenCount, float &modelExecuteTime)
+void TaskRegistration::RegisteTask(std::string name, std::shared_ptr<std::vector<float>> executeTime, int requiredToken, int requiredTokenCount, float &modelExecuteTime)
 {
-    TaskDigest task(executeTime, requiredToken, requiredTokenCount, modelExecuteTime);
+    TaskDigest task(name, executeTime, requiredToken, requiredTokenCount, modelExecuteTime);
+    std::unique_lock<std::mutex> lock(mutex);
 
 #ifdef ALLOW_GPU_PARALLEL
-    tasks.push_back(task);
+    tasks.push_front(task);
     this->queueLength += task.LeftRunTime();
-    return;
 #else
     if (tasks.size() < 1)
     {
-        tasks.push_back(task);
-        this->queueLength += task.LeftRunTime();
+        tasks.push_front(task);
         goto SCHEDULE;
     }
     else
@@ -48,7 +48,65 @@ void TaskRegistration::RegisteTask(std::shared_ptr<std::vector<float>> executeTi
     }
 
 SCHEDULE:
-    // to release lock;
-    return;
 #endif // ALLOW_GPU_PARALLEL
+    // to release lock;
+    this->queueLength += task.LeftRunTime();
+    std::cout<<"add: "<<task.LeftRunTime()<<std::endl;
+    lock.unlock();
+    m_notEmpty.notify_all();
+    return;
+}
+
+void TaskRegistration::TokenDispense()
+{
+    float reduce_time = 0.0F;
+    int next_token = 0;
+    while (true)
+    {
+        tokenManager->WaitFree();
+
+        std::unique_lock<std::mutex> lock(mutex);
+        std::string discribe;
+
+        queueLength -= reduce_time;
+        std::cout<<"less: "<<reduce_time<<std::endl;
+
+        while (true)
+        {
+            m_notEmpty.wait(lock, [this]() -> bool
+                            { return tasks.size() > 0; });
+
+            TaskDigest &task = tasks.back();
+            discribe = task.GetInfo();
+
+            next_token = task.GetToken(reduce_time);
+
+            if (next_token < 0)
+            {
+                tasks.pop_back();
+                continue;
+            }
+            else
+            {
+                if (task.requiredTokenCount < 1)
+                {
+                    tasks.pop_back();
+                }
+                break;
+            }
+        }
+        lock.unlock(); // release lock
+
+        if (tokenManager)
+        {
+            std::cout << next_token << ": " << discribe << std::endl;
+            tokenManager->Grant(next_token, true);
+            if (tasks.size() < 1)
+            {
+                queueLength = 0.0F;
+            }
+
+            this->dealTask->notify_all();
+        }
+    }
 }

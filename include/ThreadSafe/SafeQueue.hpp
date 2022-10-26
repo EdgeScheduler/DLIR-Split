@@ -58,7 +58,6 @@ template <class T>
 void SafeQueue<T>::Push(T &x)
 {
     std::unique_lock<std::mutex> lock(mutex);
-    //有一个判断谓词,等价于while(!Pred){m_notFull.wait()}
     m_notFull.wait(lock, [this]() -> bool
                    { return capacity < 0 || size < capacity; });
     dequeDatas.push_back(x);
@@ -74,7 +73,6 @@ template <class T>
 void SafeQueue<T>::Emplace(T &&x)
 {
     std::unique_lock<std::mutex> lock(mutex);
-    //有一个判断谓词,等价于while(!Pred){m_notFull.wait()}
     m_notFull.wait(lock, [this]() -> bool
                    { return capacity < 0 || size < capacity; });
     dequeDatas.emplace_back(std::move(x));

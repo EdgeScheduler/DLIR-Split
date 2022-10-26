@@ -1,6 +1,6 @@
 #include "../../include/GPUAllocator/TaskDigest.h"
 
-TaskDigest::TaskDigest(std::shared_ptr<std::vector<float>> executeTime, int requiredToken, int requiredTokenCount, float &modelExecuteTime, float penaltyValue) : executeTime(executeTime), requiredToken(requiredToken), requiredTokenCount(requiredTokenCount), limitRuntime(modelExecuteTime),leftRuntime(0.0F)
+TaskDigest::TaskDigest(std::string name, std::shared_ptr<std::vector<float>> executeTime, int requiredToken, int requiredTokenCount, float &modelExecuteTime, float penaltyValue) : executeTime(executeTime), requiredToken(requiredToken), requiredTokenCount(requiredTokenCount), limitRuntime(modelExecuteTime), leftRuntime(0.0F), name(name)
 {
     this->startTime = clock();
     this->penaltyValue = penaltyValue;
@@ -43,11 +43,12 @@ int TaskDigest::GetToken(float& reduceTime)
 {
     if (this->requiredTokenCount < 1)
     {
+        reduceTime=0.0F;
         return -1;
     }
     else
     {
-        reduceTime=(*executeTime)[requiredTokenCount];
+        reduceTime=(*executeTime)[requiredTokenCount-1];
         this->leftRuntime-=reduceTime;
         this->requiredTokenCount -= 1;
         if(this->requiredTokenCount<1)
@@ -61,4 +62,9 @@ int TaskDigest::GetToken(float& reduceTime)
 float TaskDigest::LeftRunTime()
 {
     return this->leftRuntime;
+}
+
+std::string TaskDigest::GetInfo(int offset)
+{
+    return name+"-"+std::to_string(requiredTokenCount+offset);
 }

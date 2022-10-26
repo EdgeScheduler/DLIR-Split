@@ -3,6 +3,7 @@
 
 #include <ctime>
 #include <vector>
+#include <string>
 #include <memory>
 
 class TaskDigest
@@ -14,7 +15,7 @@ public:
     /// @param requiredTokenCount how many child-models there is   
     /// @param modelExecuteTime 
     /// @param penaltyValue 
-    TaskDigest(std::shared_ptr<std::vector<float>> executeTime, int requiredToken, int requiredTokenCount, float &modelExecuteTime,float penaltyValue=-0.3);
+    TaskDigest(std::string name, std::shared_ptr<std::vector<float>> executeTime, int requiredToken, int requiredTokenCount, float &modelExecuteTime,float penaltyValue=-0.3);
 
 public:
     /// @brief calculate SLO-time(ms)
@@ -33,13 +34,19 @@ public:
     /// @return -1 if there is no need.
     int GetToken(float& reduceTime);
 
+    
+    /// @brief get sequence info.
+    /// @return 
+    std::string GetInfo(int offset=0);
+
 public:
     int requiredToken;
+    int requiredTokenCount;
 
 private:
+    std::string name;
     clock_t startTime;
     std::shared_ptr<std::vector<float>> executeTime; // executeTime[0] is the last child-model run-time cost
-    int requiredTokenCount;
     
     float leftRuntime;
     float &limitRuntime;

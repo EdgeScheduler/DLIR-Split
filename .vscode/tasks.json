@@ -40,7 +40,8 @@
                 "-lstdc++fs",
                 "-lonnxruntime",
                 "-lprotobuf",
-                "-lpthread"
+                "-lpthread",
+                "-lpython3.6m"
             ],
             "options": {
                 "cwd": "${fileDirname}"

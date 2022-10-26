@@ -56,12 +56,14 @@ public:
 private:
     Ort::SessionOptions sessionOption;
     Ort::Env environment;
-    TokenManager tokenManager;
+    std::condition_variable dealTask;               // must define before taskRegistration
+    TokenManager tokenManager;                      // must define before taskRegistration
     int executorCount;
     std::mutex gpuMutex;
-    std::condition_variable dealTask;
-    TaskRegistration taskRegistration;
+    
+    TaskRegistration taskRegistration;              // must define after tokenManager and dealTask
 
+    std::shared_ptr<std::thread> tokenDespenseThread;
     std::map<std::string, std::shared_ptr<ExecutorDescribe>> executorMap;
 };
 

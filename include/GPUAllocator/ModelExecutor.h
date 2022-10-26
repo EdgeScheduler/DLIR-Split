@@ -34,8 +34,21 @@ public:
     /// @brief run all model automatically.
     void RunCycle();
 
+    /// @brief get token id of this executor.
+    /// @return
+    int GetTokenID();
+
+    /// @brief get how long the model limit-timecost.
+    /// @return
+    float &GetModelExecuteTime();
+
+    /// @brief get how many pieces this model is split into.
+    /// @return
+    int GetChildModelCount();
+
     SafeQueue<std::shared_ptr<Task>> &GetResultQueue();
     SafeQueue<std::shared_ptr<Task>> &GetTaskQueue();
+    std::shared_ptr<std::vector<float>> GetExecuteTime();
 
 private:
     int modelCount = 0;
@@ -61,7 +74,7 @@ private:
     // runtime args
 private:
     std::shared_ptr<Task> current_task;
-
+    
     // record how long will models run cost.
     std::shared_ptr<std::vector<float>> executeTime;
     float modelExecuteTime;

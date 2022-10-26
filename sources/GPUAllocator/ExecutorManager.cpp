@@ -2,11 +2,13 @@
 #include "../../include/Common/Drivers.h"
 #include <iostream>
 
-ExecutorManager::ExecutorManager() : environment(ORT_LOGGING_LEVEL_WARNING, "test"), executorCount(0)
+ExecutorManager::ExecutorManager() : environment(ORT_LOGGING_LEVEL_WARNING, "test"), executorCount(0), tokenManager(), taskRegistration(&tokenManager, &dealTask)
 {
     sessionOption.SetIntraOpNumThreads(1);
     sessionOption.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
     sessionOption.AppendExecutionProvider_CUDA(Drivers::GPU_CUDA::GPU0);
+
+    this->tokenDespenseThread = std::make_shared<std::thread>(&TaskRegistration::TokenDispense, &taskRegistration);
 }
 
 ExecutorManager::~ExecutorManager()
@@ -15,7 +17,7 @@ ExecutorManager::~ExecutorManager()
 
 void ExecutorManager::RunExecutor(std::string model_name)
 {
-    this->executorCount++; // it means no matter thread create ok, give a token_id.
+    this->executorCount++; // it means whether threads create successfully or not, give a token_id.
     std::shared_ptr<ExecutorDescribe> executorDescribe = std::make_shared<ExecutorDescribe>();
     executorDescribe->executor = std::make_shared<ModelExecutor>(model_name, &sessionOption, &environment, executorCount, &tokenManager, &gpuMutex, &dealTask);
     executorDescribe->executorID = executorCount;
@@ -34,6 +36,7 @@ void ExecutorManager::AddTask(std::string model_name, std::shared_ptr<std::map<s
     }
 
     iter->second->executor->AddTask(datas, tag);
+    this->taskRegistration.RegisteTask(model_name, iter->second->executor->GetExecuteTime(), iter->second->executor->GetTokenID(), iter->second->executor->GetChildModelCount(), iter->second->executor->GetModelExecuteTime());
 }
 
 std::map<std::string, std::shared_ptr<ExecutorDescribe>> &ExecutorManager::GetExecutorInformation()
@@ -48,6 +51,7 @@ std::vector<std::shared_ptr<std::thread>> ExecutorManager::GetAllThreads()
     {
         result.push_back(iter->second->threadHandle);
     }
+    result.push_back(this->tokenDespenseThread);
     return result;
 }
 
