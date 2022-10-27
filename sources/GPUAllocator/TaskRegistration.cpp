@@ -51,7 +51,7 @@ SCHEDULE:
 #endif // ALLOW_GPU_PARALLEL
     // to release lock;
     this->queueLength += task.LeftRunTime();
-    std::cout<<"add: "<<task.LeftRunTime()<<std::endl;
+    //std::cout<<"add: "<<task.LeftRunTime()<<std::endl;
     lock.unlock();
     m_notEmpty.notify_all();
     return;
@@ -69,7 +69,7 @@ void TaskRegistration::TokenDispense()
         std::string discribe;
 
         queueLength -= reduce_time;
-        std::cout<<"less: "<<reduce_time<<std::endl;
+        //std::cout<<"less: "<<reduce_time<<std::endl;
 
         while (true)
         {
@@ -99,7 +99,7 @@ void TaskRegistration::TokenDispense()
 
         if (tokenManager)
         {
-            std::cout << next_token << ": " << discribe << std::endl;
+            // std::cout << next_token << ": " << discribe << std::endl;
             tokenManager->Grant(next_token, true);
             if (tasks.size() < 1)
             {

@@ -7,7 +7,7 @@ class UniformRandom
 {
 public:
     UniformRandom(unsigned int seed=0);
-    float Random(float lambda);
+    float Random();
 
 private:
     std::default_random_engine engin;

@@ -29,7 +29,8 @@ public:
     void LoadTask();
 
     /// @brief Inference for once task.
-    void RunOnce();
+    /// @return recv end signal or not.
+    bool RunOnce();
 
     /// @brief run all model automatically.
     void RunCycle();
@@ -74,7 +75,7 @@ private:
     // runtime args
 private:
     std::shared_ptr<Task> current_task;
-    
+
     // record how long will models run cost.
     std::shared_ptr<std::vector<float>> executeTime;
     float modelExecuteTime;

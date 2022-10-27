@@ -23,7 +23,16 @@ void ExecutorManager::RunExecutor(std::string model_name)
     executorDescribe->executorID = executorCount;
     executorDescribe->modelName = model_name;
     executorDescribe->threadHandle = std::make_shared<std::thread>(&ModelExecutor::RunCycle, executorDescribe->executor);
+    executorDescribe->resultGatherThread=std::make_shared<std::thread>(&ExecutorManager::GatherTask,this,&(executorDescribe->executor->GetResultQueue()));
     this->executorMap.insert(std::pair<std::string, std::shared_ptr<ExecutorDescribe>>(model_name, executorDescribe));
+}
+
+void ExecutorManager::GatherTask(SafeQueue<std::shared_ptr<Task>>* taskQueue)
+{
+    while(true)
+    {
+        this->applyQueue.Emplace(taskQueue->Pop());
+    }
 }
 
 void ExecutorManager::AddTask(std::string model_name, std::shared_ptr<std::map<std::string, std::shared_ptr<TensorValue<float>>>> datas, std::string tag)
@@ -50,6 +59,7 @@ std::vector<std::shared_ptr<std::thread>> ExecutorManager::GetAllThreads()
     for (auto iter = executorMap.begin(); iter != executorMap.end(); iter++)
     {
         result.push_back(iter->second->threadHandle);
+        result.push_back(iter->second->resultGatherThread);
     }
     result.push_back(this->tokenDespenseThread);
     return result;
@@ -69,4 +79,9 @@ bool ExecutorManager::Grant(int token, bool block)
     bool flag = this->tokenManager.Grant(token, block);
     this->dealTask.notify_all();
     return flag;
+}
+
+SafeQueue<std::shared_ptr<Task>>& ExecutorManager::GetApplyQueue()
+{
+    return this->applyQueue;
 }

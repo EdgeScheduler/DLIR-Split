@@ -12,6 +12,7 @@
 #include "TokenManager.h"
 #include "ModelExecutor.h"
 #include "TaskRegistration.h"
+#include "../ThreadSafe/SafeQueue.hpp"
 
 struct ExecutorDescribe
 {
@@ -19,6 +20,7 @@ struct ExecutorDescribe
     int executorID;
     std::string modelName;
     std::shared_ptr<std::thread> threadHandle;
+    std::shared_ptr<std::thread> resultGatherThread;
 };
 
 class ExecutorManager
@@ -53,18 +55,26 @@ public:
     /// @brief join all thread to current-thread
     void Join();
 
+    /// @brief gather tasks from queue
+    void GatherTask(SafeQueue<std::shared_ptr<Task>>* taskQueue);
+
+    /// @brief returns a read/write reference Queue to the apply of all the request that have been finished.
+    SafeQueue<std::shared_ptr<Task>>& GetApplyQueue();
+
 private:
     Ort::SessionOptions sessionOption;
     Ort::Env environment;
-    std::condition_variable dealTask;               // must define before taskRegistration
-    TokenManager tokenManager;                      // must define before taskRegistration
+    std::condition_variable dealTask; // must define before taskRegistration
+    TokenManager tokenManager;        // must define before taskRegistration
     int executorCount;
     std::mutex gpuMutex;
-    
-    TaskRegistration taskRegistration;              // must define after tokenManager and dealTask
+
+    TaskRegistration taskRegistration; // must define after tokenManager and dealTask
 
     std::shared_ptr<std::thread> tokenDespenseThread;
     std::map<std::string, std::shared_ptr<ExecutorDescribe>> executorMap;
+
+    SafeQueue<std::shared_ptr<Task>> applyQueue;
 };
 
 #endif // __EXECUTORMANAGER_H__

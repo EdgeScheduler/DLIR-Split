@@ -161,13 +161,13 @@ void ModelExecutor::LoadTask()
     current_task->_output_labels = &this->outputLabels[this->todo];
 }
 
-void ModelExecutor::RunOnce()
+bool ModelExecutor::RunOnce()
 {
     this->LoadTask();
     if (this->current_task == nullptr)
     {
         std::cout << "warning: meet no input." << std::endl;
-        return;
+        return true;
     }
 
 #ifndef ALLOW_GPU_PARALLEL
@@ -175,14 +175,15 @@ void ModelExecutor::RunOnce()
     dealTask->wait(lock, [this]() -> bool
                    { return this->tokenManager->GetFlag() == tokenID; });
     // use token already
-    // this->tokenManager->Release();
+    this->tokenManager->Release();
 
 #endif // !ALLOW_GPU_PARALLEL
     clock_t start = clock();
     current_task->_input_datas = current_task->_session->Run(Ort::RunOptions{nullptr}, current_task->_input_labels->data(), current_task->_input_datas.data(), current_task->_input_labels->size(), current_task->_output_labels->data(), current_task->_output_labels->size());
-    // use token already
-    this->tokenManager->Release();
     current_task->RecordTimeCosts(start, clock());
+
+    // use token already
+    // this->tokenManager->Release();
 
 #ifndef ALLOW_GPU_PARALLEL
 
@@ -192,11 +193,12 @@ void ModelExecutor::RunOnce()
 #endif // !ALLOW_GPU_PARALLEL
 
     this->ToNext();
+    return false;
 }
 
 void ModelExecutor::AddTask(std::shared_ptr<std::map<std::string, std::shared_ptr<TensorValue<float>>>> datas, std::string tag)
 {
-    std::shared_ptr<Task> new_task = std::make_shared<Task>(this->modelName, this->rawModelInfo, tag);
+    std::shared_ptr<Task> new_task = std::make_shared<Task>(this->modelName,this->modelExecuteTime, this->rawModelInfo, tag);
     new_task->SetInputs(datas);
     this->task_queue.Push(new_task);
 }
@@ -210,7 +212,10 @@ void ModelExecutor::RunCycle()
     }
     while (true)
     {
-        this->RunOnce();
+        if(this->RunOnce())
+        {
+            break;
+        }
     }
 }
 

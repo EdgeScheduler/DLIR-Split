@@ -13,7 +13,7 @@
 class Task
 {
 public:
-    Task(std::string modelName, std::shared_ptr<ModelInfo> modelInfo = nullptr, std::string tag = "");
+    Task(std::string modelName,float limitCost, std::shared_ptr<ModelInfo> modelInfo = nullptr, std::string tag = "");
     /// @brief set model-infos
     /// @param modelInfo
     void SetModelInfo(std::shared_ptr<ModelInfo> modelInfo);
@@ -88,6 +88,7 @@ private:
     std::string tag;
     std::string modelName;
     std::shared_ptr<ModelInfo> modelInfo;
+    float limitCost;
 };
 
 #endif // __TASK_H__
