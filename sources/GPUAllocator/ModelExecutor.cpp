@@ -175,7 +175,7 @@ bool ModelExecutor::RunOnce()
     dealTask->wait(lock, [this]() -> bool
                    { return this->tokenManager->GetFlag() == tokenID; });
     // use token already
-    this->tokenManager->Release();
+    // this->tokenManager->Release();
 
 #endif // !ALLOW_GPU_PARALLEL
     clock_t start = clock();
@@ -183,7 +183,7 @@ bool ModelExecutor::RunOnce()
     current_task->RecordTimeCosts(start, clock());
 
     // use token already
-    // this->tokenManager->Release();
+    this->tokenManager->Release();
 
 #ifndef ALLOW_GPU_PARALLEL
 

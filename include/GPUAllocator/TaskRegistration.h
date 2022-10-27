@@ -32,6 +32,8 @@ private:
     /// @brief add restrictions on consumer-threads
     std::condition_variable m_notEmpty;
     std::condition_variable* dealTask;
+
+    TaskDigest* currentTask;
 };
 
 #endif // __TASKREGISTRATION_H__

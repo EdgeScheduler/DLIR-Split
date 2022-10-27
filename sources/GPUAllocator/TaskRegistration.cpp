@@ -1,7 +1,7 @@
 #include "../../include/GPUAllocator/TaskRegistration.h"
 #include <iostream>
 
-TaskRegistration::TaskRegistration(TokenManager *tokenManager, std::condition_variable *dealTask) : queueLength(0.0F), tokenManager(tokenManager), dealTask(dealTask)
+TaskRegistration::TaskRegistration(TokenManager *tokenManager, std::condition_variable *dealTask) : queueLength(0.0F), tokenManager(tokenManager), dealTask(dealTask), currentTask(nullptr)
 {
 }
 
@@ -45,6 +45,11 @@ void TaskRegistration::RegisteTask(std::string name, std::shared_ptr<std::vector
             }
         }
         tasks.insert(tasks.end(), std::move(task));
+
+        // update current_task (queue head)
+        currentTask=&tasks.back();
+
+        goto SCHEDULE;
     }
 
 SCHEDULE:
@@ -61,41 +66,37 @@ void TaskRegistration::TokenDispense()
 {
     float reduce_time = 0.0F;
     int next_token = 0;
+    // TaskDigest* currentTaskPtr=nullptr;
     while (true)
     {
-        tokenManager->WaitFree();
-
-        std::unique_lock<std::mutex> lock(mutex);
-        std::string discribe;
-
-        queueLength -= reduce_time;
-        //std::cout<<"less: "<<reduce_time<<std::endl;
-
-        while (true)
+        // std::unique_lock<std::mutex> lock(mutex);
+        // std::string discribe;
+        
+        if(this->currentTask==nullptr or this->currentTask->requiredTokenCount<1)
         {
-            m_notEmpty.wait(lock, [this]() -> bool
-                            { return tasks.size() > 0; });
-
-            TaskDigest &task = tasks.back();
-            discribe = task.GetInfo();
-
-            next_token = task.GetToken(reduce_time);
-
-            if (next_token < 0)
+            // to read valid task
+            std::unique_lock<std::mutex> lock(mutex);
+            while (true)
             {
-                tasks.pop_back();
-                continue;
-            }
-            else
-            {
-                if (task.requiredTokenCount < 1)
+                m_notEmpty.wait(lock, [this]() -> bool{ return tasks.size() > 0; });
+                currentTask=&tasks.back();
+                if(currentTask->requiredTokenCount<1)
                 {
                     tasks.pop_back();
+                    continue;
                 }
-                break;
+                else
+                {
+                    break;
+                }
             }
+            lock.unlock();
         }
-        lock.unlock(); // release lock
+
+        tokenManager->WaitFree();
+        queueLength -= reduce_time;
+
+        next_token = this->currentTask->GetToken(reduce_time);          // currentTask is allowed to be update by TaskRegistration::RegisteTask
 
         if (tokenManager)
         {
