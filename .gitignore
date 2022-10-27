@@ -1,5 +1,6 @@
 .vscode
 *.onnx
+data
 Onnxs/*
 !Onnxs/scripts
 onnxruntime-package

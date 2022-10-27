@@ -6,7 +6,6 @@ We find that many types of computing-resources (such as CUDA-GPU and FPGA) have 
 
 ![architecture](doc/resource/images/allocate-architecture.svg)
 
-
 ## Develop Environment
 
 > we test our program with `GTX-2080Ti with 10-core GPU`

@@ -68,13 +68,13 @@ int main(int argc, char *argv[])
     }
 
 #ifndef ALLOW_GPU_PARALLEL
-    cout << "use token:";
-    for (int token : tokens)
-    {
-        cout << token << " ";
-        executorManager.Grant(token);
-    }
-    cout << endl;
+    // cout << "use token:";
+    // for (int token : tokens)
+    // {
+    //     cout << token << " ";
+    //     executorManager.Grant(token);
+    // }
+    // cout << endl;
 #else
     cout << "tokens deprecated, you have allow GPU parallel." << endl;
 #endif // !1

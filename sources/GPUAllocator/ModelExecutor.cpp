@@ -9,6 +9,7 @@
 ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *session_opt, Ort::Env *env, int token_id, TokenManager *token_manager, std::mutex *gpu_mutex, std::condition_variable *deal_task) : modelName(model_name), sessionOption(session_opt), onnxruntimeEnv(env), todo(0), modelCount(0), tokenID(token_id), tokenManager(token_manager), gpuMutex(gpu_mutex), dealTask(deal_task)
 {
     std::filesystem::path rawModelPath = OnnxPathManager::GetModelSavePath(modelName);
+    this->executeTime = std::make_shared<std::vector<float>>();
     Ort::Session rawSession(*onnxruntimeEnv, rawModelPath.c_str(), *sessionOption);
     this->rawModelInfo = std::make_shared<ModelInfo>(rawSession, rawModelPath);
 
@@ -43,29 +44,75 @@ ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *sessio
         this->outputLabels.push_back(outputs);
     }
 
-    // run test to skip cold-run
-    std::cout << "start to run " << modelName << " test." << std::endl;
-    std::vector<const char *> input_labels;
-    for (int i = 0; i < modelCount; i++)
+    // run test to skip cold-run and get run-time
+
+    // test child-models
     {
-        std::vector<TensorValue<float>> input_Tensors;
-        std::vector<Ort::Value> input_values;
-        for (auto &info : modelInfos[i].GetInput().GetAllTensors())
+        std::cout << "start to run " << modelName << " test." << std::endl;
+        for (int i = 0; i < modelCount; i++)
         {
-            input_Tensors.push_back(TensorValue(info, true));
+            std::vector<TensorValue<float>> input_Tensors;
+            std::vector<Ort::Value> input_values;
+            for (auto &info : modelInfos[i].GetInput().GetAllTensors())
+            {
+                input_Tensors.push_back(TensorValue(info, true));
+            }
+
+            for (auto &tensor : input_Tensors)
+            {
+                input_values.push_back(tensor);
+            }
+
+            // run to skip cold-run
+            for (int k = 0; k < 3; k++)
+            {
+                this->sessions[i].Run(Ort::RunOptions{nullptr}, inputLabels[i].data(), input_values.data(), inputLabels[i].size(), outputLabels[i].data(), outputLabels[i].size());
+            }
+
+            // evaluate the time-cost
+            clock_t start = clock();
+            for (int k = 0; k < 3; k++)
+            {
+                this->sessions[i].Run(Ort::RunOptions{nullptr}, inputLabels[i].data(), input_values.data(), inputLabels[i].size(), outputLabels[i].data(), outputLabels[i].size());
+            }
+            this->executeTime->push_back((clock() - start) / 3.0 / CLOCKS_PER_SEC * 1000.0);
+            // test child-models end.
+        }
+        // test raw-model
+        {
+            // run to skip cold-run
+            std::vector<TensorValue<float>> raw_input_Tensors;
+            std::vector<Ort::Value> raw_input_values;
+            for (auto &info : modelInfos[0].GetInput().GetAllTensors())
+            {
+                raw_input_Tensors.push_back(TensorValue(info, true));
+            }
+
+            for (auto &tensor : raw_input_Tensors)
+            {
+                raw_input_values.push_back(tensor);
+            }
+
+            // skip cold-run
+            for (int k = 0; k < 3; k++)
+            {
+                rawSession.Run(Ort::RunOptions{nullptr}, inputLabels[0].data(), raw_input_values.data(), inputLabels[0].size(), outputLabels[modelCount - 1].data(), outputLabels[modelCount - 1].size());
+            }
+
+            // evaluate the time-cost
+            clock_t start_raw = clock();
+            for (int k = 0; k < 3; k++)
+            {
+                rawSession.Run(Ort::RunOptions{nullptr}, inputLabels[0].data(), raw_input_values.data(), inputLabels[0].size(), outputLabels[modelCount - 1].data(), outputLabels[modelCount - 1].size());
+            }
+            this->modelExecuteTime = (clock() - start_raw) / 3.0 / CLOCKS_PER_SEC * 1000.0;
+
+            // test raw-model end.
         }
 
-        for (auto &tensor : input_Tensors)
-        {
-            input_values.push_back(tensor);
-        }
-
-        for (int k = 0; k < 3; k++)
-        {
-            this->sessions[i].Run(Ort::RunOptions{nullptr}, inputLabels[i].data(), input_values.data(), inputLabels[i].size(), outputLabels[i].data(), outputLabels[i].size());
-        }
+        // evaluate end
     }
-    std::cout << "run " << modelName << " test to end." << std::endl;
+
     // test end
 
     if (modelCount > 0)
@@ -85,6 +132,9 @@ ModelExecutor::ModelExecutor(std::string model_name, Ort::SessionOptions *sessio
         }
         this->outputLabels[modelCount - 1] = outputs;
     }
+
+    // evaluate end
+    std::cout << "run " << modelName << " test to end." << std::endl;
 }
 
 void ModelExecutor::ToNext()
@@ -111,13 +161,13 @@ void ModelExecutor::LoadTask()
     current_task->_output_labels = &this->outputLabels[this->todo];
 }
 
-void ModelExecutor::RunOnce()
+bool ModelExecutor::RunOnce()
 {
     this->LoadTask();
     if (this->current_task == nullptr)
     {
         std::cout << "warning: meet no input." << std::endl;
-        return;
+        return true;
     }
 
 #ifndef ALLOW_GPU_PARALLEL
@@ -125,12 +175,15 @@ void ModelExecutor::RunOnce()
     dealTask->wait(lock, [this]() -> bool
                    { return this->tokenManager->GetFlag() == tokenID; });
     // use token already
-    this->tokenManager->Release();
+    // this->tokenManager->Release();
 
 #endif // !ALLOW_GPU_PARALLEL
     clock_t start = clock();
     current_task->_input_datas = current_task->_session->Run(Ort::RunOptions{nullptr}, current_task->_input_labels->data(), current_task->_input_datas.data(), current_task->_input_labels->size(), current_task->_output_labels->data(), current_task->_output_labels->size());
     current_task->RecordTimeCosts(start, clock());
+
+    // use token already
+    this->tokenManager->Release();
 
 #ifndef ALLOW_GPU_PARALLEL
 
@@ -140,11 +193,12 @@ void ModelExecutor::RunOnce()
 #endif // !ALLOW_GPU_PARALLEL
 
     this->ToNext();
+    return false;
 }
 
 void ModelExecutor::AddTask(std::shared_ptr<std::map<std::string, std::shared_ptr<TensorValue<float>>>> datas, std::string tag)
 {
-    std::shared_ptr<Task> new_task = std::make_shared<Task>(this->modelName, this->rawModelInfo, tag);
+    std::shared_ptr<Task> new_task = std::make_shared<Task>(this->modelName,this->modelExecuteTime, this->rawModelInfo, tag);
     new_task->SetInputs(datas);
     this->task_queue.Push(new_task);
 }
@@ -158,7 +212,10 @@ void ModelExecutor::RunCycle()
     }
     while (true)
     {
-        this->RunOnce();
+        if(this->RunOnce())
+        {
+            break;
+        }
     }
 }
 
@@ -170,4 +227,24 @@ SafeQueue<std::shared_ptr<Task>> &ModelExecutor::GetResultQueue()
 SafeQueue<std::shared_ptr<Task>> &ModelExecutor::GetTaskQueue()
 {
     return this->task_queue;
+}
+
+std::shared_ptr<std::vector<float>> ModelExecutor::GetExecuteTime()
+{
+    return this->executeTime;
+}
+
+int ModelExecutor::GetTokenID()
+{
+    return this->tokenID;
+}
+
+float &ModelExecutor::GetModelExecuteTime()
+{
+    return this->modelExecuteTime;
+}
+
+int ModelExecutor::GetChildModelCount()
+{
+    return this->modelCount;
 }

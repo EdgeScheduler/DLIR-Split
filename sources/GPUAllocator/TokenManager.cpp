@@ -9,7 +9,7 @@ void TokenManager::Release()
     std::unique_lock<std::mutex> lock(mutex);
     this->flag = 0;
     lock.unlock();
-    needWrite.notify_all();
+    needNewToken.notify_all();
 }
 
 bool TokenManager::Grant(int token, bool block)
@@ -20,7 +20,7 @@ bool TokenManager::Grant(int token, bool block)
     {
         if (block)
         {
-            needWrite.wait(lock, [this]() -> bool
+            needNewToken.wait(lock, [this]() -> bool
                            { return this->flag < 1; });
             this->flag = token;
             lock.unlock();
@@ -52,4 +52,16 @@ TokenManager::operator int()
 int TokenManager::GetFlag()
 {
     return this->flag;
+}
+
+std::condition_variable& TokenManager::NeedNewToken()
+{
+    return this->needNewToken;
+}
+
+void TokenManager::WaitFree()
+{
+    std::unique_lock<std::mutex> lock(mutex);
+    needNewToken.wait(lock, [this]() -> bool
+                           { return this->flag < 1; });
 }
