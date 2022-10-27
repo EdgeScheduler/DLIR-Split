@@ -5,7 +5,8 @@
       "includePath": [
         "${workspaceFolder}/**",
         "${workspaceFolder}/include/*/*",
-        "${workspaceFolder}/sources/*/*"
+        "${workspaceFolder}/sources/*/*",
+        "${workspaceFolder}/library/*"
       ],
       "defines": [],
       "compilerPath": "/usr/bin/gcc",

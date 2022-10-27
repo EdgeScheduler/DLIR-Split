@@ -71,7 +71,9 @@
     "forward_list": "cpp",
     "valarray": "cpp",
     "stdio.h": "c",
-    "cassert": "cpp"
+    "cassert": "cpp",
+    "hash_map": "cpp",
+    "hash_set": "cpp"
   },
   "C_Cpp.errorSquiggles": "Disabled",
   "C_Cpp_Runner.msvcBatchPath": "",
@@ -111,11 +113,14 @@
     "BFLOAT",
     "Inited",
     "oneof",
+    "opschema",
     "opset",
     "protoc",
     "resnet",
     "tennsors",
     "Varint",
-    "Winvalid"
+    "vimap",
+    "Winvalid",
+    "wmap"
   ]
 }

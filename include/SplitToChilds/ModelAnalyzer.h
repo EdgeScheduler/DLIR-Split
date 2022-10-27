@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <set>
 #include <vector>
+#include <iterator>
 #include <nlohmann/json.hpp>
 #include "../Common/PathManager.h"
 #include "../../library/onnx.proto3.pb.h"
@@ -48,12 +49,43 @@ public:
     int idx;
 };
 
+class ModelAnalyzerIterator
+{
+    public:
+        /// @brief 
+        /// @param p 
+        ModelAnalyzerIterator(GraphNode* p);
 
+        /// @brief 
+        /// @param iter 
+        /// @return 
+        bool operator!=(const ModelAnalyzerIterator &iter);
+
+                /// @brief 
+        /// @param iter 
+        /// @return 
+        bool operator==(const ModelAnalyzerIterator &iter);
+
+        /// @brief 
+        /// @return 
+        ModelAnalyzerIterator& operator++();
+
+        /// @brief 
+        /// @param  
+        /// @return 
+        ModelAnalyzerIterator operator++(int);
+
+        GraphNode& operator * ();
+    
+    private:
+        GraphNode* _ptr;
+};
 
 /// @brief
 class ModelAnalyzer
 {
 public:
+    typedef ModelAnalyzerIterator iterator;
     /// @brief
     /// @param model_name
     /// @param onnx_path
@@ -118,9 +150,19 @@ public:
     const std::vector<GraphNode> &GetAllNodes() const;
 
     /// @brief 
-    /// @param os 
+    /// @param i 
     /// @return 
-    std::ostream& operator<<(std::ostream os);
+    GraphNode& operator[](int i);
+
+    /// @brief 
+    /// @return 
+    iterator begin();
+
+    /// @brief 
+    /// @return 
+    iterator end();
+
+    int size() const;
 
 private:
     /// @brief
@@ -145,6 +187,11 @@ private:
     bool use_cache;
 };
 
+
+
+
+
+
 //Overload
 
 /// @brief 
@@ -160,7 +207,13 @@ std::ostream& operator<<(std::ostream &os, const GraphNode &node);
 template<typename T>
 std::ostream& operator<<(std::ostream &os, const std::vector<T> &v);
 
+/// @brief 
+/// @param os 
+/// @param analyzer 
+/// @return 
 std::ostream& operator<<(std::ostream &os, const ModelAnalyzer &analyzer);
+
+
 
 
 

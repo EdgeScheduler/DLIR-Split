@@ -37,6 +37,7 @@
                 "${workspaceFolder}/library/*",
                 "-o",
                 "${workspaceRoot}/bin/debug/${fileBasenameNoExtension}",
+                "-lpython3.6m",
                 "-lstdc++fs",
                 "-lonnxruntime",
                 "-lprotobuf",

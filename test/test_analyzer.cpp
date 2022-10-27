@@ -2,7 +2,8 @@
 #include <iostream>
 #include "../include/SplitToChilds/ModelAnalyzer.h"
 #include "../library/onnx.proto3.pb.h"
-#include "../include/Utils/OnnxUtil.h"
+#include "../include/Utils/helper.h"
+#include <python3.6/Python.h>
 using namespace std;
 
 int main()
@@ -13,8 +14,10 @@ int main()
     // ModelAnalyzer a = ModelAnalyzer(modelname, p);
 
     ModelAnalyzer analyzer = ModelAnalyzer("vgg19");
-    onnx::ModelProto model = onnxUtil.load(analyzer.GetModelPath());
+    onnx::ModelProto model = onnxUtil::load(analyzer.GetModelPath());
     auto graph = model.graph();
+    // graph.output();
+    analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());
 
     // initializer
     // std::cout<<graph.initializer_size()<<std::endl;
@@ -24,12 +27,12 @@ int main()
     // }
 
     // graph
-    // std::cout<<graph.initializer_size()<<std::endl;
-    // for(auto data: graph.input())
-    // {
-    //     for(auto i: data.type().tensor_type().shape().dim())
-    //     std::cout<< i.dim_value() <<","<<std::endl;
-    // }
+    std::cout<<graph.initializer_size()<<std::endl;
+    for(auto data: graph.output())
+    {
+        for(auto i: data.type().tensor_type().shape().dim())
+        std::cout<< i.dim_value() <<","<<std::endl;
+    }
 
     // std::cout << __cplusplus << std::endl;
 
@@ -48,7 +51,7 @@ int main()
     //     std::cout<<data.output(0)<<std::endl;
     // }
 
-    std::cout<<analyzer;
+    // std::cout<<analyzer[3];
     std::cout << "test end" << std::endl;
     
     // std::filesystem::create_directories(RootPathManager::GetRunRootFold() / "123456789.json");

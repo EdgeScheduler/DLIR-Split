@@ -3,10 +3,12 @@
 #include <string>
 #include <vector>
 #include <python3.6/Python.h>
+#include <iterator>
 #include "../../include/SplitToChilds/ModelAnalyzer.h"
 #include "../../include/Common/PathManager.h"
 #include "../../library/onnx.proto3.pb.h"
-#include "../../include/Utils/OnnxUtil.h"
+// #include "../../include/Utils/OnnxUtil.h"
+#include "../../include/Utils/helper.h"
 #include "../../include/Common/JsonSerializer.h"
 #include "../../include/Common/PathManager.h"
 
@@ -78,6 +80,41 @@ bool GraphNode::IsConvergeNode()
     return this->dependencies_inputs.size() < 2 ? true : false;
 }
 
+// ModelAnalyzerIterator
+ModelAnalyzerIterator::ModelAnalyzerIterator(GraphNode* p)
+{
+    _ptr = p;   
+}
+
+bool ModelAnalyzerIterator::operator!=(const ModelAnalyzerIterator &iter)
+{
+    return _ptr != iter._ptr;
+}
+
+bool ModelAnalyzerIterator::operator==(const ModelAnalyzerIterator &iter)
+{
+    return _ptr == iter._ptr;
+}
+
+ModelAnalyzerIterator& ModelAnalyzerIterator::operator++()
+{
+    _ptr++;
+    return *this;
+}
+
+ModelAnalyzerIterator ModelAnalyzerIterator::operator++(int)
+{
+    ModelAnalyzerIterator tmp = *this;
+    _ptr++;
+    return tmp;
+}
+
+GraphNode& ModelAnalyzerIterator::operator * ()
+{
+    return *_ptr;
+}
+
+
 // ModelAnalyzer
 
 ModelAnalyzer::ModelAnalyzer(std::string model_name, const std::filesystem::path &onnx_path)
@@ -94,8 +131,15 @@ ModelAnalyzer::ModelAnalyzer(std::string model_name, const std::filesystem::path
     else
         this->onnxPath = onnx_path;
 
-    if (!this->Init())
-        return;
+    try
+    {
+        if (!this->Init())
+            throw -1;
+    }
+    catch(int e)
+    {
+        std::cerr << "Error while initiating analyzer." << '\n';
+    }
 }
 
 bool ModelAnalyzer::Init()
@@ -104,7 +148,7 @@ bool ModelAnalyzer::Init()
     onnx::ModelProto model;
     try
     {
-        model = onnxUtil.load(onnxPath);
+        model = onnxUtil::load(onnxPath);
         auto graph = model.graph();
 
         for (auto &data : graph.initializer())
@@ -159,37 +203,38 @@ nlohmann::json ModelAnalyzer::LoadCache()
 nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,
                                                  GraphNode start_node, GraphNode end_node, bool print_error)
 {
+    onnxUtil::extract_model(raw_onnx_path, new_onnx_path, start_node.dependencies_inputs, end_node.dependencies_outputs);
 
-    Py_Initialize();
-    PyObject *pModule = PyImport_ImportModule("onnx");
-    PyObject *pFunc = PyObject_GetAttrString(pModule, "utils.extract_model");
-    PyObject *pArgs = PyTuple_New(4);
-    PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", raw_onnx_path.c_str()));
-    PyTuple_SetItem(pArgs, 1, Py_BuildValue("s", new_onnx_path.c_str()));
+    // Py_Initialize();
+    // PyObject *pModule = PyImport_ImportModule("onnx");
+    // PyObject *pFunc = PyObject_GetAttrString(pModule, "utils.extract_model");
+    // PyObject *pArgs = PyTuple_New(4);
+    // PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", raw_onnx_path.c_str()));
+    // PyTuple_SetItem(pArgs, 1, Py_BuildValue("s", new_onnx_path.c_str()));
 
-    int input_size = start_node.dependencies_inputs.size();
-    int output_size = end_node.dependencies_outputs.size();
+    // int input_size = start_node.dependencies_inputs.size();
+    // int output_size = end_node.dependencies_outputs.size();
 
-    PyObject *inputs = PyList_New(input_size);
-    PyObject *outputs = PyList_New(output_size);
-    int i = 0;
-    std::vector<std::string>::iterator iList;
-    for (i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
-    {
-        PyList_SetItem(inputs, i, PyBytes_FromString((*iList).c_str()));
-    }
+    // PyObject *inputs = PyList_New(input_size);
+    // PyObject *outputs = PyList_New(output_size);
+    // int i = 0;
+    // std::vector<std::string>::iterator iList;
+    // for (i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
+    // {
+    //     PyList_SetItem(inputs, i, PyBytes_FromString((*iList).c_str()));
+    // }
 
-    for (i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
-    {
-        PyList_SetItem(outputs, i, PyBytes_FromString((*iList).c_str()));
-    }
-    PyTuple_SetItem(pArgs, 2, inputs);
-    PyTuple_SetItem(pArgs, 3, outputs);
-    // PyObject* pReturn = PyEval_CallObject(pFunc, pArgs);
-    PyEval_CallObject(pFunc, pArgs);
-    Py_Finalize();
+    // for (i = 0, iList = start_node.dependencies_inputs.begin(); iList != start_node.dependencies_inputs.end(); ++iList, ++i)
+    // {
+    //     PyList_SetItem(outputs, i, PyBytes_FromString((*iList).c_str()));
+    // }
+    // PyTuple_SetItem(pArgs, 2, inputs);
+    // PyTuple_SetItem(pArgs, 3, outputs);
+    // // PyObject* pReturn = PyEval_CallObject(pFunc, pArgs);
+    // PyEval_CallObject(pFunc, pArgs);
+    // Py_Finalize();
 
-    return this->CreateParamsInfo(new_onnx_path, new_onnx_param_path);
+    return CreateParamsInfo(new_onnx_path, new_onnx_param_path);
 }
 
 void ModelAnalyzer::RecordDependency()
@@ -247,7 +292,7 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
     nlohmann::json info = CreateParamsInfo(onnxPath, OnnxPathManager::GetModelParamsSavePath(modelName));
     info["from"] = nodes[0].idx;
     info["to"] = nodes.back().idx;
-    total_param[-1] = info;
+    total_param["-1"] = info;
 
     int childs_size = childs.size();
     for (int child_idx = 0; child_idx < childs_size; child_idx++)
@@ -264,7 +309,7 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
         info = ExtractModelByNode(onnxPath, child_onnx_path, child_params_path, start_node, end_node);
         info["from"] = start_node.idx;
         info["to"] = end_node.idx;
-        total_param[child_idx] = info;
+        total_param[std::to_string(child_idx)] = info;
     }
 
     JsonSerializer::StoreJson(total_param, OnnxPathManager::GetChildModelSumParamsSavePath(modelName));
@@ -274,7 +319,7 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
 
 nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, std::filesystem::path params_path, int default_batch)
 {
-    onnx::ModelProto model = onnxUtil.load(onnx_path);
+    onnx::ModelProto model = onnxUtil::load(onnx_path);
     onnx::GraphProto graph = model.graph();
 
     nlohmann::json params_dict;
@@ -348,9 +393,31 @@ const std::vector<GraphNode> &ModelAnalyzer::GetAllNodes() const
     return nodes;
 }
 
+GraphNode& ModelAnalyzer::operator[](int i)
+{
+    return nodes[i];
+}
+
+ModelAnalyzer::iterator ModelAnalyzer::begin()
+{
+    return ModelAnalyzer::iterator(nodes.data());
+}
+
+ModelAnalyzer::iterator ModelAnalyzer::end()
+{
+    return ModelAnalyzer::iterator(&nodes.back() + 1);
+}
+
+int ModelAnalyzer::size() const
+{
+    return nodes.size();
+}
+
+
+// Operator overload
+
 std::ostream &operator<<(std::ostream &os, const GraphNode &node)
 {
-    // input_info 是RuntimeAnalyze里面的
     os << "id=" << node.idx << ", name=" << node.name << ", inputs=" << node.inputs << ", outputs=" << node.outputs << ", dependencies_inputs=" << node.dependencies_inputs << ", dependencies_outputs=" << node.dependencies_outputs << std::endl;
     return os;
 }
@@ -375,3 +442,4 @@ std::ostream &operator<<(std::ostream &os, const ModelAnalyzer &analyzer)
     }
     return os;
 }
+
