@@ -1,6 +1,7 @@
 #include "../../include/Utils/helper.h"
 #include "../../include/Utils/Extractor.h"
-#include "../../library/onnx.proto3.pb.h"
+#include "../../library/onnx/onnx.pb.h"
+// #include <onnx/onnx.pb.h>
 
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -13,20 +14,14 @@ namespace onnxUtil
     std::vector<onnx::SparseTensorProto> sparse_initializer)
     {
         onnx::GraphProto graph = onnx::GraphProto();
-        google::protobuf::RepeatedPtrField<onnx::NodeProto> graph_node = graph.node();
-        google::protobuf::RepeatedPtrField<onnx::ValueInfoProto> graph_input = graph.input();
-        google::protobuf::RepeatedPtrField<onnx::ValueInfoProto> graph_output = graph.output();
-        google::protobuf::RepeatedPtrField<onnx::TensorProto> graph_initializer = graph.initializer();
-        google::protobuf::RepeatedPtrField<onnx::SparseTensorProto> graph_sparse_initializer = graph.sparse_initializer();
-        google::protobuf::RepeatedPtrField<onnx::ValueInfoProto> graph_value_info = graph.value_info();
 
-        graph_node.MergeFrom (google::protobuf::RepeatedPtrField<onnx::NodeProto>(nodes.begin(), nodes.end()));
+        graph.mutable_node()->CopyFrom (google::protobuf::RepeatedPtrField<onnx::NodeProto>(nodes.begin(), nodes.end()));
         graph.set_name(name);
-        graph_input.MergeFrom (google::protobuf::RepeatedPtrField<onnx::ValueInfoProto>(inputs.begin(), inputs.end()));
-        graph_output.MergeFrom (google::protobuf::RepeatedPtrField<onnx::ValueInfoProto>(outputs.begin(), outputs.end()));
-        graph_initializer.MergeFrom (google::protobuf::RepeatedPtrField<onnx::TensorProto>(initializer.begin(), initializer.end()));
-        graph_sparse_initializer.MergeFrom (google::protobuf::RepeatedPtrField<onnx::SparseTensorProto>(sparse_initializer.begin(), sparse_initializer.end()));
-        graph_value_info.MergeFrom (google::protobuf::RepeatedPtrField<onnx::ValueInfoProto>(value_info.begin(), value_info.end()));
+        graph.mutable_input()->CopyFrom (google::protobuf::RepeatedPtrField<onnx::ValueInfoProto>(inputs.begin(), inputs.end()));
+        graph.mutable_output()->CopyFrom (google::protobuf::RepeatedPtrField<onnx::ValueInfoProto>(outputs.begin(), outputs.end()));
+        graph.mutable_initializer()->CopyFrom (google::protobuf::RepeatedPtrField<onnx::TensorProto>(initializer.begin(), initializer.end()));
+        graph.mutable_sparse_initializer()->CopyFrom (google::protobuf::RepeatedPtrField<onnx::SparseTensorProto>(sparse_initializer.begin(), sparse_initializer.end()));
+        graph.mutable_value_info()->CopyFrom (google::protobuf::RepeatedPtrField<onnx::ValueInfoProto>(value_info.begin(), value_info.end()));
         if (!doc_string.empty())
          graph.set_doc_string(doc_string);
 
@@ -62,7 +57,7 @@ namespace onnxUtil
         std::string model_string;
         try
         {
-            model.SerializeToString(&model_string);
+            extracted.SerializeToString(&model_string);
             output << model_string;
         }
         catch(const std::exception& e)
@@ -77,15 +72,14 @@ namespace onnxUtil
     std::vector<onnx::FunctionProto> local_functions)
     {
         onnx::ModelProto model = onnx::ModelProto();
-        onnx::GraphProto graph = model.graph();
+        // onnx::GraphProto graph = model.graph();
 
         model.set_ir_version(onnx::IR_VERSION);
-        graph.CopyFrom(input_graph);
+        model.mutable_graph()->CopyFrom(input_graph);
 
         // if (input_opset_imports.size() > 0)
         // {
-            google::protobuf::RepeatedPtrField<onnx::OperatorSetIdProto> model_opset_import = model.opset_import();
-            model_opset_import.MergeFrom (input_opset_imports);
+            model.mutable_opset_import()->CopyFrom (input_opset_imports);
         // }
         // else{
         //     onnx::OperatorSetIdProto* imp = model.add_opset_import();
@@ -93,7 +87,7 @@ namespace onnxUtil
         // }
 
         google::protobuf::RepeatedPtrField<onnx::FunctionProto> model_functions = model.functions();
-        model_functions.MergeFrom (google::protobuf::RepeatedPtrField<onnx::FunctionProto>(local_functions.begin(), local_functions.end()));
+        model.mutable_functions()->CopyFrom (google::protobuf::RepeatedPtrField<onnx::FunctionProto>(local_functions.begin(), local_functions.end()));
         model.set_ir_version(ir_version);
         model.set_producer_name("onnx.utils.extract_model");
         return model;
@@ -103,10 +97,10 @@ namespace onnxUtil
 
     // onnx::ModelProto infer_shapes(onnx::ModelProto model, bool check_type, bool strict_mode, bool data_prop)
     // {
-    //     onnx::ModelProto proto{};
-    //     ONNX_NAMESPACE::ParseProtoFromPyBytes(&proto, bytes);
+    //     // onnx::ModelProto proto{};
+    //     // ONNX_NAMESPACE::ParseProtoFromPyBytes(&proto, bytes);
     //     ShapeInferenceOptions options{check_type, strict_mode == true ? 1 : 0, data_prop};
-    //     shape_inference::InferShapes(proto, OpSchemaRegistry::Instance(), options);
+    //     shape_inference::InferShapes(model, OpSchemaRegistry::Instance(), options);
     //     std::string out;
     //     proto.SerializeToString(&out);
     //     return out;
@@ -132,8 +126,6 @@ namespace onnxUtil
             coded_input.SetTotalBytesLimit(std::numeric_limits<int>::max(), std::numeric_limits<int>::max() / 6 * 5); //cancel the limit
 
             model.ParseFromCodedStream(&coded_input);
-
-            auto graph = model.graph();
         }
         catch(int e)
         {

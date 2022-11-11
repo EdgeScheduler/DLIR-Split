@@ -6,8 +6,9 @@
 #include <iterator>
 #include "../../include/SplitToChilds/ModelAnalyzer.h"
 #include "../../include/Common/PathManager.h"
-#include "../../library/onnx.proto3.pb.h"
-// #include "../../include/Utils/OnnxUtil.h"
+// #include "../../library/onnx.proto3.pb.h"
+// #include <onnx/onnx.pb.h>
+#include "../../library/onnx/onnx.pb.h"
 #include "../../include/Utils/helper.h"
 #include "../../include/Common/JsonSerializer.h"
 #include "../../include/Common/PathManager.h"
@@ -306,6 +307,7 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
 
         std::filesystem::path child_onnx_path = OnnxPathManager::GetChildModelSavePath(modelName, child_idx);
         std::filesystem::path child_params_path = OnnxPathManager::GetChildModelParamsSavePath(modelName, child_idx);
+        
         info = ExtractModelByNode(onnxPath, child_onnx_path, child_params_path, start_node, end_node);
         info["from"] = start_node.idx;
         info["to"] = end_node.idx;
@@ -321,6 +323,11 @@ nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, 
 {
     onnx::ModelProto model = onnxUtil::load(onnx_path);
     onnx::GraphProto graph = model.graph();
+
+    // for (auto&data: graph.input())
+    // {
+    //     std::cout<<data.name()<<"DDDSDSDS"<<std::endl;
+    // }
 
     nlohmann::json params_dict;
     params_dict["model_path"] = onnx_path;
@@ -347,7 +354,7 @@ nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, 
             google::protobuf::RepeatedPtrField<onnx::TensorShapeProto_Dimension> dim = m.type().tensor_type().shape().dim();
             for (auto &v : dim)
             {
-                shape_list.emplace_back((typeid(v.dim_value()) == typeid(int) && v.dim_value() > 0) ? v.dim_value() : -1);
+                shape_list.emplace_back((typeid(v.dim_value()) == typeid(int64_t) && v.dim_value() > 0) ? v.dim_value() : -1);
                 mul_value *= ((typeid(v.dim_value()) == typeid(int) && v.dim_value() > 0) ? v.dim_value() : default_batch);
             }
 

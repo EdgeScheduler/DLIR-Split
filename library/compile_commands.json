@@ -1,0 +1,267 @@
+[
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_API=\"__attribute__((__visibility__(\\\"default\\\")))\" -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -std=gnu++11 -o CMakeFiles/onnx_proto.dir/onnx/onnx-ml.pb.cc.o -c /home/onceas/Arantir/onnx/.setuptools-cmake-build/onnx/onnx-ml.pb.cc",
+  "file": "/home/onceas/Arantir/onnx/.setuptools-cmake-build/onnx/onnx-ml.pb.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_API=\"__attribute__((__visibility__(\\\"default\\\")))\" -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -std=gnu++11 -o CMakeFiles/onnx_proto.dir/onnx/onnx-operators-ml.pb.cc.o -c /home/onceas/Arantir/onnx/.setuptools-cmake-build/onnx/onnx-operators-ml.pb.cc",
+  "file": "/home/onceas/Arantir/onnx/.setuptools-cmake-build/onnx/onnx-operators-ml.pb.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_API=\"__attribute__((__visibility__(\\\"default\\\")))\" -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -std=gnu++11 -o CMakeFiles/onnx_proto.dir/onnx/onnx-data.pb.cc.o -c /home/onceas/Arantir/onnx/.setuptools-cmake-build/onnx/onnx-data.pb.cc",
+  "file": "/home/onceas/Arantir/onnx/.setuptools-cmake-build/onnx/onnx-data.pb.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/checker.cc.o -c /home/onceas/Arantir/onnx/onnx/checker.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/checker.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/common/assertions.cc.o -c /home/onceas/Arantir/onnx/onnx/common/assertions.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/common/assertions.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/common/interned_strings.cc.o -c /home/onceas/Arantir/onnx/onnx/common/interned_strings.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/common/interned_strings.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/common/ir_pb_converter.cc.o -c /home/onceas/Arantir/onnx/onnx/common/ir_pb_converter.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/common/ir_pb_converter.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/common/model_helpers.cc.o -c /home/onceas/Arantir/onnx/onnx/common/model_helpers.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/common/model_helpers.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/common/path.cc.o -c /home/onceas/Arantir/onnx/onnx/common/path.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/common/path.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/common/status.cc.o -c /home/onceas/Arantir/onnx/onnx/common/status.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/common/status.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/attr_proto_util.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/attr_proto_util.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/attr_proto_util.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/controlflow/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/controlflow/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/controlflow/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/controlflow/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/controlflow/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/controlflow/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/data_type_utils.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/data_type_utils.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/data_type_utils.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/function.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/function.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/function.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/generator/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/generator/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/generator/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/generator/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/generator/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/generator/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/logical/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/logical/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/logical/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/logical/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/logical/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/logical/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/math/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/math/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/math/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/math/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/math/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/math/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/nn/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/nn/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/nn/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/nn/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/nn/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/nn/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/object_detection/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/object_detection/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/object_detection/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/object_detection/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/object_detection/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/object_detection/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/optional/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/optional/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/optional/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/parser.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/parser.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/parser.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/printer.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/printer.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/printer.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/quantization/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/quantization/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/quantization/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/quantization/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/quantization/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/quantization/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/reduction/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/reduction/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/reduction/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/reduction/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/reduction/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/reduction/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/rnn/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/rnn/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/rnn/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/rnn/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/rnn/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/rnn/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/schema.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/schema.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/schema.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/sequence/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/sequence/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/sequence/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/shape_inference.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/shape_inference.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/shape_inference.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/tensor/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/tensor/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/tensor/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/tensor/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/tensor/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/tensor/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/tensor/utils.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/tensor/utils.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/tensor/utils.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/tensor_proto_util.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/tensor_proto_util.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/tensor_proto_util.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/tensor_util.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/tensor_util.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/tensor_util.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/traditionalml/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/traditionalml/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/traditionalml/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/traditionalml/old.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/traditionalml/old.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/traditionalml/old.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/defs/training/defs.cc.o -c /home/onceas/Arantir/onnx/onnx/defs/training/defs.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/defs/training/defs.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/onnxifi_utils.cc.o -c /home/onceas/Arantir/onnx/onnx/onnxifi_utils.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/onnxifi_utils.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/shape_inference/implementation.cc.o -c /home/onceas/Arantir/onnx/onnx/shape_inference/implementation.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/shape_inference/implementation.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/version_converter/convert.cc.o -c /home/onceas/Arantir/onnx/onnx/version_converter/convert.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/version_converter/convert.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -Wall -Wextra -std=gnu++11 -o CMakeFiles/onnx.dir/onnx/version_converter/helper.cc.o -c /home/onceas/Arantir/onnx/onnx/version_converter/helper.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/version_converter/helper.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/c++ -DONNX_ML=1 -DONNX_NAMESPACE=onnx -D__STDC_FORMAT_MACROS -Donnx_cpp2py_export_EXPORTS -I/home/onceas/Arantir/onnx -I/home/onceas/Arantir/onnx/.setuptools-cmake-build -I/home/onceas/Arantir/onnx/third_party/pybind11/include -I/usr/include/python3.8  -Wnon-virtual-dtor -O3 -DNDEBUG -fPIC -fvisibility=hidden -std=gnu++11 -o CMakeFiles/onnx_cpp2py_export.dir/onnx/cpp2py_export.cc.o -c /home/onceas/Arantir/onnx/onnx/cpp2py_export.cc",
+  "file": "/home/onceas/Arantir/onnx/onnx/cpp2py_export.cc"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/cc -D__STDC_FORMAT_MACROS -I/home/onceas/Arantir/onnx -O3 -DNDEBUG -fPIC -std=c90 -o CMakeFiles/onnxifi_loader.dir/onnx/onnxifi_loader.c.o -c /home/onceas/Arantir/onnx/onnx/onnxifi_loader.c",
+  "file": "/home/onceas/Arantir/onnx/onnx/onnxifi_loader.c"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/cc -D__STDC_FORMAT_MACROS -Donnxifi_wrapper_EXPORTS -I/home/onceas/Arantir/onnx -O3 -DNDEBUG -fPIC -std=c99 -o CMakeFiles/onnxifi_wrapper.dir/onnx/onnxifi_wrapper.c.o -c /home/onceas/Arantir/onnx/onnx/onnxifi_wrapper.c",
+  "file": "/home/onceas/Arantir/onnx/onnx/onnxifi_wrapper.c"
+},
+{
+  "directory": "/home/onceas/Arantir/onnx/.setuptools-cmake-build",
+  "command": "/usr/bin/cc -DONNXIFI_BUILD_LIBRARY=TRUE -D__STDC_FORMAT_MACROS -Donnxifi_dummy_EXPORTS -I/home/onceas/Arantir/onnx -O3 -DNDEBUG -fPIC -o CMakeFiles/onnxifi_dummy.dir/onnx/onnxifi_dummy.c.o -c /home/onceas/Arantir/onnx/onnx/onnxifi_dummy.c",
+  "file": "/home/onceas/Arantir/onnx/onnx/onnxifi_dummy.c"
+}
+]

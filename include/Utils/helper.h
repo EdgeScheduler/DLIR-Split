@@ -1,7 +1,9 @@
 #ifndef __HELPER_H__
 #define __HELPER_H__
 
-#include "../../library/onnx.proto3.pb.h"
+// #include "../../library/onnx.proto3.pb.h"
+// #include <onnx/onnx.pb.h>
+#include "../../library/onnx/onnx.pb.h"
 #include <iostream>
 #include <fstream>
 #include <filesystem>

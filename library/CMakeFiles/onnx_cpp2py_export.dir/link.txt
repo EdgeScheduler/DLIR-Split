@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC  -Wnon-virtual-dtor -O3 -DNDEBUG -Wl,--exclude-libs,ALL -shared  -o onnx_cpp2py_export.cpython-38-x86_64-linux-gnu.so CMakeFiles/onnx_cpp2py_export.dir/onnx/cpp2py_export.cc.o  -Wl,--whole-archive libonnx.a -Wl,--no-whole-archive libonnx.a libonnx_proto.a /usr/lib/x86_64-linux-gnu/libprotobuf.a -lpthread 

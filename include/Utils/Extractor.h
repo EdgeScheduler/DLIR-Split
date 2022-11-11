@@ -1,7 +1,9 @@
 #ifndef __EXTRACTOR_H__
 #define __EXTRACTOR_H__
 
-#include "../../library/onnx.proto3.pb.h"
+// #include "../../library/onnx.proto3.pb.h"
+// #include <onnx/onnx.pb.h>
+#include "../../library/onnx/onnx.pb.h"
 #include <nlohmann/json.hpp>
 
 class Extractor

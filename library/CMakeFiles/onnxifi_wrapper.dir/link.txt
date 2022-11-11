@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC -O3 -DNDEBUG -shared  -o libonnxifi.so CMakeFiles/onnxifi_wrapper.dir/onnx/onnxifi_wrapper.c.o  libonnxifi_loader.a -ldl 

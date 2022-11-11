@@ -1,12 +1,39 @@
 #include "../../include/Utils/Extractor.h"
 #include "../../include/Utils/helper.h"
+#include "../../library/shapeinfer.h"
+#include <dlfcn.h>
 
+
+// #include <onnx/shape_inference/implementation.h>
+// #include "onnx/shape_inference/implementation.h"
+// #include "../../library/libonnx.a"
+// #include "onnx/shape_inference/implementation.h"
+// #include "../../library/include/shape_inference/implementation.h"
 #include <set>
 #include <algorithm>
+
+#define DLL_FILE_NAME "libonnx.so"
+// typedef void (*ShapeInfer)(onnx::ModelProto, const onnx::ISchemaRegistry*);
 // Extractor
 
 Extractor::Extractor(onnx::ModelProto model)
 {
+    // this -> model = model;
+    // void *handle;
+    // void (*func)(onnx::ModelProto, const onnx::ISchemaRegistry*);
+    // char* error;
+    // handle = dlopen(DLL_FILE_NAME, RTLD_LAZY);
+    // if (handle == NULL)
+    // {
+    //     fprintf(stderr, "Failed to open libaray %s error:%s\n", DLL_FILE_NAME, dlerror());
+    //     exit(EXIT_FAILURE);
+    // }
+    // ShapeInfer infer=NULL;
+    // *(void **)(&infer) = dlsym(handle, "InferShapes");
+
+
+    // infer(model);
+    onnx::shape_inference::InferShapes(model);
     this -> model = model;
     graph = this -> model.graph();
     wmap = _build_name2obj_dict(graph.initializer());
@@ -67,10 +94,27 @@ std::vector<onnx::ValueInfoProto> Extractor::_collect_new_io_core(google::protob
     google::protobuf::RepeatedPtrField<onnx::ValueInfoProto> new_io_tensors = google::protobuf::RepeatedPtrField<onnx::ValueInfoProto>();
 
     std::vector<onnx::ValueInfoProto> new_io_vec = std::vector<onnx::ValueInfoProto>();
+
+    // for(auto&data:original_io_map)
+    // {
+    //     std::cout<<"QQQQQQ"<<data.first<<std::endl;
+    // }
+    for(auto&data:vimap)
+    {
+        std::cout<<"WWWW"<<data.first<<std::endl;
+    }
+
     for (auto &name : io_names_to_keep)
+    {
         new_io_vec.emplace_back(original_io_map[name]);
+        // std::cout<<"SSSSS"<<name<<std::endl;
+    }
+        
     for (auto &name : new_io_names_to_add)
+    {
         new_io_vec.emplace_back(vimap[name]);
+        // std::cout<<"RRRRRR"<<name<<std::endl<<"_____"<<std::endl;
+    }
 
     new_io_tensors = google::protobuf::RepeatedPtrField<onnx::ValueInfoProto>(new_io_vec.begin(), new_io_vec.end());
 
@@ -108,7 +152,7 @@ void Extractor::_dfs_search_reachable_nodes(std::string node_output_name, std::v
         bool flag = false;
         for(int i = 0; i < reachable_nodes.size(); i++)
         {   
-            if (&reachable_nodes[i] == &node)
+            if (reachable_nodes[i].name() == node.name())
             {
                 flag = true;
                 break;
@@ -134,8 +178,8 @@ std::vector<onnx::NodeProto> Extractor::_collect_reachable_nodes(std::vector<std
     std::vector<onnx::NodeProto> nodes = std::vector<onnx::NodeProto>();
     
     for(auto &n: graph.node())
-        for(int i = 0; i < graph.node().size(); i++)
-            if (&reachable_nodes[i] == &n)
+        for(int i = 0; i < reachable_nodes.size(); i++)
+            if (reachable_nodes[i].name() == n.name())
                 nodes.emplace_back(n);
     return nodes;
 }

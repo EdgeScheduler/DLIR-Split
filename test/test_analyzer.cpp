@@ -1,11 +1,15 @@
 #include <filesystem>
 #include <iostream>
 #include "../include/SplitToChilds/ModelAnalyzer.h"
-#include "../library/onnx.proto3.pb.h"
+// #include "../library/onnx.proto3.pb.h"
+// #include <onnx/onnx.pb.h>
+// #include "../library/onnx/onnx.pb.h"
+// #include "../library/onnx/onnx.pb.h"
+#include "../library/onnx/onnx.pb.h"
+// #include "onnx/onnx_pb.h"
 #include "../include/Utils/helper.h"
-#include <python3.6/Python.h>
 using namespace std;
-
+#define ONNX_API
 int main()
 {
 
@@ -28,11 +32,11 @@ int main()
 
     // graph
     std::cout<<graph.initializer_size()<<std::endl;
-    for(auto data: graph.output())
-    {
-        for(auto i: data.type().tensor_type().shape().dim())
-        std::cout<< i.dim_value() <<","<<std::endl;
-    }
+    // for(auto data: graph.output())
+    // {
+    //     for(auto i: data.type().tensor_type().shape().dim())
+    //     std::cout<< i.dim_value() <<","<<std::endl;
+    // }
 
     // std::cout << __cplusplus << std::endl;
 

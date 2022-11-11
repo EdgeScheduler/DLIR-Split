@@ -9,7 +9,8 @@
 #include <iterator>
 #include <nlohmann/json.hpp>
 #include "../Common/PathManager.h"
-#include "../../library/onnx.proto3.pb.h"
+// #include "../../library/onnx.proto3.pb.h"
+#include "../../library/onnx/onnx.pb.h"
 
 class GraphNode
 {

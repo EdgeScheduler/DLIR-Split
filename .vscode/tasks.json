@@ -34,7 +34,7 @@
                 "${file}",
                 "${workspaceFolder}/include/*/*",
                 "${workspaceFolder}/sources/*/*",
-                "${workspaceFolder}/library/*",
+                "${workspaceFolder}/library/*/",
                 "-o",
                 "${workspaceRoot}/bin/debug/${fileBasenameNoExtension}",
                 "-lpython3.6m",
@@ -42,7 +42,9 @@
                 "-lonnxruntime",
                 "-lprotobuf",
                 "-lpthread",
-                "-lpython3.6m"
+                "-lonnx_proto",
+                "-lonnx",
+                "-L${workspaceFolder}/library/"
             ],
             "options": {
                 "cwd": "${fileDirname}"
@@ -52,6 +54,37 @@
             ],
             "group": "build",
             "detail": "调试器生成的任务。"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++-8 build-release",
+            "command": "/usr/bin/g++-8",
+            "args": [
+                "-std=c++17",
+                "-Wl,-rpath,${workspaceRoot}/library/",
+                "-fdiagnostics-color=always",
+                "${file}",
+                "${workspaceFolder}/include/*/*",
+                "${workspaceFolder}/sources/*/*",
+                "-o",
+                "${workspaceRoot}/bin/release/${fileBasenameNoExtension}",
+                "-lpython3.6m",
+                "-lstdc++fs",
+                "-lonnxruntime",
+                "-lprotobuf",
+                "-lpthread",
+                "-lonnx_proto",
+                "-lonnx",
+                "-L${workspaceFolder}/library/"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "运行生成的任务。"
         }
     ],
     "version": "2.0.0"

@@ -73,7 +73,9 @@
     "stdio.h": "c",
     "cassert": "cpp",
     "hash_map": "cpp",
-    "hash_set": "cpp"
+    "hash_set": "cpp",
+    "*.a": "cpp",
+    "*.d": "cpp"
   },
   "C_Cpp.errorSquiggles": "Disabled",
   "C_Cpp_Runner.msvcBatchPath": "",
