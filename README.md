@@ -34,7 +34,7 @@ We find that many types of computing-resources (such as CUDA-GPU and FPGA) have 
 
 ## Contributors
 
-* [Yu Tian](http://oneflyingfish.github.io)
 * [Luo Diao Han](https://github.com/Arantir1028)
+* [Yu Tian](http://oneflyingfish.github.io)
 * [Wu Heng (Guide)](https://people.ucas.ac.cn/~wuheng)
 * [Zhang wen bo (Guide)](https://people.ucas.ac.cn/~zhangwenbo)
