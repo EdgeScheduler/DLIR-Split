@@ -1,10 +1,6 @@
-# DLIR-Allocator
+# DLIR-SPLIT
 
 We find that many types of computing-resources (such as CUDA-GPU and FPGA) have parallel waiting problem, which is bad for deep learning inference applications which are computationally intensive and delay-sensitive. To solve the above problem, one can consider intercepting API calls from the hardware driver layer, as in GPU virtualization, but this makes the generality greatly reduced and the system over-coupled. Therefore, we innovatively start from the model and create a generic allocator and mask the driver layer scheduling to alleviate the above problems, expecting to obtain better service latency for each request.
-
-## Architecture
-
-![architecture](doc/resource/images/allocate-architecture.svg)
 
 ## Develop Environment
 
@@ -30,10 +26,6 @@ We find that many types of computing-resources (such as CUDA-GPU and FPGA) have 
     * Mali-GPU
     * FPGA
     * DSP
-
-## Relationship with [OnnxSplitRunner](https://github.com/EdgeScheduler/OnnxSplitRunner)
-
-In order to eliminate the negative effects of fake-multi-threading mechanism of `Python` course by `GIL`, we eventually decided to refactor the code in `C++`. Raw Project with Python can still be found at: https://github.com/EdgeScheduler/OnnxSplitRunner
 
 ## Recommend
 * [C++ chinese manul](https://www.apiref.com/cpp-zh/cpp/filesystem/path.html)
