@@ -1,13 +1,14 @@
 #include <filesystem>
 #include <iostream>
-#include "../include/SplitToChilds/ModelAnalyzer.h"
+#include "include/SplitToChilds/ModelAnalyzer.h"
 #include "onnx/shape_inference/implementation.h"
 // #include <onnx/onnx.pb.h>
 // #include "../library/onnx/onnx.pb.h"
 // #include "../library/onnx/onnx.pb.h"
 // #include "../library/onnx/onnx.pb.h"
 // #include "onnx/onnx_pb.h"
-#include "../include/Utils/helper.h"
+#include "include/Utils/helper.h"
+#include "include/Benchmark/evaluate_models.h"
 using namespace std;
 #define ONNX_NAMESPACE onnx
 int main()
@@ -20,8 +21,12 @@ int main()
     ModelAnalyzer analyzer = ModelAnalyzer("vgg19");
     onnx::ModelProto model = onnxUtil::load(analyzer.GetModelPath());
     auto graph = model.graph();
+
+
     // graph.output();
-    analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());
+    // analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());
+    evam::EvalCurrentModelSplit("vgg19", "vgg19_0.json");
+
 
     // initializer
     // std::cout<<graph.initializer_size()<<std::endl;
@@ -31,7 +36,7 @@ int main()
     // }
 
     // graph
-    std::cout<<graph.initializer_size()<<std::endl;
+    // std::cout<<graph.initializer_size()<<std::endl;
     // for(auto data: graph.output())
     // {
     //     for(auto i: data.type().tensor_type().shape().dim())
@@ -54,8 +59,8 @@ int main()
     // {
     //     std::cout<<data.output(0)<<std::endl;
     // }
+    google::protobuf::ShutdownProtobufLibrary();
 
-    // std::cout<<analyzer[3];
     std::cout << "test end" << std::endl;
     
     // std::filesystem::create_directories(RootPathManager::GetRunRootFold() / "123456789.json");
