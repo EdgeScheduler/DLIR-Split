@@ -1,15 +1,15 @@
 #include <filesystem>
 #include <iostream>
 #include "../include/SplitToChilds/ModelAnalyzer.h"
-// #include "../library/onnx.proto3.pb.h"
+#include "onnx/shape_inference/implementation.h"
 // #include <onnx/onnx.pb.h>
 // #include "../library/onnx/onnx.pb.h"
 // #include "../library/onnx/onnx.pb.h"
-#include "../library/onnx/onnx.pb.h"
+// #include "../library/onnx/onnx.pb.h"
 // #include "onnx/onnx_pb.h"
 #include "../include/Utils/helper.h"
 using namespace std;
-#define ONNX_API
+#define ONNX_NAMESPACE onnx
 int main()
 {
 

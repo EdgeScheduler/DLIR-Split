@@ -1,2 +1,0 @@
-/usr/bin/ar qc libonnxifi_loader.a CMakeFiles/onnxifi_loader.dir/onnx/onnxifi_loader.c.o
-/usr/bin/ranlib libonnxifi_loader.a

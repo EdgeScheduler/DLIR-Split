@@ -1,5 +1,4 @@
 {
-  "search.followSymlinks": false,
   "files.associations": {
     "*.rmd": "markdown",
     "chrono": "cpp",
@@ -74,55 +73,69 @@
     "cassert": "cpp",
     "hash_map": "cpp",
     "hash_set": "cpp",
-    "*.a": "cpp",
-    "*.d": "cpp"
+    "variant": "cpp"
   },
-  "C_Cpp.errorSquiggles": "Disabled",
-  "C_Cpp_Runner.msvcBatchPath": "",
-  "C_Cpp_Runner.cCompilerPath": "/usr/bin/gcc",
-  "C_Cpp_Runner.cppCompilerPath": "g++",
-  "C_Cpp_Runner.debuggerPath": "gdb",
-  "C_Cpp_Runner.cStandard": "c17",
-  "C_Cpp_Runner.cppStandard": "c++17",
-  "C_Cpp_Runner.useMsvc": false,
-  "C_Cpp_Runner.warnings": [
-    "-Wall",
-    "-Wextra",
-    "-Wpedantic"
+  "code-runner.executorMap": {
+    "javascript": "node",
+    "java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
+    "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "cpp": "cd $workspaceRoot &&  mkdir -p $workspaceRoot/bin/release/ && g++ -std=c++17 $workspaceRoot/library/*.c* $dir$fileName -I $workspaceRoot/include  -I $workspaceRoot/library -I/usr/include/python3.8 $workspaceRoot/sources/*/*.cpp -o $workspaceRoot/bin/release/$fileNameWithoutExt -lstdc++fs -lonnxruntime -lpthread -lprotobuf -lpython3.8 && $workspaceRoot/bin/release/$fileNameWithoutExt",
+    "objective-c": "cd $dir && gcc -framework Cocoa $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "php": "php",
+    "python": "python -u",
+    "perl": "perl",
+    "perl6": "perl6",
+    "ruby": "ruby",
+    "go": "go run",
+    "lua": "lua",
+    "groovy": "groovy",
+    "powershell": "powershell -ExecutionPolicy ByPass -File",
+    "bat": "cmd /c",
+    "shellscript": "bash",
+    "fsharp": "fsi",
+    "csharp": "scriptcs",
+    "vbscript": "cscript //Nologo",
+    "typescript": "ts-node",
+    "coffeescript": "coffee",
+    "scala": "scala",
+    "swift": "swift",
+    "julia": "julia",
+    "crystal": "crystal",
+    "ocaml": "ocaml",
+    "r": "Rscript",
+    "applescript": "osascript",
+    "clojure": "lein exec",
+    "haxe": "haxe --cwd $dirWithoutTrailingSlash --run $fileNameWithoutExt",
+    "rust": "cd $dir && rustc $fileName && $dir$fileNameWithoutExt",
+    "racket": "racket",
+    "scheme": "csi -script",
+    "ahk": "autohotkey",
+    "autoit": "autoit3",
+    "dart": "dart",
+    "pascal": "cd $dir && fpc $fileName && $dir$fileNameWithoutExt",
+    "d": "cd $dir && dmd $fileName && $dir$fileNameWithoutExt",
+    "haskell": "runhaskell",
+    "nim": "nim compile --verbosity:0 --hints:off --run",
+    "lisp": "sbcl --script",
+    "kit": "kitc --run",
+    "v": "v run",
+    "sass": "sass --style expanded",
+    "scss": "scss --style expanded",
+    "less": "cd $dir && lessc $fileName $fileNameWithoutExt.css",
+    "FortranFreeForm": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "fortran-modern": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "fortran_fixed-form": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "fortran": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+    "sml": "cd $dir && sml $fileName"
+  },
+  "clang.cflags": [
+    "-std=c17",
+    "-I ${workspaceRoot}/include",
+    "-I ${workspaceRoot}/testlib"
   ],
-  "C_Cpp_Runner.enableWarnings": true,
-  "C_Cpp_Runner.warningsAsError": false,
-  "C_Cpp_Runner.compilerArgs": [],
-  "C_Cpp_Runner.linkerArgs": [],
-  "C_Cpp_Runner.includePaths": [
-    "${workspaceFolder}/include/*/*",
-    "${workspaceFolder}/sources/*/*"
+  "clang.cxxflags": [
+    "-std=c++17",
+    "-I${workspaceRoot}/third_party/include",
   ],
-  "C_Cpp_Runner.includeSearch": [
-    "*",
-    "**/*"
-  ],
-  "C_Cpp_Runner.excludeSearch": [
-    "**/build",
-    "**/build/**",
-    "**/.*",
-    "**/.*/**",
-    "**/.vscode",
-    "**/.vscode/**"
-  ],
-  "cSpell.words": [
-    "ARRAYSIZE",
-    "BFLOAT",
-    "Inited",
-    "oneof",
-    "opschema",
-    "opset",
-    "protoc",
-    "resnet",
-    "tennsors",
-    "Varint",
-    "vimap",
-    "Winvalid",
-    "wmap"
-  ]
+  "C_Cpp.errorSquiggles": "Disabled"
 }

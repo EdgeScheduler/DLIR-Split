@@ -1,15 +1,15 @@
 #ifndef __HELPER_H__
 #define __HELPER_H__
 
-// #include "../../library/onnx.proto3.pb.h"
+#include "onnx/shape_inference/implementation.h"
 // #include <onnx/onnx.pb.h>
-#include "../../library/onnx/onnx.pb.h"
+// #include "../../library/onnx/onnx.pb.h"
 #include <iostream>
 #include <fstream>
 #include <filesystem>
 
 // #include <nlohmann/json.hpp>
-// #include "../../library/onnx.proto3.pb.h"
+// #include "onnx/shape_inference/implementation.h"
 
 // namespace nlohmann
 // {

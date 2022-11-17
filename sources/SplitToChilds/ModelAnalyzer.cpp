@@ -2,13 +2,14 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <python3.6/Python.h>
+// #include <python3.6/Python.h>
+// #include <python3.8/Python.h>
 #include <iterator>
 #include "../../include/SplitToChilds/ModelAnalyzer.h"
 #include "../../include/Common/PathManager.h"
-// #include "../../library/onnx.proto3.pb.h"
+#include "onnx/shape_inference/implementation.h"
 // #include <onnx/onnx.pb.h>
-#include "../../library/onnx/onnx.pb.h"
+// #include "../../library/onnx/onnx.pb.h"
 #include "../../include/Utils/helper.h"
 #include "../../include/Common/JsonSerializer.h"
 #include "../../include/Common/PathManager.h"
@@ -204,8 +205,20 @@ nlohmann::json ModelAnalyzer::LoadCache()
 nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,
                                                  GraphNode start_node, GraphNode end_node, bool print_error)
 {
+
+    
+    
+    // c++!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    
+    
     onnxUtil::extract_model(raw_onnx_path, new_onnx_path, start_node.dependencies_inputs, end_node.dependencies_outputs);
 
+
+    //
+    //
+    // python
+    //
+    //
     // Py_Initialize();
     // PyObject *pModule = PyImport_ImportModule("onnx");
     // PyObject *pFunc = PyObject_GetAttrString(pModule, "utils.extract_model");
