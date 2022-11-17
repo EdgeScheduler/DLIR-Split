@@ -24,8 +24,8 @@ int main()
 
 
     // graph.output();
-    // analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());
-    evam::EvalCurrentModelSplit("vgg19", "vgg19_0.json");
+    analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());
+    // evam::EvalCurrentModelSplit("vgg19", "vgg19_0.json");
 
 
     // initializer

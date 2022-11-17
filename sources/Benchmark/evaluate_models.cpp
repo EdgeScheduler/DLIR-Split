@@ -112,16 +112,22 @@ namespace evam
     nlohmann::json TimeEvaluateChildModels(std::string model_name, int child_num, int test_count, int default_batchsize)
     {
         nlohmann::json result;
-
+        float raw = TimeEvaluateChildModels_impl(model_name, -1, test_count, default_batchsize);
         // raw
-        result["raw"]["avg"] = TimeEvaluateChildModels_impl(model_name, -1, test_count, default_batchsize);
+        result["raw"]["avg"] = raw;
 
         //childs
         nlohmann::json params_dict = JsonSerializer::LoadJson(OnnxPathManager::GetChildModelSumParamsSavePath(model_name));
+        float childs = 0;
+        float tmp;
         for(int idx = 0; idx < params_dict.size() - 1; idx++)
         {
-            result["childs"][to_string(idx)]["avg"] = TimeEvaluateChildModels_impl(model_name, idx, test_count, default_batchsize);
+            tmp = TimeEvaluateChildModels_impl(model_name, idx, test_count, default_batchsize);
+            result["childs"][to_string(idx)]["avg"] = tmp;
+            childs += tmp;
         }
+
+        std::cout << "Raw: " << raw << std::endl << "Split: " << childs << std::endl << "Improve: " << (raw - childs) / raw << std::endl;
         return result;
     }
 
