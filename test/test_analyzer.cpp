@@ -1,14 +1,15 @@
 #include <filesystem>
 #include <iostream>
-#include "include/SplitToChilds/ModelAnalyzer.h"
+#include "SplitToChilds/ModelAnalyzer.h"
 #include "onnx/shape_inference/implementation.h"
 // #include <onnx/onnx.pb.h>
 // #include "../library/onnx/onnx.pb.h"
 // #include "../library/onnx/onnx.pb.h"
 // #include "../library/onnx/onnx.pb.h"
 // #include "onnx/onnx_pb.h"
-#include "include/Utils/helper.h"
-#include "include/Benchmark/evaluate_models.h"
+#include "Utils/helper.h"
+#include "Benchmark/evaluate_models.h"
+#include "Utils/Optimizer.h"
 using namespace std;
 #define ONNX_NAMESPACE onnx
 int main()
@@ -22,9 +23,10 @@ int main()
     onnx::ModelProto model = onnxUtil::load(analyzer.GetModelPath());
     auto graph = model.graph();
 
+    optimize(analyzer);
 
     // graph.output();
-    analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());
+    // analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());
     // evam::EvalCurrentModelSplit("vgg19", "vgg19_0.json");
 
 

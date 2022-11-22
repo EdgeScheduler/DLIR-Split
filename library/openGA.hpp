@@ -16,7 +16,7 @@
 #include <functional>
 #include <mutex>
 #include <atomic>
-#include "include/SplitToChilds/ModelAnalyzer.h"
+#include "SplitToChilds/ModelAnalyzer.h"
 
 #ifndef NS_EA_BEGIN
 #define NS_EA_BEGIN namespace EA {
@@ -263,7 +263,7 @@ public:
 
 };
 
-std::mutex mtx_rand;
+static std::mutex mtx_rand;
 
 template<typename GeneType,typename MiddleCostType>
 class Genetic
@@ -314,10 +314,10 @@ public:
 	function<double(const thisChromosomeType&)> calculate_SO_total_fitness;
 	function<vector<double>(thisChromosomeType&)> calculate_MO_objectives;
 	function<vector<double>(const vector<double>&)> distribution_objective_reductions;
-	function<void(GeneType&,const function<double(void)> &rnd01)> init_genes;
-	function<bool(const GeneType&,MiddleCostType&)> eval_solution;
+	function<void(GeneType&,const function<double(void)> &rnd01,ModelAnalyzer&)> init_genes;
+	function<bool(const GeneType&,MiddleCostType&,ModelAnalyzer&)> eval_solution;
 	function<bool(const GeneType&,MiddleCostType&,const thisGenerationType&)> eval_solution_IGA;
-	function<GeneType(const GeneType&,const function<double(void)> &rnd01,double shrink_scale)> mutate;
+	function<GeneType(const GeneType&,const function<double(void)> &rnd01,double shrink_scale,ModelAnalyzer&)> mutate;
 	function<GeneType(const GeneType&,const GeneType&,const function<double(void)> &rnd01)> crossover;
 	function<void(int,const thisGenerationType&,const GeneType&)> SO_report_generation;
 	function<void(int,const thisGenerationType&,const vector<unsigned int>&)> MO_report_generation;
@@ -326,13 +326,12 @@ public:
 	vector<thisGenSOAbs> generations_so_abs;
 	thisGenerationType last_generation;
 
-	int range;
 	ModelAnalyzer analyzer;
 
 
 	////////////////////////////////////////////////////
 
-	Genetic() :
+	Genetic(ModelAnalyzer analyzer) :
 		unif_dist(0.0,1.0),
 		N_robj(0),
 		problem_mode(GA_MODE::SOGA),
@@ -349,7 +348,7 @@ public:
 		best_stall_max(10),
 		reference_vector_divisions(0),
 		enable_reference_vectors(true),
-		multi_threading(true),
+		multi_threading(false),
 		dynamic_threading(true),
 		N_threads(std::thread::hardware_concurrency()),
 		user_request_stop(false),
@@ -366,7 +365,8 @@ public:
 		SO_report_generation(nullptr),
 		MO_report_generation(nullptr),
 		custom_refresh(nullptr),
-		get_shrink_scale(default_shrink_scale)
+		get_shrink_scale(default_shrink_scale),
+		analyzer(analyzer)
 	{
 		// initialize the random number generator with time-dependent seed
 		uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -1291,7 +1291,7 @@ protected:
 		}
 		else
 		{
-			if(eval_solution(X.genes,X.middle_costs))
+			if(eval_solution(X.genes,X.middle_costs, analyzer))
 			{
 				if(index>=0)
 				{
@@ -1320,7 +1320,7 @@ protected:
 			while(!accepted)
 			{
 				thisChromosomeType X;
-				init_genes(X.genes,[this](){return random01();});
+				init_genes(X.genes,[this](){return random01();}, analyzer);
 				accepted = init_population_try(*p_generation0,X,index);
 				(*attemps)++;
 			}
@@ -1623,7 +1623,7 @@ protected:
 					if(verbose)
 						cout<<"Mutation of chromosome "<<endl;
 					double shrink_scale=get_shrink_scale(generation_step,[this](){return random01();});
-					X.genes=mutate(X.genes,[this](){return random01();},shrink_scale);
+					X.genes=mutate(X.genes,[this](){return random01();},shrink_scale, analyzer);
 				}
 				if(is_interactive())
 				{
@@ -1637,7 +1637,7 @@ protected:
 				}
 				else
 				{
-					if(eval_solution(X.genes,X.middle_costs))
+					if(eval_solution(X.genes,X.middle_costs, analyzer))
 					{
 						if(index>=0)
 							p_new_generation->chromosomes[index]=X;

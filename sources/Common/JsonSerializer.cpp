@@ -77,4 +77,50 @@ namespace JsonSerializer
 
         return true;
     }
+
+    bool StoreJsonAppend(const nlohmann::json &json, const std::filesystem::path &path, bool enable_null_json)
+    {
+        if (json == nullptr || json.is_discarded())
+        {
+            if (!enable_null_json)
+            {
+                std::cout << "warning: json to " << path.string() << " is null." << std::endl;
+                return false;
+            }
+        }
+
+        try
+        {
+            std::filesystem::path fold = path.parent_path();
+            if (fold != "")
+            {
+                std::filesystem::create_directories(fold);
+            }
+
+            std::ofstream o(path, std::ofstream::app);
+            if (json.is_discarded())
+            {
+                nlohmann::json tmp = nullptr;
+                o << std::setw(4) << tmp << std::endl;
+            }
+            else
+            {
+                o << std::setw(4) << json << std::endl;
+            }
+        }
+        catch (const std::exception &error)
+        {
+            std::cout << "error while write json to " << path << ": " << error.what() << std::endl;
+            return false;
+        }
+        catch (...)
+        {
+            std::cout << "error while write json to " << path << ": unknown error." << std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
+
 }

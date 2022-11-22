@@ -5,14 +5,14 @@
 // #include <python3.6/Python.h>
 // #include <python3.8/Python.h>
 #include <iterator>
-#include "../../include/SplitToChilds/ModelAnalyzer.h"
-#include "../../include/Common/PathManager.h"
+#include "SplitToChilds/ModelAnalyzer.h"
+#include "Common/PathManager.h"
 #include "onnx/shape_inference/implementation.h"
 // #include <onnx/onnx.pb.h>
 // #include "../../library/onnx/onnx.pb.h"
-#include "../../include/Utils/helper.h"
-#include "../../include/Common/JsonSerializer.h"
-#include "../../include/Common/PathManager.h"
+#include "Utils/helper.h"
+#include "Common/JsonSerializer.h"
+#include "Common/PathManager.h"
 
 // GraphNode
 GraphNode::GraphNode()
@@ -281,6 +281,7 @@ void ModelAnalyzer::RecordDependency()
 
 nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_childs)
 {
+    std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold() / this->getName() / "childs/");
     nlohmann::json total_param;
     std::vector<GraphNode> childs = std::vector<GraphNode>();
     for (auto &child : input_childs)
@@ -432,6 +433,12 @@ int ModelAnalyzer::size() const
 {
     return nodes.size();
 }
+
+std::string ModelAnalyzer::getName()
+{
+    return this -> modelName;    
+}
+
 
 
 // Operator overload

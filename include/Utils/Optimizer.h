@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "library/openGA.hpp"
+#include "openGA.hpp"
 #include "include/SplitToChilds/ModelAnalyzer.h"
 
 using std::string;
@@ -19,6 +19,7 @@ struct SplitSolution
 	string to_string() const;
 };
 
+
 struct SplitVariance
 {
 	// This is where the results of simulation
@@ -32,7 +33,7 @@ typedef EA::GenerationType<SplitSolution,SplitVariance> Generation_Type;
 /// @brief 
 /// @param p 
 /// @param rnd01 
-void init_genes(SplitSolution& p,const std::function<double(void)> &rnd01, int range);
+void init_genes(SplitSolution& p,const std::function<double(void)> &rnd01, ModelAnalyzer &analyzer);
 
 /// @brief 
 /// @param p 
@@ -45,7 +46,7 @@ bool eval_solution(const SplitSolution& p, SplitVariance &c, ModelAnalyzer &anal
 /// @param rnd01 
 /// @param shrink_scale 
 /// @return 
-SplitSolution mutate(const SplitSolution& X_base, const std::function<double(void)> &rnd01, double shrink_scale, int range);
+SplitSolution mutate(const SplitSolution& X_base, const std::function<double(void)> &rnd01, double shrink_scale, ModelAnalyzer &analyzer);
 
 /// @brief 
 /// @param X1 
@@ -60,10 +61,14 @@ SplitSolution crossover(
 /// @return 
 double calculate_SO_total_fitness(const GA_Type::thisChromosomeType &X);
 
-std::ofstream output_file;
+static std::ofstream output_file;
 
 /// @brief 
 /// @param generation_number 
 /// @param last_generation 
 /// @param best_genes 
 void SO_report_generation(int generation_number, const EA::GenerationType<SplitSolution,SplitVariance> &last_generation, const SplitSolution& best_genes);
+
+/// @brief 
+/// @param analyzer 
+void optimize(ModelAnalyzer analyzer);

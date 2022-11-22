@@ -3,55 +3,48 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "library/openGA.hpp"
-#include "include/Utils/Optimizer.h"
-#include "include/SplitToChilds/ModelAnalyzer.h"
+#include "openGA.hpp"
+#include "Utils/Optimizer.h"
+#include "SplitToChilds/ModelAnalyzer.h"
+#include "Benchmark/evaluate_models.h"
 
 using std::string;
 using std::cout;
 using std::endl;
 
-struct SplitSolution
-{
-	int breakpoint1;
-	int breakpoint2;
-	int breakpoint3;
 
-	string to_string() const
-	{
-		return 
+string SplitSolution::to_string() const
+{
+	return 
 			string("{")
 			+  "breakpoint1:"+std::to_string(breakpoint1)
 			+", breakpoint2:"+std::to_string(breakpoint2)
-			+", breakpoint3:"+std::to_string(breakpoint3)
+			// +", breakpoint3:"+std::to_string(breakpoint3)
 			+"}";
-	}
-};
-
-struct SplitVariance
-{
-	// This is where the results of simulation
-	// is stored but not yet finalized.
-	double objective1;
-};
+}
 
 typedef EA::Genetic<SplitSolution,SplitVariance> GA_Type;
 typedef EA::GenerationType<SplitSolution,SplitVariance> Generation_Type;
 
-void init_genes(SplitSolution& p,const std::function<double(void)> &rnd01, int range)
+void init_genes(SplitSolution& p,const std::function<double(void)> &rnd01, ModelAnalyzer &analyzer)
 {
+    int range = analyzer.size();
 	// rnd01() gives a random number in 0~1
-	p.breakpoint1=0.0+range*rnd01();
+    do
+    {
+        p.breakpoint1=0.0+range*rnd01();
+    }while(p.breakpoint1 == 0 || p.breakpoint1 == range - 1);
+	
     
     do
     {
         p.breakpoint2=0.0+range*rnd01();
-    }while(p.breakpoint2 == p.breakpoint1);
+    }while(p.breakpoint2 == p.breakpoint1 || p.breakpoint2 == 0 || p.breakpoint2 == range - 1);
 	
-    do
-    {
-        p.breakpoint3=0.0+range*rnd01();
-    }while(p.breakpoint3 == p.breakpoint2 || p.breakpoint3 == p.breakpoint1);
+    // do
+    // {
+    //     p.breakpoint3=0.0+range*rnd01();
+    // }while(p.breakpoint3 == p.breakpoint2 || p.breakpoint3 == p.breakpoint1 || p.breakpoint3 == 0 || p.breakpoint3 == range - 1);
 }
 
 bool eval_solution(
@@ -60,22 +53,24 @@ bool eval_solution(
 {
 	const int& breakpoint1=p.breakpoint1;
 	const int& breakpoint2=p.breakpoint2;
-	const int& breakpoint3=p.breakpoint3;
+	// const int& breakpoint3=p.breakpoint3;
 
-	c.objective1=sin(var1)*sin(var2)+log(var2)*log(var1);
-    analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2], analyzer[breakpoint3]});
-    
+    // analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2], analyzer[breakpoint3]});
+    analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2]});
+    c.objective1 = evam::EvalStdCurrentModelSplit(analyzer.getName());
+    // evam::EvalStdCurrentModelSplit(analyzer.getName(), analyzer.getName());
 	return true; // solution is accepted
 }
 
 SplitSolution mutate(
 	const SplitSolution& X_base,
 	const std::function<double(void)> &rnd01,
-	double shrink_scale, int range)
+	double shrink_scale, ModelAnalyzer &analyzer)
 {
 	SplitSolution X_new;
 	const double mu = 0.2*shrink_scale; // mutation radius (adjustable)
 	bool in_range;
+    int range = analyzer.size();
 	do{
 		in_range=true;
 		X_new=X_base;
@@ -83,8 +78,8 @@ SplitSolution mutate(
 		in_range=in_range&&(X_new.breakpoint1>=0.0 && X_new.breakpoint1<range);
 		X_new.breakpoint2+=mu*(rnd01()-rnd01());
 		in_range=in_range&&(X_new.breakpoint2>=0.0 && X_new.breakpoint2<range);
-		X_new.breakpoint3+=mu*(rnd01()-rnd01());
-		in_range=in_range&&(X_new.breakpoint3>=0.0 && X_new.breakpoint3<range);
+		// X_new.breakpoint3+=mu*(rnd01()-rnd01());
+		// in_range=in_range&&(X_new.breakpoint3>=0.0 && X_new.breakpoint3<range);
 	} while(!in_range);
 	return X_new;
 }
@@ -100,8 +95,8 @@ SplitSolution crossover(
 	X_new.breakpoint1=r*X1.breakpoint1+(1.0-r)*X2.breakpoint1;
 	r=rnd01();
 	X_new.breakpoint2=r*X1.breakpoint2+(1.0-r)*X2.breakpoint2;
-	r=rnd01();
-	X_new.breakpoint3=r*X1.breakpoint3+(1.0-r)*X2.breakpoint3;
+	// r=rnd01();
+	// X_new.breakpoint3=r*X1.breakpoint3+(1.0-r)*X2.breakpoint3;
 	return X_new;
 }
 
@@ -112,8 +107,6 @@ double calculate_SO_total_fitness(const GA_Type::thisChromosomeType &X)
 	final_cost+=X.middle_costs.objective1;
 	return final_cost;
 }
-
-std::ofstream output_file;
 
 void SO_report_generation(
 	int generation_number,
@@ -135,17 +128,18 @@ void SO_report_generation(
 		<<best_genes.to_string()<<"\n";
 }
 
-int main(int range)
+void optimize(ModelAnalyzer analyzer)
 {
-	output_file.open("results.txt");
+    output_file.open("results.txt");
 	output_file<<"step"<<"\t"<<"cost_avg"<<"\t"<<"cost_best"<<"\t"<<"solution_best"<<"\n";
 
 	EA::Chronometer timer;
 	timer.tic();
 
-	GA_Type ga_obj;
+	GA_Type ga_obj = GA_Type(analyzer);
+    // ga_obj.analyzer=analyzer;
 	ga_obj.problem_mode=EA::GA_MODE::SOGA;
-	ga_obj.multi_threading=true;
+	ga_obj.multi_threading=false;
 	ga_obj.idle_delay_us=10; // switch between threads quickly
 	ga_obj.dynamic_threading=true;
 	ga_obj.verbose=false;
@@ -161,11 +155,9 @@ int main(int range)
 	ga_obj.mutation_rate=0.2;
 	ga_obj.best_stall_max=10;
 	ga_obj.elite_count=10;
-    ga_obj.range = range;
 	ga_obj.solve();
 
 	cout<<"The problem is optimized in "<<timer.toc()<<" seconds."<<endl;
 
 	output_file.close();
-	return 0;
 }

@@ -8,7 +8,7 @@
 #include <vector>
 #include <iterator>
 #include <nlohmann/json.hpp>
-#include "../Common/PathManager.h"
+#include "Common/PathManager.h"
 #include "onnx/shape_inference/implementation.h"
 // #include "../../library/onnx/onnx.pb.h"
 
@@ -165,6 +165,8 @@ public:
 
     int size() const;
 
+    std::string getName();
+
 private:
     /// @brief
     std::string modelName;
@@ -187,10 +189,6 @@ private:
     /// @brief
     bool use_cache;
 };
-
-
-
-
 
 
 //Overload
