@@ -20,8 +20,8 @@ int main()
     // ModelAnalyzer a = ModelAnalyzer(modelname, p);
 
     ModelAnalyzer analyzer = ModelAnalyzer("vgg19");
-    onnx::ModelProto model = onnxUtil::load(analyzer.GetModelPath());
-    auto graph = model.graph();
+    //onnx::ModelProto model = onnxUtil::load(analyzer.GetModelPath());
+    //auto graph = model.graph();
 
     optimize(analyzer);
 
@@ -61,7 +61,7 @@ int main()
     // {
     //     std::cout<<data.output(0)<<std::endl;
     // }
-    google::protobuf::ShutdownProtobufLibrary();
+    //google::protobuf::ShutdownProtobufLibrary();
 
     std::cout << "test end" << std::endl;
     
