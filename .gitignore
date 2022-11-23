@@ -1,7 +1,7 @@
 .vscode
 *.onnx
 data
-!thild_party/lib/*.so
+!thild_party/lib/*
 Onnxs/*
 !Onnxs/scripts
 onnxruntime-package
