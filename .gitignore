@@ -41,5 +41,5 @@ __pycache__
 *.app
 bin/
 
-!thild_party/lib
-!thild_party/lib/*
+!third_party/lib
+!third_party/lib/*
