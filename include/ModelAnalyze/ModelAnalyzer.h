@@ -80,17 +80,17 @@ public:
     /// @return
     const std::vector<GraphNode> &GetAllNodes() const;
 
-    /// @brief 
-    /// @param i 
-    /// @return 
-    GraphNode& operator[](int i);
+    /// @brief
+    /// @param i
+    /// @return
+    GraphNode &operator[](int i);
 
-    /// @brief 
-    /// @return 
+    /// @brief
+    /// @return
     iterator begin();
 
-    /// @brief 
-    /// @return 
+    /// @brief
+    /// @return
     iterator end();
 
     int size() const;
@@ -120,31 +120,25 @@ private:
     bool use_cache;
 };
 
+// Overload
 
-//Overload
+/// @brief
+/// @param os
+/// @return
+std::ostream &operator<<(std::ostream &os, const GraphNode &node);
 
-/// @brief 
-/// @param os 
-/// @return 
-std::ostream& operator<<(std::ostream &os, const GraphNode &node);
+/// @brief
+/// @tparam T
+/// @param os
+/// @param v
+/// @return
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::vector<T> &v);
 
-/// @brief 
-/// @tparam T 
-/// @param os 
-/// @param v 
-/// @return 
-template<typename T>
-std::ostream& operator<<(std::ostream &os, const std::vector<T> &v);
-
-/// @brief 
-/// @param os 
-/// @param analyzer 
-/// @return 
-std::ostream& operator<<(std::ostream &os, const ModelAnalyzer &analyzer);
-
-
-
-
-
+/// @brief
+/// @param os
+/// @param analyzer
+/// @return
+std::ostream &operator<<(std::ostream &os, const ModelAnalyzer &analyzer);
 
 #endif // !MODELANALYZER_H
