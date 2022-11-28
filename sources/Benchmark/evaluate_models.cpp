@@ -158,7 +158,7 @@ namespace evam
 
         std::cout << "Raw: " << raw << std::endl
                   << "Split: " << total << std::endl
-                  << "Improve: " << (raw - total) / raw << std::endl;
+                  << "OverHead: " << (total - raw) / raw << std::endl;
 
         float avg = total / params_dict.size();
         float var = 0;
