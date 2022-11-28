@@ -43,7 +43,7 @@ namespace evam
         Ort::SessionOptions session_options;
         session_options.SetIntraOpNumThreads(1);
         session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
-        session_options.AppendExecutionProvider_CUDA(Drivers::GPU_CUDA::GPU1);
+        session_options.AppendExecutionProvider_CUDA(Drivers::GPU_CUDA::GPU0);
         Ort::Session session(env, model_path.c_str(), session_options);
 
         ModelInfo modelInfo(session);
