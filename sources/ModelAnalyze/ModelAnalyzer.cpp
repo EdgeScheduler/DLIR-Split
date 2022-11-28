@@ -221,7 +221,7 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
         std::filesystem::path child_onnx_path = OnnxPathManager::GetChildModelSavePath(modelName, child_idx);
         std::filesystem::path child_params_path = OnnxPathManager::GetChildModelParamsSavePath(modelName, child_idx);
 
-        //this->ExtractModelByNodeWithWrite(infos[child_idx],onnxPath, child_onnx_path, child_params_path, start_node, end_node);
+        //this->ExtractModelByNodeWithWrite(&infos[child_idx],onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true);
 
         threads.push_back(std::make_shared<std::thread>(&ModelAnalyzer::ExtractModelByNodeWithWrite,this, &infos[child_idx],onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true));
     }
@@ -230,6 +230,7 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
     {
         th->join();
     }
+    
     std::cout << "end split"<<std::endl;
 
     for(int child_idx = 0; child_idx < childs_size; child_idx++)
