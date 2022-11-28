@@ -1,5 +1,6 @@
 .vscode
 *.onnx
+build
 data
 Onnxs/*
 !Onnxs/scripts

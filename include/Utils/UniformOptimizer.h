@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include "openGA.hpp"
-#include "include/ModelAnalyze/ModelAnalyzer.h"
+#include "ModelAnalyze/ModelAnalyzer.h"
 
 namespace UniformOptimizer
 {
@@ -70,6 +70,8 @@ namespace UniformOptimizer
 	/// @brief
 	/// @param analyzer
 	void optimize(ModelAnalyzer& analyzer);
+
+	extern std::string GPU_Tag;
 
 }
 

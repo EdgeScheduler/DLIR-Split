@@ -51,6 +51,13 @@ private:
 
 class BenchmarkPathManager
 {
+public:
+    /// @brief get executor-file path, get project root path instead while developing.
+    /// @return "$project"
+    static std::filesystem::path GetBenchmarkRootFold();
+    static std::filesystem::path GetModelTimeBenchmarkCacheSavePath(std::string model_name, std::string GPU_tag);
+    static std::filesystem::path GetModelSplitRecordJsonSavePath(std::string model_name);
+
 private:
     static std::filesystem::path benchmarkRootFold;
 };

@@ -14,14 +14,30 @@
 #include "Benchmark/evaluate_models.h"
 using namespace std;
 
-
 namespace evam
 {
-    float TimeEvaluateChildModels_impl(std::string model_name, int child_num, int test_count, int default_batchsize)
+    float TimeEvaluateChildModels_impl(std::string model_name, int child_num, std::string GPU_tag, int test_count, int default_batchsize)
     {
-        std::filesystem::path model_path;
-        model_path = OnnxPathManager::GetChildModelSavePath(model_name, child_num);
+        static nlohmann::json cache = [=]()
+        {
+            if (std::filesystem::exists(BenchmarkPathManager::GetModelTimeBenchmarkCacheSavePath(model_name, GPU_tag)))
+            {
+                return JsonSerializer::LoadJson(BenchmarkPathManager::GetModelTimeBenchmarkCacheSavePath(model_name, GPU_tag));
+            }
+            else
+            {
+                return nlohmann::json({});
+            }
+        }();
 
+        nlohmann::json child_summary = JsonSerializer::LoadJson(OnnxPathManager::GetChildModelSumParamsSavePath(model_name));
+        std::string key = std::to_string(child_summary[std::to_string(child_num)]["from"].get<int>()) + "-" + std::to_string(child_summary[std::to_string(child_num)]["to"].get<int>());
+        if (cache.contains(key))
+        {
+            return cache[key].get<float>();
+        }
+
+        std::filesystem::path model_path = OnnxPathManager::GetChildModelSavePath(model_name, child_num);
         Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "evaluate"); // log id: "test"
 
         Ort::SessionOptions session_options;
@@ -66,7 +82,7 @@ namespace evam
 
         clock_t start = clock();
         vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
-        
+
         // cout << endl
         //     << "run-0(" << setiosflags(ios::fixed) << setprecision(2) << (clock() - start) * 1000.0 / CLOCKS_PER_SEC << "ms)." << endl;
         // print with TensorValue
@@ -95,7 +111,7 @@ namespace evam
             // cout << "run-" << i << "(" << setiosflags(ios::fixed) << setprecision(2) << (clock() - start) * 1000.0 / CLOCKS_PER_SEC << "ms)."
             //     << "=> [" << setprecision(6) << *output_values[0].GetTensorMutableData<float>() << " ...]" << endl;
             end = clock();
-            if(i >= cold_num)
+            if (i >= cold_num)
             {
                 time_cost += (end - start) * 1000.0 / CLOCKS_PER_SEC;
             }
@@ -105,42 +121,55 @@ namespace evam
                 Ort::OrtRelease(value.release());
             }
         }
-        
+
         float result = time_cost / (test_count - cold_num);
+
+        cache[key] = result;
+        JsonSerializer::StoreJson(cache, BenchmarkPathManager::GetModelTimeBenchmarkCacheSavePath(model_name, GPU_tag), true);
         return result;
     }
 
-    nlohmann::json TimeEvaluateChildModels(std::string model_name, int test_count, int default_batchsize)
+    nlohmann::json TimeEvaluateChildModels(std::string model_name, std::string GPU_tag, int test_count, int default_batchsize)
     {
         nlohmann::json result;
-        float raw = TimeEvaluateChildModels_impl(model_name, -1, test_count, default_batchsize);
+        nlohmann::json child_summary = JsonSerializer::LoadJson(OnnxPathManager::GetChildModelSumParamsSavePath(model_name));
+        
+        float raw = TimeEvaluateChildModels_impl(model_name, -1, GPU_tag, test_count, default_batchsize);
         // raw
         result["raw"]["avg"] = raw;
+        result["raw"]["from"] = child_summary["-1"]["from"].get<int>();
+        result["raw"]["to"] = child_summary["-1"]["to"].get<int>();
 
-        //childs
+        // childs
         nlohmann::json params_dict = JsonSerializer::LoadJson(OnnxPathManager::GetChildModelSumParamsSavePath(model_name));
         float total = 0;
         float tmp;
         std::vector<float> childs;
-        for(int idx = 0; idx < params_dict.size() - 1; idx++)
+        for (int idx = 0; idx < params_dict.size() - 1; idx++)
         {
-            tmp = TimeEvaluateChildModels_impl(model_name, idx, test_count, default_batchsize);
+            tmp = TimeEvaluateChildModels_impl(model_name, idx, GPU_tag, test_count, default_batchsize);
             result["childs"][to_string(idx)]["avg"] = tmp;
+            result["childs"][to_string(idx)]["from"] = child_summary[to_string(idx)]["from"].get<int>();
+            result["childs"][to_string(idx)]["to"] = child_summary[to_string(idx)]["to"].get<int>();
+
             total += tmp;
             childs.push_back(tmp);
         }
 
-        std::cout << "Raw: " << raw << std::endl << "Split: " << total << std::endl << "Improve: " << (raw - total) / raw << std::endl;
+        std::cout << "Raw: " << raw << std::endl
+                  << "Split: " << total << std::endl
+                  << "Improve: " << (raw - total) / raw << std::endl;
 
         float avg = total / params_dict.size();
         float var = 0;
         for (auto &data : childs)
         {
-            std::cout<< "|| " << data << " "; 
+            std::cout << "|| " << data << " ";
             var += pow(data - avg, 2);
         }
         float sigma = sqrt(var / childs.size());
-        std::cout << std::endl << "sigma: " << sigma << std::endl;
+        std::cout << std::endl
+                  << "sigma: " << sigma << std::endl;
         result["childs"]["Std"] = sigma;
         result["childs"]["Improve"] = (raw - total) / raw;
         result["childs"]["total_time"] = total;
@@ -178,26 +207,25 @@ namespace evam
     //     return var;
     // }
 
-
-
-    void EvalCurrentModelSplit(std::string model_name, std::string file_name)
+    float EvalStdCurrentModelSplit(std::string model_name, std::string file_name, std::string GPU_tag)
     {
-        std::filesystem::path save_fold = "Benchmark/data/timecost/" + model_name + "/GPU/";
-        if(!std::filesystem::exists(save_fold))
-            std::filesystem::create_directories(save_fold);
-        nlohmann::json time_evaluate_dict = TimeEvaluateChildModels(model_name);
-        JsonSerializer::StoreJson(time_evaluate_dict, save_fold += (file_name.empty() ? "data.json" : file_name));
-    }
+        std::filesystem::path record_path = BenchmarkPathManager::GetModelSplitRecordJsonSavePath(model_name);
+        static nlohmann::json cache = [=]()
+        {
+            if (std::filesystem::exists(record_path))
+            {
+                return JsonSerializer::LoadJson(record_path);
+            }
+            else
+            {
+                return nlohmann::json::array();
+            }
+        }();
 
-    float EvalStdCurrentModelSplit(std::string model_name, std::string file_name)
-    {
-        std::filesystem::path save_fold = "Benchmark/data/timecost/" + model_name + "/optimize/";
-        if(!std::filesystem::exists(save_fold))
-            std::filesystem::create_directories(save_fold);
-        nlohmann::json time_evaluate_dict = TimeEvaluateChildModels(model_name);
-        JsonSerializer::StoreJsonAppend(time_evaluate_dict, save_fold += (file_name.empty() ? "data.json" : file_name));
+        nlohmann::json time_evaluate_dict = TimeEvaluateChildModels(model_name, GPU_tag);
+
+        cache.push_back(time_evaluate_dict);
+        JsonSerializer::StoreJson(cache, record_path, true);
         return time_evaluate_dict["childs"]["Std"].get<float>();
     }
-
-    
 }

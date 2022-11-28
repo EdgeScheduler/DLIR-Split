@@ -60,6 +60,21 @@ std::filesystem::path OnnxPathManager::GetChildModelSumCacheSavePath(std::string
 // BenchmarkPathManager
 std::filesystem::path BenchmarkPathManager::benchmarkRootFold = "Benchmark";
 
+std::filesystem::path BenchmarkPathManager::GetBenchmarkRootFold()
+{
+    return RootPathManager::GetRunRootFold() / BenchmarkPathManager::benchmarkRootFold;
+}
+
+std::filesystem::path BenchmarkPathManager::GetModelSplitRecordJsonSavePath(std::string model_name)
+{
+    return BenchmarkPathManager::GetBenchmarkRootFold() / model_name / ("last_split.json");
+}
+
+std::filesystem::path BenchmarkPathManager::GetModelTimeBenchmarkCacheSavePath(std::string model_name, std::string GPU_tag)
+{
+    return BenchmarkPathManager::GetBenchmarkRootFold() / model_name / (GPU_tag+".json");
+}
+
 // RootPathManager
 std::filesystem::path RootPathManager::projectRootFold = []() -> std::filesystem::path
 {

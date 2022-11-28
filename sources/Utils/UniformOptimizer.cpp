@@ -8,6 +8,8 @@
 
 namespace UniformOptimizer
 {
+	std::string GPU_Tag = "RTX-2080Ti";
+
 	using std::cout;
 	using std::endl;
 	using std::string;
@@ -48,7 +50,7 @@ namespace UniformOptimizer
 
 		// analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2], analyzer[breakpoint3]});
 		analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2]});
-		c.objective1 = evam::EvalStdCurrentModelSplit(analyzer.getName());
+		c.objective1 = evam::EvalStdCurrentModelSplit(analyzer.getName(),"",GPU_Tag);
 		// evam::EvalStdCurrentModelSplit(analyzer.getName(), analyzer.getName());
 		return true; // solution is accepted
 	}

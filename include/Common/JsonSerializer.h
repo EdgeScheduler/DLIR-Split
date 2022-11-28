@@ -17,12 +17,12 @@ namespace JsonSerializer
     /// @return success or not
     bool StoreJson(const nlohmann::json &json, const std::filesystem::path &path, bool enable_null_json = false);
 
-    /// @brief 
-    /// @param json 
-    /// @param path 
-    /// @param enable_null_json 
-    /// @return 
-    bool StoreJsonAppend(const nlohmann::json &json, const std::filesystem::path &path, bool enable_null_json = false);
+    // /// @brief 
+    // /// @param json 
+    // /// @param path 
+    // /// @param enable_null_json 
+    // /// @return 
+    // bool StoreJsonAppend(const nlohmann::json &json, const std::filesystem::path &path, bool enable_null_json = false);
 }
 
 #endif // __JSONSERIALIZER_H__
