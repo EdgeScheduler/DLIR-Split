@@ -2,122 +2,13 @@
 #include <fstream>
 #include <string>
 #include <vector>
-// #include <python3.6/Python.h>
-// #include <python3.8/Python.h>
 #include <iterator>
-#include "SplitToChilds/ModelAnalyzer.h"
+#include "ModelAnalyze/ModelAnalyzer.h"
 #include "Common/PathManager.h"
 #include "onnx/shape_inference/implementation.h"
-// #include <onnx/onnx.pb.h>
-// #include "../../library/onnx/onnx.pb.h"
 #include "Utils/helper.h"
 #include "Common/JsonSerializer.h"
 #include "Common/PathManager.h"
-
-// GraphNode
-GraphNode::GraphNode()
-{
-    this->name = "";
-    this->type = "";
-    this->inputs = std::vector<std::string>();
-    this->outputs = std::vector<std::string>();
-    this->dependencies_inputs = std::vector<std::string>();
-    this->dependencies_outputs = std::vector<std::string>();
-    this->params = std::set<std::string>();
-    this->idx = 0;
-}
-
-GraphNode::GraphNode(onnx::NodeProto node, std::set<std::string> TotalParams, int index)
-{
-    this->name = node.name();
-    this->type = node.op_type();
-    this->inputs = std::vector<std::string>();
-    this->outputs = std::vector<std::string>();
-    this->dependencies_inputs = std::vector<std::string>();
-    this->dependencies_outputs = std::vector<std::string>();
-    this->params = std::set<std::string>();
-    this->idx = index;
-
-    int output_size = node.output_size();
-    for (auto &output : node.output())
-    {
-        this->outputs.emplace_back(output);
-    }
-
-    for (auto &input_name : node.input())
-    {
-        if (std::find(TotalParams.begin(), TotalParams.end(), input_name) != TotalParams.end())
-        {
-            this->params.emplace(input_name);
-        }
-        else
-        {
-            this->inputs.emplace_back(input_name);
-        }
-    }
-}
-
-GraphNode::GraphNode(const GraphNode &node)
-{
-    this->name = node.name;
-    this->type = node.type;
-    this->inputs = node.inputs;
-    this->outputs = node.outputs;
-    this->dependencies_inputs = node.dependencies_inputs;
-    this->dependencies_outputs = node.dependencies_outputs;
-    this->params = node.params;
-    this->idx = node.idx;
-}
-
-bool GraphNode::operator==(GraphNode &node)
-{
-    if (this->name == node.name && this->type == node.type && this->inputs == node.inputs && this->outputs == node.outputs &&
-        this->dependencies_inputs == node.dependencies_inputs && this->dependencies_outputs == node.dependencies_outputs && this->params == node.params && this->idx == node.idx)
-        return true;
-    return false;
-}
-
-bool GraphNode::IsConvergeNode()
-{
-    return this->dependencies_inputs.size() < 2 ? true : false;
-}
-
-// ModelAnalyzerIterator
-ModelAnalyzerIterator::ModelAnalyzerIterator(GraphNode* p)
-{
-    _ptr = p;   
-}
-
-bool ModelAnalyzerIterator::operator!=(const ModelAnalyzerIterator &iter)
-{
-    return _ptr != iter._ptr;
-}
-
-bool ModelAnalyzerIterator::operator==(const ModelAnalyzerIterator &iter)
-{
-    return _ptr == iter._ptr;
-}
-
-ModelAnalyzerIterator& ModelAnalyzerIterator::operator++()
-{
-    _ptr++;
-    return *this;
-}
-
-ModelAnalyzerIterator ModelAnalyzerIterator::operator++(int)
-{
-    ModelAnalyzerIterator tmp = *this;
-    _ptr++;
-    return tmp;
-}
-
-GraphNode& ModelAnalyzerIterator::operator * ()
-{
-    return *_ptr;
-}
-
-
-// ModelAnalyzer
 
 ModelAnalyzer::ModelAnalyzer(std::string model_name, const std::filesystem::path &onnx_path)
 {
@@ -138,7 +29,7 @@ ModelAnalyzer::ModelAnalyzer(std::string model_name, const std::filesystem::path
         if (!this->Init())
             throw -1;
     }
-    catch(int e)
+    catch (int e)
     {
         std::cerr << "Error while initiating analyzer." << '\n';
     }
@@ -206,13 +97,9 @@ nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_
                                                  GraphNode start_node, GraphNode end_node, bool print_error)
 {
 
-    
-    
     // c++!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
-    
-    onnxUtil::extract_model(raw_onnx_path, new_onnx_path, start_node.dependencies_inputs, end_node.dependencies_outputs);
 
+    onnxUtil::extract_model(raw_onnx_path, new_onnx_path, start_node.dependencies_inputs, end_node.dependencies_outputs);
 
     //
     //
@@ -321,7 +208,7 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
 
         std::filesystem::path child_onnx_path = OnnxPathManager::GetChildModelSavePath(modelName, child_idx);
         std::filesystem::path child_params_path = OnnxPathManager::GetChildModelParamsSavePath(modelName, child_idx);
-        
+
         info = ExtractModelByNode(onnxPath, child_onnx_path, child_params_path, start_node, end_node);
         info["from"] = start_node.idx;
         info["to"] = end_node.idx;
@@ -414,7 +301,7 @@ const std::vector<GraphNode> &ModelAnalyzer::GetAllNodes() const
     return nodes;
 }
 
-GraphNode& ModelAnalyzer::operator[](int i)
+GraphNode &ModelAnalyzer::operator[](int i)
 {
     return nodes[i];
 }
@@ -436,10 +323,8 @@ int ModelAnalyzer::size() const
 
 std::string ModelAnalyzer::getName()
 {
-    return this -> modelName;    
+    return this->modelName;
 }
-
-
 
 // Operator overload
 
@@ -469,4 +354,3 @@ std::ostream &operator<<(std::ostream &os, const ModelAnalyzer &analyzer)
     }
     return os;
 }
-

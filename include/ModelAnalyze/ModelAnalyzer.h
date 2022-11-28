@@ -10,77 +10,7 @@
 #include <nlohmann/json.hpp>
 #include "Common/PathManager.h"
 #include "onnx/shape_inference/implementation.h"
-// #include "../../library/onnx/onnx.pb.h"
-
-class GraphNode
-{
-    
-public:
-    /// @brief
-    GraphNode();
-
-    /// @brief
-    /// @param node
-    /// @param TotalParams
-    /// @param idx
-    GraphNode(onnx::NodeProto node, std::set<std::string> TotalParams = std::set<std::string>(), int index = -1);
-
-    /// @brief
-    /// @param node
-    GraphNode(const GraphNode &node);
-
-    /// @brief
-    /// @param node
-    /// @return
-    bool operator==(GraphNode &node);
-
-    /// @brief
-    /// @return
-    bool IsConvergeNode();
-
-// private:
-    std::string name;
-    std::string type;
-    std::vector<std::string> inputs;
-    std::vector<std::string> outputs;
-    std::vector<std::string> dependencies_inputs;
-    std::vector<std::string> dependencies_outputs;
-    std::set<std::string> params;
-    nlohmann::json input_info;
-    int idx;
-};
-
-class ModelAnalyzerIterator
-{
-    public:
-        /// @brief 
-        /// @param p 
-        ModelAnalyzerIterator(GraphNode* p);
-
-        /// @brief 
-        /// @param iter 
-        /// @return 
-        bool operator!=(const ModelAnalyzerIterator &iter);
-
-                /// @brief 
-        /// @param iter 
-        /// @return 
-        bool operator==(const ModelAnalyzerIterator &iter);
-
-        /// @brief 
-        /// @return 
-        ModelAnalyzerIterator& operator++();
-
-        /// @brief 
-        /// @param  
-        /// @return 
-        ModelAnalyzerIterator operator++(int);
-
-        GraphNode& operator * ();
-    
-    private:
-        GraphNode* _ptr;
-};
+#include "ModelAnalyzerIterator.h"
 
 /// @brief
 class ModelAnalyzer

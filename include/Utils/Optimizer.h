@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include "openGA.hpp"
-#include "include/SplitToChilds/ModelAnalyzer.h"
+#include "include/ModelAnalyze/ModelAnalyzer.h"
 
 using std::string;
 using std::cout;

@@ -5,7 +5,7 @@
 #include <fstream>
 #include "openGA.hpp"
 #include "Utils/Optimizer.h"
-#include "SplitToChilds/ModelAnalyzer.h"
+#include "ModelAnalyze/ModelAnalyzer.h"
 #include "Benchmark/evaluate_models.h"
 
 using std::string;

@@ -1,6 +1,6 @@
 #include <filesystem>
 #include <iostream>
-#include "SplitToChilds/ModelAnalyzer.h"
+#include "ModelAnalyze/ModelAnalyzer.h"
 #include "onnx/shape_inference/implementation.h"
 // #include <onnx/onnx.pb.h>
 // #include "../library/onnx/onnx.pb.h"

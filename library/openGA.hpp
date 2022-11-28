@@ -16,7 +16,7 @@
 #include <functional>
 #include <mutex>
 #include <atomic>
-#include "SplitToChilds/ModelAnalyzer.h"
+#include "ModelAnalyze/ModelAnalyzer.h"
 
 #ifndef NS_EA_BEGIN
 #define NS_EA_BEGIN namespace EA {
