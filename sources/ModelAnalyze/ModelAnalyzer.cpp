@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <memory>
 #include <iterator>
 #include "openGA.hpp"
 #include "onnx/shape_inference/implementation.h"
@@ -96,8 +97,14 @@ nlohmann::json ModelAnalyzer::LoadCache()
     }
 }
 
-nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,
-                                                 GraphNode start_node, GraphNode end_node, bool print_error)
+void ModelAnalyzer::ExtractModelByNodeWithWrite(nlohmann::json* value,std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,GraphNode* start_node, GraphNode* end_node, bool print_error)
+{
+    *value=ExtractModelByNode(raw_onnx_path,new_onnx_path,new_onnx_param_path,*start_node,*end_node,print_error);
+    (*value)["from"] = start_node->idx;
+    (*value)["to"] = end_node->idx;
+}
+
+nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,GraphNode& start_node, GraphNode& end_node, bool print_error)
 {
 
     // c++!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -200,22 +207,34 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
     total_param["-1"] = info;
 
     int childs_size = childs.size();
+    std::vector<nlohmann::json> infos(childs_size);
+    std::vector<std::shared_ptr<std::thread>> threads;
     for (int child_idx = 0; child_idx < childs_size; child_idx++)
     {
-        GraphNode start_node = childs[child_idx];
-        GraphNode end_node = nodes.back();
+        int start_index=childs[child_idx].idx;
+        int end_index=nodes.back().idx;
         if (child_idx + 1 < childs.size())
-            end_node = nodes[childs[child_idx + 1].idx - 1];
+            end_index = childs[child_idx + 1].idx - 1;
 
-        std::cout << modelName << "-" << child_idx << " ==|> " << start_node.name << " --> " << end_node.name << std::endl;
+        std::cout << modelName << "-" << child_idx << " ==|> " << nodes[start_index].name << " --> " << nodes[end_index].name << std::endl;
 
         std::filesystem::path child_onnx_path = OnnxPathManager::GetChildModelSavePath(modelName, child_idx);
         std::filesystem::path child_params_path = OnnxPathManager::GetChildModelParamsSavePath(modelName, child_idx);
 
-        info = ExtractModelByNode(onnxPath, child_onnx_path, child_params_path, start_node, end_node);
-        info["from"] = start_node.idx;
-        info["to"] = end_node.idx;
-        total_param[std::to_string(child_idx)] = info;
+        //this->ExtractModelByNodeWithWrite(infos[child_idx],onnxPath, child_onnx_path, child_params_path, start_node, end_node);
+
+        threads.push_back(std::make_shared<std::thread>(&ModelAnalyzer::ExtractModelByNodeWithWrite,this, &infos[child_idx],onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true));
+    }
+
+    for(auto &th: threads)
+    {
+        th->join();
+    }
+    std::cout << "end split"<<std::endl;
+
+    for(int child_idx = 0; child_idx < childs_size; child_idx++)
+    {
+        total_param[std::to_string(child_idx)] = infos[child_idx];
     }
 
     JsonSerializer::StoreJson(total_param, OnnxPathManager::GetChildModelSumParamsSavePath(modelName));

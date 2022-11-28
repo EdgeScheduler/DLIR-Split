@@ -55,7 +55,9 @@ public:
     /// @param print_error
     /// @return
     nlohmann::json ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,
-                                      GraphNode start_node, GraphNode end_node, bool print_error = true);
+                                      GraphNode& start_node, GraphNode& end_node, bool print_error = true);
+
+    void ExtractModelByNodeWithWrite(nlohmann::json* value,std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,GraphNode* start_node, GraphNode* end_node, bool print_error = true);
 
     /// @brief
     void RecordDependency();
