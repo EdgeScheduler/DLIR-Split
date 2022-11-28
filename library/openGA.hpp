@@ -1,7 +1,9 @@
+#ifndef __OPENGA_H__
+#define __OPENGA_H__
+
 // This library is free and distributed under
 // Mozilla Public License Version 2.0.
 
-#pragma once
 #include <vector>
 #include <random>
 #include <chrono>
@@ -1764,3 +1766,5 @@ protected:
 };
 
 NS_EA_END
+
+#endif // __OPENGA_H__

@@ -3,12 +3,15 @@
 #include <string>
 #include <vector>
 #include <iterator>
-#include "ModelAnalyze/ModelAnalyzer.h"
-#include "Common/PathManager.h"
+#include "openGA.hpp"
 #include "onnx/shape_inference/implementation.h"
-#include "Utils/helper.h"
+#include "Benchmark/evaluate_models.h"
+#include "ModelAnalyze/ModelAnalyzer.h"
 #include "Common/JsonSerializer.h"
 #include "Common/PathManager.h"
+#include "Common/PathManager.h"
+#include "Utils/helper.h"
+#include "Utils/UniformOptimizer.h"
 
 ModelAnalyzer::ModelAnalyzer(std::string model_name, const std::filesystem::path &onnx_path)
 {
@@ -285,6 +288,17 @@ nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, 
     JsonSerializer::StoreJson(params_dict, params_path, true);
 
     return params_dict;
+}
+
+bool ModelAnalyzer::UniformSplit(int count)
+{
+    if(count>this->size())
+    {
+        return false;
+    }
+
+    UniformOptimizer::optimize(*this);
+    return true;
 }
 
 std::vector<GraphNode> ModelAnalyzer::GetConvergeNodes()

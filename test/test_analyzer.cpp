@@ -2,16 +2,11 @@
 #include <iostream>
 #include "ModelAnalyze/ModelAnalyzer.h"
 #include "onnx/shape_inference/implementation.h"
-// #include <onnx/onnx.pb.h>
-// #include "../library/onnx/onnx.pb.h"
-// #include "../library/onnx/onnx.pb.h"
-// #include "../library/onnx/onnx.pb.h"
-// #include "onnx/onnx_pb.h"
 #include "Utils/helper.h"
 #include "Benchmark/evaluate_models.h"
-#include "Utils/Optimizer.h"
+#include "Utils/UniformOptimizer.h"
 using namespace std;
-#define ONNX_NAMESPACE onnx
+
 int main()
 {
 
@@ -23,7 +18,7 @@ int main()
     //onnx::ModelProto model = onnxUtil::load(analyzer.GetModelPath());
     //auto graph = model.graph();
 
-    optimize(analyzer);
+    UniformOptimizer::optimize(analyzer);
 
     // graph.output();
     // analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());

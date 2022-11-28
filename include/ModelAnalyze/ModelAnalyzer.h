@@ -80,6 +80,8 @@ public:
     /// @return
     const std::vector<GraphNode> &GetAllNodes() const;
 
+    bool UniformSplit(int count);
+
     /// @brief
     /// @param i
     /// @return
