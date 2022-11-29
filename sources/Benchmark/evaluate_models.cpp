@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <time.h>
 #include <onnxruntime_cxx_api.h>
 #include "Common/Drivers.h"
@@ -18,6 +19,8 @@ namespace evam
 {
     float TimeEvaluateChildModels_impl(std::string model_name, std::filesystem::path model_path, std::string key, std::string GPU_tag, int test_count, int default_batchsize)
     {
+        static std::mutex mutex;
+        std::unique_lock<std::mutex> lock(mutex);
         static nlohmann::json cache = [=]()
         {
             if (std::filesystem::exists(BenchmarkPathManager::GetModelTimeBenchmarkCacheSavePath(model_name, GPU_tag)))
@@ -124,6 +127,7 @@ namespace evam
 
         cache[key] = result;
         JsonSerializer::StoreJson(cache, BenchmarkPathManager::GetModelTimeBenchmarkCacheSavePath(model_name, GPU_tag), true);
+        lock.unlock();
         return result;
     }
 
