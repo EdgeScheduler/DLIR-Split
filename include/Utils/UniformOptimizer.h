@@ -9,7 +9,7 @@
 
 namespace UniformOptimizer
 {
-		extern int split_num;
+	extern int split_num;
 
 	struct SplitSolution
 	{

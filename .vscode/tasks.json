@@ -61,7 +61,7 @@
                 "${file}",
                 "${workspaceFolder}/include/*/*",
                 "${workspaceFolder}/sources/*/*",
-                "${workspaceFolder}/library/*/",
+                "${workspaceFolder}/libs/*/",
                 "-o",
                 "${workspaceRoot}/bin/debug/${fileBasenameNoExtension}",
                 "-I/usr/include/python3.8",
@@ -70,7 +70,7 @@
                 "-lonnxruntime",
                 "-lprotobuf",
                 "-lpthread",
-                "-L${workspaceFolder}/library/"
+                "-L${workspaceFolder}/libs/"
             ],
             "options": {
                 "cwd": "${fileDirname}"

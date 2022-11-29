@@ -170,7 +170,7 @@ namespace UniformOptimizer
 		split_num = num;
 		// std::cout<<num<<std::endl;
 		// std::cout<<split_num<<std::endl;
-		output_file.open("results.txt");
+		output_file.open(RootPathManager::GetRunRootFold()/"results.txt");
 		output_file << "step"
 					<< "\t"
 					<< "cost_avg"
