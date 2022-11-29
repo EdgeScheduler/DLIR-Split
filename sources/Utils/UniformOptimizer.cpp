@@ -8,7 +8,7 @@
 
 namespace UniformOptimizer
 {
-	std::string GPU_Tag = "RTX-2080Ti";
+	std::string GPU_Tag;
 	int split_num;
 
 	using std::cout;
@@ -52,7 +52,7 @@ namespace UniformOptimizer
 			p.breakpoints[0] = 0.0 + range * rnd01();
 			// std::cout<<"init_gene1";
 		} while (p.breakpoints[0] == 0 || p.breakpoints[0] > range - (size + 0));
-		std::cout<<std::endl;
+		// std::cout<<std::endl;
 		
 		for(int i = 1; i <= size - 1; i++)
 		{
@@ -61,7 +61,7 @@ namespace UniformOptimizer
 				p.breakpoints[i] = 0.0 + range * rnd01();
 				// std::cout<<"init_gene2";
 			} while (p.breakpoints[i] <= p.breakpoints[i - 1] || p.breakpoints[i] > range - (size + i));
-			std::cout<<std::endl;
+			// std::cout<<std::endl;
 		}
 
 		// do
@@ -103,7 +103,7 @@ namespace UniformOptimizer
 			in_range = in_range && (X_new.breakpoints[0] == 0 || X_new.breakpoints[0] > range - (size + 0));
 			std::cout<<"mutate1";
 		}while(!in_range);
-		std::cout<<std::endl;
+		// std::cout<<std::endl;
 		for(int i = 1; i <= size - 1; i++)
 		{
 			do{
@@ -111,9 +111,9 @@ namespace UniformOptimizer
 				in_range = in_range && (X_new.breakpoints[i] <= X_new.breakpoints[i - 1] || X_new.breakpoints[i] > range - (size + i));
 				std::cout<<"mutate2";
 			}while(!in_range);
-			std::cout<<"____"<<std::endl;
+			// std::cout<<"____"<<std::endl;
 		}
-		std::cout<<"end";
+		// std::cout<<"end";
 		
 		// X_new.breakpoint3+=mu*(rnd01()-rnd01());
 		// in_range=in_range&&(X_new.breakpoint3>=0.0 && X_new.breakpoint3<range);
@@ -165,9 +165,10 @@ namespace UniformOptimizer
 			<< best_genes.to_string() << "\n";
 	}
 
-	void optimize(ModelAnalyzer& analyzer, int num)
+	void optimize(ModelAnalyzer& analyzer, int num, std::string Tag, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
 	{
 		split_num = num;
+		GPU_Tag = Tag;
 		// std::cout<<num<<std::endl;
 		// std::cout<<split_num<<std::endl;
 		output_file.open(RootPathManager::GetRunRootFold()/"results.txt");
@@ -191,8 +192,8 @@ namespace UniformOptimizer
 		ga_obj.idle_delay_us = 10; // switch between threads quickly
 		ga_obj.dynamic_threading = true;
 		ga_obj.verbose = false;
-		ga_obj.population = 200;
-		ga_obj.generation_max = 100;
+		ga_obj.population = population;
+		ga_obj.generation_max = generation;
 		ga_obj.calculate_SO_total_fitness = calculate_SO_total_fitness;
 		ga_obj.init_genes = init_genes;
 		ga_obj.eval_solution = eval_solution;
@@ -201,10 +202,10 @@ namespace UniformOptimizer
 		ga_obj.SO_report_generation = SO_report_generation;
 		ga_obj.crossover_fraction = 0.7;
 		ga_obj.mutation_rate = 0.2;
-		ga_obj.best_stall_max = 3;
+		ga_obj.best_stall_max = best_stall_max;
 		ga_obj.elite_count = 10;
-		ga_obj.average_stall_max = 3;
-		// std::cout<<"AAAA";
+		ga_obj.tol_stall_best = tol_stall_best;
+		ga_obj.early_exit = early_exit;
 		ga_obj.solve();
 
 		cout << "The problem is optimized in " << timer.toc() << " seconds." << endl;
