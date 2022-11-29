@@ -102,6 +102,7 @@ namespace UniformOptimizer
 		}
 		// analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2], analyzer[breakpoint3]});
 		// analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2]});
+
 		c.objective1 = analyzer.SplitAndEvaluateChilds(c.costs, splits, GPU_Tag);
 
 		std::cout<<"cost ==> ";
@@ -111,8 +112,10 @@ namespace UniformOptimizer
 		}
 
 		std::cout<<std::endl;
+
 		// analyzer.SplitAndStoreChilds(splits);
 		// c.objective1 = evam::EvalStdCurrentModelSplit(analyzer.getName());
+
 		// evam::EvalStdCurrentModelSplit(analyzer.getName(), analyzer.getName());
 		return true; // solution is accepted
 	}

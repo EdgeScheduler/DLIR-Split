@@ -98,40 +98,42 @@ nlohmann::json ModelAnalyzer::LoadCache()
     }
 }
 
-void ModelAnalyzer::ExtractModelByNodeWithWrite(nlohmann::json* value,std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,GraphNode* start_node, GraphNode* end_node, bool print_error)
+void ModelAnalyzer::ExtractModelByNodeWithWrite(nlohmann::json *value, std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path, GraphNode *start_node, GraphNode *end_node, bool print_error)
 {
-    *value=ExtractModelByNode(raw_onnx_path,new_onnx_path,new_onnx_param_path,*start_node,*end_node,print_error);
+    *value = ExtractModelByNode(raw_onnx_path, new_onnx_path, new_onnx_param_path, *start_node, *end_node, print_error);
     (*value)["from"] = start_node->idx;
     (*value)["to"] = end_node->idx;
 }
 
-void ModelAnalyzer::ExtractModelByNodeWithEvaluate(std::string model_name, std::string GPU_tag, nlohmann::json* value,std::filesystem::path raw_onnx_path,GraphNode* start_node, GraphNode* end_node, bool print_error)
+void ModelAnalyzer::ExtractModelByNodeWithEvaluate(std::string model_name, std::string GPU_tag, nlohmann::json *value, std::filesystem::path raw_onnx_path, GraphNode *start_node, GraphNode *end_node, bool print_error)
 {
-    static int global_flag=0;
+    static int global_flag = 0;
     static std::mutex mutex;
-    static std::mutex gpu_mutex;
-    int flag=0;
     std::unique_lock<std::mutex> lock(mutex);
+    static std::mutex gpu_mutex;
+    int flag = 0;
 
-    flag=global_flag;
+    flag = global_flag;
     global_flag++;
     lock.unlock();
 
-    std::filesystem::create_directories(OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag));
-    
-    *value=ExtractModelByNode(raw_onnx_path,OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag)/"model.onnx",OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag)/"param.json",*start_node,*end_node,print_error);
+    std::filesystem::create_directories(OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag));
+    std::filesystem::path model_path = OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) / "model.onnx";
+    std::filesystem::path param_path = OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) / "param.json";
+
+    *value = ExtractModelByNode(raw_onnx_path, model_path, param_path, *start_node, *end_node, print_error);
     (*value)["from"] = start_node->idx;
     (*value)["to"] = end_node->idx;
 
     std::unique_lock<std::mutex> gpu_lock(gpu_mutex);
-    (*value)["cost"] = evam::TimeEvaluateChildModels_impl(model_name,OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag)/"model.onnx",std::to_string(start_node->idx)+"-"+std::to_string(end_node->idx),GPU_tag);
+    (*value)["cost"] = evam::TimeEvaluateChildModels_impl(model_name, model_path, std::to_string(start_node->idx) + "-" + std::to_string(end_node->idx), GPU_tag);
+    std::cout << "rm: " << OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) << std::endl;
     gpu_lock.unlock();
 
-    //std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag));
+    // std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag));
 }
 
-
-nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,GraphNode& start_node, GraphNode& end_node, bool print_error)
+nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path, GraphNode &start_node, GraphNode &end_node, bool print_error)
 {
 
     // c++!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -203,9 +205,8 @@ void ModelAnalyzer::RecordDependency()
     }
 }
 
-double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs,std::vector<GraphNode> input_childs, std::string GPU_tag)
+double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs, std::vector<GraphNode> input_childs, std::string GPU_tag)
 {
-    std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold() / this->getName() / "childs/");
     std::vector<GraphNode> childs = std::vector<GraphNode>();
     for (auto &child : input_childs)
         if (EnableStart(child))
@@ -227,37 +228,36 @@ double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs,std::vect
     }
     childs = childs_;
 
-
     int childs_size = childs.size();
     std::vector<nlohmann::json> infos(childs_size);
     std::vector<std::shared_ptr<std::thread>> threads;
     for (int child_idx = 0; child_idx < childs_size; child_idx++)
     {
-        int start_index=childs[child_idx].idx;
-        int end_index=nodes.back().idx;
+        int start_index = childs[child_idx].idx;
+        int end_index = nodes.back().idx;
         if (child_idx + 1 < childs.size())
             end_index = childs[child_idx + 1].idx - 1;
 
         std::cout << modelName << "-" << child_idx << " ==|> " << nodes[start_index].name << " --> " << nodes[end_index].name << std::endl;
 
-        //this->ExtractModelByNodeWithWrite(&infos[child_idx],onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true);
+        // this->ExtractModelByNodeWithWrite(&infos[child_idx],onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true);
 
-        threads.push_back(std::make_shared<std::thread>(&ModelAnalyzer::ExtractModelByNodeWithEvaluate,this,modelName,GPU_tag, &infos[child_idx],onnxPath, &nodes[start_index], &nodes[end_index], true));
+        threads.push_back(std::make_shared<std::thread>(&ModelAnalyzer::ExtractModelByNodeWithEvaluate, this, modelName, GPU_tag, &infos[child_idx], onnxPath, &nodes[start_index], &nodes[end_index], true));
     }
 
-    for(auto &th: threads)
+    for (auto &th : threads)
     {
         th->join();
     }
-    
+
     // std::cout << "end split"<<std::endl;
     costs.clear();
-    float total=0.0f;
-    for(int child_idx = 0; child_idx < childs_size; child_idx++)
+    float total = 0.0f;
+    for (int child_idx = 0; child_idx < childs_size; child_idx++)
     {
-        float cost=infos[child_idx]["cost"].get<float>();
+        float cost = infos[child_idx]["cost"].get<float>();
         costs.push_back(cost);
-        total+=cost;
+        total += cost;
     }
 
     float avg = total / childs_size;
@@ -306,8 +306,8 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
     std::vector<std::shared_ptr<std::thread>> threads;
     for (int child_idx = 0; child_idx < childs_size; child_idx++)
     {
-        int start_index=childs[child_idx].idx;
-        int end_index=nodes.back().idx;
+        int start_index = childs[child_idx].idx;
+        int end_index = nodes.back().idx;
         if (child_idx + 1 < childs.size())
             end_index = childs[child_idx + 1].idx - 1;
 
@@ -316,19 +316,19 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
         std::filesystem::path child_onnx_path = OnnxPathManager::GetChildModelSavePath(modelName, child_idx);
         std::filesystem::path child_params_path = OnnxPathManager::GetChildModelParamsSavePath(modelName, child_idx);
 
-        //this->ExtractModelByNodeWithWrite(&infos[child_idx],onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true);
+        // this->ExtractModelByNodeWithWrite(&infos[child_idx],onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true);
 
-        threads.push_back(std::make_shared<std::thread>(&ModelAnalyzer::ExtractModelByNodeWithWrite,this, &infos[child_idx],onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true));
+        threads.push_back(std::make_shared<std::thread>(&ModelAnalyzer::ExtractModelByNodeWithWrite, this, &infos[child_idx], onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true));
     }
 
-    for(auto &th: threads)
+    for (auto &th : threads)
     {
         th->join();
     }
-    
+
     // std::cout << "end split"<<std::endl;
 
-    for(int child_idx = 0; child_idx < childs_size; child_idx++)
+    for (int child_idx = 0; child_idx < childs_size; child_idx++)
     {
         total_param[std::to_string(child_idx)] = infos[child_idx];
     }
@@ -407,7 +407,7 @@ nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, 
 
 bool ModelAnalyzer::UniformSplit(int count, std::string GPU_Tag, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
 {
-    if(count>this->size() || count <= 1)
+    if (count > this->size() || count <= 1)
     {
         return false;
     }
