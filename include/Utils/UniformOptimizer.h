@@ -65,8 +65,6 @@ namespace UniformOptimizer
 	/// @return
 	double calculate_SO_total_fitness(const GA_Type::thisChromosomeType &X);
 
-	static std::ofstream output_file;
-
 	/// @brief
 	/// @param generation_number
 	/// @param last_generation

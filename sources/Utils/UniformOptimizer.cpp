@@ -11,6 +11,7 @@ namespace UniformOptimizer
 {
 	std::string GPU_Tag;
 	int split_num;
+	std::ofstream output_file;
 
 	using std::cout;
 	using std::endl;
@@ -31,7 +32,7 @@ namespace UniformOptimizer
 
 		for (int i = 0; i < breakpoints.size(); i++)
 		{
-			result += "breakpoint" + std::to_string(i + 1) + ": " + std::to_string(breakpoints[i]);
+			result += "breakpoint-" + std::to_string(i + 1) + ": " + std::to_string(breakpoints[i]);
 			if (i < breakpoints.size() - 1)
 			{
 				result += "; ";
@@ -192,7 +193,7 @@ namespace UniformOptimizer
 	{
 		const SplitVariance &best = last_generation.chromosomes[last_generation.best_chromosome_index].middle_costs;
 
-		static float raw_cost = [=]()
+		static float raw_cost = [&]()
 		{
 			return evam::TimeEvaluateChildModels_impl(best.model_name,-1, GPU_Tag);
 		}();
@@ -235,7 +236,7 @@ namespace UniformOptimizer
 		GPU_Tag = Tag;
 		// std::cout<<num<<std::endl;
 		// std::cout<<split_num<<std::endl;
-		output_file.open(RootPathManager::GetRunRootFold() / "results.csv");
+		output_file.open(RootPathManager::GetRunRootFold() / ("results-"+analyzer.getName()+"_"+std::to_string(num+1)+".csv"));
 		output_file << "step" << ", "
 					<< "model-name" << ", "
 					<< "cost-avg" << ", "

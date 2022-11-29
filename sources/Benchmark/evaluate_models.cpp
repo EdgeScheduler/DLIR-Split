@@ -21,7 +21,7 @@ namespace evam
     {
         static std::mutex mutex;
         std::unique_lock<std::mutex> lock(mutex);
-        static nlohmann::json cache = [=]()
+        static nlohmann::json cache = [&]()
         {
             if (std::filesystem::exists(BenchmarkPathManager::GetModelTimeBenchmarkCacheSavePath(model_name, GPU_tag)))
             {
@@ -41,7 +41,7 @@ namespace evam
         static Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "evaluate"); // log id: "test"
 
         static Ort::SessionOptions session_options;
-        static bool init_flag = []()
+        static bool init_flag = [&]()
         {
             session_options.SetIntraOpNumThreads(1);
             session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
