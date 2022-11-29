@@ -9,12 +9,15 @@
 
 namespace UniformOptimizer
 {
+		extern int split_num;
+
 	struct SplitSolution
 	{
-		int breakpoint1;
-		int breakpoint2;
-		int breakpoint3;
-
+		// int breakpoint1;
+		// int breakpoint2;
+		// int breakpoint3;
+		std::vector<int> breakpoints;
+		SplitSolution();
 		std::string to_string() const;
 	};
 
@@ -69,9 +72,10 @@ namespace UniformOptimizer
 
 	/// @brief
 	/// @param analyzer
-	void optimize(ModelAnalyzer& analyzer);
+	void optimize(ModelAnalyzer& analyzer, int split_num);
 
 	extern std::string GPU_Tag;
+
 
 }
 

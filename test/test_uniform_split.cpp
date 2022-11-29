@@ -4,7 +4,8 @@ using namespace std;
 int main()
 {
     ModelAnalyzer analyzer = ModelAnalyzer("vgg19");
-    if(!analyzer.UniformSplit(3))
+    std::cout<<"init"<<std::endl;
+    if(!analyzer.UniformSplit(5))
     {
         cout<<"bad aim"<<endl;
     }

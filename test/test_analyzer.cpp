@@ -18,10 +18,10 @@ int main()
     //onnx::ModelProto model = onnxUtil::load(analyzer.GetModelPath());
     //auto graph = model.graph();
 
-    UniformOptimizer::optimize(analyzer);
+    // UniformOptimizer::optimize(analyzer, 3);
 
     // graph.output();
-    // analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());
+    analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());
     // evam::EvalCurrentModelSplit("vgg19", "vgg19_0.json");
 
 
