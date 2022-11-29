@@ -231,7 +231,7 @@ nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_c
         th->join();
     }
     
-    std::cout << "end split"<<std::endl;
+    // std::cout << "end split"<<std::endl;
 
     for(int child_idx = 0; child_idx < childs_size; child_idx++)
     {
@@ -312,12 +312,12 @@ nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, 
 
 bool ModelAnalyzer::UniformSplit(int count)
 {
-    if(count>this->size())
+    if(count>this->size() || count <= 1)
     {
         return false;
     }
-
-    UniformOptimizer::optimize(*this);
+    std::cout<<count<<std::endl;
+    UniformOptimizer::optimize(*this, count - 1);
     return true;
 }
 
