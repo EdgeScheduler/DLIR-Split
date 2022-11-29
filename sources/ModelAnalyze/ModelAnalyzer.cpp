@@ -4,7 +4,9 @@
 #include <vector>
 #include <memory>
 #include <iterator>
+#include <shared_mutex>
 #include <mutex>
+#include <condition_variable>
 #include "openGA.hpp"
 #include "onnx/shape_inference/implementation.h"
 #include "Benchmark/evaluate_models.h"
@@ -109,14 +111,15 @@ void ModelAnalyzer::ExtractModelByNodeWithEvaluate(std::string model_name, std::
 {
     static int global_flag = 0;
     static std::mutex mutex;
-    std::unique_lock<std::mutex> lock(mutex);
-    static std::mutex gpu_mutex;
-    int flag = 0;
+    static std::shared_mutex device_mutex;
 
+    std::unique_lock<std::mutex> lock(mutex);
+    int flag = 0;
     flag = global_flag;
     global_flag++;
     lock.unlock();
 
+    std::shared_lock<std::shared_mutex> share_lock(device_mutex);
     std::filesystem::create_directories(OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag));
     std::filesystem::path model_path = OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) / "model.onnx";
     std::filesystem::path param_path = OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) / "param.json";
@@ -124,13 +127,16 @@ void ModelAnalyzer::ExtractModelByNodeWithEvaluate(std::string model_name, std::
     *value = ExtractModelByNode(raw_onnx_path, model_path, param_path, *start_node, *end_node, print_error);
     (*value)["from"] = start_node->idx;
     (*value)["to"] = end_node->idx;
+    share_lock.unlock();
 
-    std::unique_lock<std::mutex> gpu_lock(gpu_mutex);
+    //std::this_thread::sleep_for(std::chrono::milliseconds(6000));
+
+    std::unique_lock<std::shared_mutex> device_lock(device_mutex);
     (*value)["cost"] = evam::TimeEvaluateChildModels_impl(model_name, model_path, std::to_string(start_node->idx) + "-" + std::to_string(end_node->idx), GPU_tag);
-    std::cout << "rm: " << OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) << std::endl;
-    gpu_lock.unlock();
+    //std::cout << "rm: " << OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) << std::endl;
+    device_lock.unlock();
 
-    // std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag));
+    std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag));
 }
 
 nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path, GraphNode &start_node, GraphNode &end_node, bool print_error)
@@ -238,7 +244,7 @@ double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs, std::vec
         if (child_idx + 1 < childs.size())
             end_index = childs[child_idx + 1].idx - 1;
 
-        std::cout << modelName << "-" << child_idx << " ==|> " << nodes[start_index].name << " --> " << nodes[end_index].name << std::endl;
+        // std::cout << modelName << "-" << child_idx << " ==|> " << nodes[start_index].name << " --> " << nodes[end_index].name << std::endl;
 
         // this->ExtractModelByNodeWithWrite(&infos[child_idx],onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true);
 
@@ -405,14 +411,14 @@ nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, 
     return params_dict;
 }
 
-bool ModelAnalyzer::UniformSplit(int count, std::string GPU_Tag, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
+bool ModelAnalyzer::UniformSplit(int count, std::string GPU_Tag, bool enable_muti_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
 {
     if (count > this->size() || count <= 1)
     {
         return false;
     }
     // std::cout<<count<<std::endl;
-    UniformOptimizer::optimize(*this, count - 1, GPU_Tag, early_exit, generation, population, tol_stall_best, best_stall_max);
+    UniformOptimizer::optimize(*this, count - 1, GPU_Tag, enable_muti_thread, early_exit, generation, population, tol_stall_best, best_stall_max);
     return true;
 }
 

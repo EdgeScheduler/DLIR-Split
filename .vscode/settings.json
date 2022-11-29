@@ -73,7 +73,8 @@
     "cassert": "cpp",
     "hash_map": "cpp",
     "hash_set": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "*.inc": "cpp"
   },
   "code-runner.executorMap": {
     "javascript": "node",

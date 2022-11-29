@@ -1604,8 +1604,10 @@ protected:
 		for(int index=x_index_begin;index<=x_index_end;index++)
 		{
 			if(verbose)
-				cout<<"Action: crossover"<<endl;
-
+			{
+				// cout<<"Action: crossover"<<endl;
+			}
+				
 			bool successful=false;
 			while(!successful)
 			{
@@ -1616,7 +1618,10 @@ protected:
 				if(pidx_c1==pidx_c2)
 					continue ;
 				if(verbose)
-					cout<<"Crossover of chromosomes "<<pidx_c1<<","<<pidx_c2<<endl;
+				{
+					// cout<<"Crossover of chromosomes "<<pidx_c1<<","<<pidx_c2<<endl;
+				}
+					
 				GeneType Xp1=last_generation.chromosomes[pidx_c1].genes;
 				GeneType Xp2=last_generation.chromosomes[pidx_c2].genes;
 				X.genes=crossover(Xp1,Xp2,[this](){return random01();});

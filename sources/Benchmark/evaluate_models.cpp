@@ -50,7 +50,7 @@ namespace evam
         }();
         
         Ort::Session session(env, model_path.c_str(), session_options);
-        std::cout<<model_name<<", "<< model_path.c_str() << ", "<<key<<std::endl;
+        // std::cout<<model_name<<", "<< model_path.c_str() << ", "<<key<<std::endl;
 
         ModelInfo modelInfo(session);
         // cout << modelInfo << endl;
@@ -88,8 +88,6 @@ namespace evam
             vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
             clock_t end = clock();
 
-            std::cout<<(end - start) * 1000.0/CLOCKS_PER_SEC<<" ";
-
             if (i >= cold_num)
             {
                 time_cost += (end - start) * 1000.0;
@@ -100,7 +98,6 @@ namespace evam
                 Ort::OrtRelease(value.release());
             }
         }
-        std::cout<<std::endl;
 
         float result = time_cost / (test_count - cold_num) /  CLOCKS_PER_SEC;
 

@@ -27,6 +27,7 @@ namespace UniformOptimizer
 		// is stored but not yet finalized.
 		std::vector<float> costs;
 		double objective1;
+		std::string model_name;
 		std::string to_string() const;
 	};
 
@@ -74,7 +75,7 @@ namespace UniformOptimizer
 
 	/// @brief
 	/// @param analyzer
-	void optimize(ModelAnalyzer& analyzer, int split_num, std::string GPU_Tag, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max);
+	void optimize(ModelAnalyzer& analyzer, int split_num, std::string GPU_Tag, bool enable_muti_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max);
 
 	extern std::string GPU_Tag;
 

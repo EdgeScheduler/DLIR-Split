@@ -27,14 +27,14 @@ namespace UniformOptimizer
 
 	string SplitSolution::to_string() const
 	{
-		string result = string("{");
+		string result = string("{ ");
 
 		for (int i = 0; i < breakpoints.size(); i++)
 		{
 			result += "breakpoint" + std::to_string(i + 1) + ": " + std::to_string(breakpoints[i]);
 			if (i < breakpoints.size() - 1)
 			{
-				result += ", ";
+				result += "; ";
 			}
 		}
 		result += "}";
@@ -45,11 +45,10 @@ namespace UniformOptimizer
 
 	std::string SplitVariance::to_string() const
 	{
-		std::string result = std::to_string(objective1);
+		std::string result="{";
 
 		if (costs.size() > 0)
 		{
-			result += " ==> { ";
 			for (auto cost : costs)
 			{
 				result += std::to_string(cost) + " ";
@@ -57,7 +56,6 @@ namespace UniformOptimizer
 			result += "}";
 		}
 
-		result += "\n";
 		return result;
 		// return string("{") + "breakpoint1:" + std::to_string(breakpoint1) + ", breakpoint2:" + std::to_string(breakpoint2) /* +", breakpoint3:"+std::to_string(breakpoint3)*/ + "}";
 	}
@@ -104,15 +102,16 @@ namespace UniformOptimizer
 		// analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2], analyzer[breakpoint3]});
 		// analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2]});
 
+		c.model_name=analyzer.getName();
 		c.objective1 = analyzer.SplitAndEvaluateChilds(c.costs, splits, GPU_Tag);
 
-		std::cout<<"cost ==> ";
-		for(auto cost : c.costs)
-		{
-			std::cout<<cost <<" ";
-		}
+		// std::cout<<"cost ==> ";
+		// for(auto cost : c.costs)
+		// {
+		// 	std::cout<<cost <<" ";
+		// }
 
-		std::cout<<std::endl;
+		// std::cout<<std::endl;
 
 		// analyzer.SplitAndStoreChilds(splits);
 		// c.objective1 = evam::EvalStdCurrentModelSplit(analyzer.getName());
@@ -191,37 +190,60 @@ namespace UniformOptimizer
 
 	void SO_report_generation(int generation_number, const EA::GenerationType<SplitSolution, SplitVariance> &last_generation, const SplitSolution &best_genes)
 	{
+		const SplitVariance &best = last_generation.chromosomes[last_generation.best_chromosome_index].middle_costs;
+
+		static float raw_cost = [=]()
+		{
+			return evam::TimeEvaluateChildModels_impl(best.model_name,-1, GPU_Tag);
+		}();
+
+		float total=0.0f;
+		for(auto& cost: best.costs)
+		{
+			total+=cost;
+		}
+
 		cout
 			<< "Generation [" << generation_number << "], "
-			<< "Best=" << last_generation.best_total_cost << ", "
-			<< "Average=" << last_generation.average_cost << ", "
-			<< "Best genes=(" << best_genes.to_string() << ")"
-			<< ", "
+			<< "Best std=" << last_generation.best_total_cost << ", "
+			<< "Average std=" << last_generation.average_cost << ", "
+			<< "Best split=" << best_genes.to_string() << ", "
 			<< "Exe_time=" << last_generation.exe_time
+			<< endl
+			<< "> Best:"<< endl
+			<< "bench =|> " << best.to_string() << endl
+			<< "total=" << total << "ms" << endl
+			<< "raw=" <<raw_cost << "ms" << endl
+			<< "overhead=" << (total-raw_cost)/raw_cost <<endl
+			<< "std=" << best.objective1 << endl
 			<< endl;
 
 		output_file
-			<< generation_number << "\t"
-			<< last_generation.average_cost << "\t"
-			<< last_generation.best_total_cost << "\t"
-			<< best_genes.to_string() << "\n";
+			<< generation_number << ", "
+			<< best.model_name << ", "
+			<< last_generation.average_cost << ", "
+			<< last_generation.best_total_cost << ", "
+			<< best_genes.to_string() << ", "
+			<< best.to_string() << ", "
+			<< (total-raw_cost)/raw_cost << ", "
+			<< total << endl;
 	}
 
-	void optimize(ModelAnalyzer &analyzer, int num, std::string Tag, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
+	void optimize(ModelAnalyzer &analyzer, int num, std::string Tag, bool enable_muti_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
 	{
 		split_num = num;
 		GPU_Tag = Tag;
 		// std::cout<<num<<std::endl;
 		// std::cout<<split_num<<std::endl;
-		output_file.open(RootPathManager::GetRunRootFold() / "results.txt");
-		output_file << "step"
-					<< "\t"
-					<< "cost_avg"
-					<< "\t"
-					<< "cost_best"
-					<< "\t"
-					<< "solution_best"
-					<< "\n";
+		output_file.open(RootPathManager::GetRunRootFold() / "results.csv");
+		output_file << "step" << ", "
+					<< "model-name" << ", "
+					<< "cost-avg" << ", "
+					<< "cost-best" << ", "
+					<< "solution-best" << ", "
+					<< "runtime-bench (ms)" << ", "
+					<< "overhead" << ", "
+					<< "total cost (ms)" << endl;
 
 		EA::Chronometer timer;
 		timer.tic();
@@ -230,10 +252,11 @@ namespace UniformOptimizer
 		ga_obj.split_num = num;
 		// ga_obj.analyzer=analyzer;
 		ga_obj.problem_mode = EA::GA_MODE::SOGA;
-		ga_obj.multi_threading = false;
+		ga_obj.multi_threading = enable_muti_thread;
 		ga_obj.idle_delay_us = 10; // switch between threads quickly
 		ga_obj.dynamic_threading = true;
 		ga_obj.verbose = true;
+		ga_obj.N_threads=10;
 		ga_obj.population = population;
 		ga_obj.generation_max = generation;
 		ga_obj.calculate_SO_total_fitness = calculate_SO_total_fitness;
