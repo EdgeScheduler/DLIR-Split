@@ -491,7 +491,6 @@ public:
 			report_generation(new_generation);
 		}
 		last_generation=new_generation;
-
 		return stop_critera();
 	}
 
@@ -1028,7 +1027,6 @@ protected:
 			g2=g;
 			return ;
 		}
-
 		if(verbose)
 			cout<<"Transfered elites: ";
 		vector<int> blocked;

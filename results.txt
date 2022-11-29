@@ -1,0 +1,6 @@
+step	cost_avg	cost_best	solution_best
+0	24.0328	3.16867	{breakpoint1: 5, breakpoint2: 6}
+1	26.5857	3.16867	{breakpoint1: 5, breakpoint2: 6}
+2	26.5857	3.16867	{breakpoint1: 5, breakpoint2: 6}
+3	26.5857	3.16867	{breakpoint1: 5, breakpoint2: 6}
+4	26.5857	3.16867	{breakpoint1: 5, breakpoint2: 6}

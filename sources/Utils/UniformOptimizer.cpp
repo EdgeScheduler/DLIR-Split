@@ -5,6 +5,7 @@
 #include "Utils/UniformOptimizer.h"
 #include "ModelAnalyze/ModelAnalyzer.h"
 #include "Benchmark/evaluate_models.h"
+#include <algorithm>
 
 namespace UniformOptimizer
 {
@@ -70,7 +71,7 @@ namespace UniformOptimizer
 		{
 			p.breakpoints[0] = 0.0 + range * rnd01();
 			// std::cout<<"init_gene1";
-		} while (p.breakpoints[0] == 0 || p.breakpoints[0] > range - (size + 0));
+		} while (p.breakpoints[0] == 0 || p.breakpoints[0] > range - size + 0);
 		// std::cout<<std::endl;
 
 		for (int i = 1; i <= size - 1; i++)
@@ -79,7 +80,7 @@ namespace UniformOptimizer
 			{
 				p.breakpoints[i] = 0.0 + range * rnd01();
 				// std::cout<<"init_gene2";
-			} while (p.breakpoints[i] <= p.breakpoints[i - 1] || p.breakpoints[i] > range - (size + i));
+			} while (p.breakpoints[i] <= p.breakpoints[i - 1] || p.breakpoints[i] > range - size + i);
 			// std::cout<<std::endl;
 		}
 
@@ -124,25 +125,33 @@ namespace UniformOptimizer
 		bool in_range;
 		int range = analyzer.size();
 		int size = split_num;
-		in_range = true;
-		X_new = X_base;
 		do
-		{
-			X_new.breakpoints[0] = X_base.breakpoints[0] + mu * (rnd01() - rnd01());
-			in_range = in_range && (X_new.breakpoints[0] == 0 || X_new.breakpoints[0] > range - (size + 0));
-			std::cout << "mutate1";
+		{	
+			in_range = true;
+			X_new = X_base;
+			X_new.breakpoints[0] += mu * (rnd01() - rnd01());
+			in_range = in_range && (X_new.breakpoints[0] > 0 && X_new.breakpoints[0] < range);
+			// in_range = in_range && (X_new.breakpoints[0] > 0 && X_new.breakpoints[0] < range - size + 1);
+			if(size > 1)
+			{
+				for (int i = 1; i <= size - 1; i++)
+				{
+					X_new.breakpoints[i] += mu * (rnd01() - rnd01());
+					in_range = in_range && (X_new.breakpoints[i] > 0 && X_new.breakpoints[i] < range);
+					for(int j = 0; j < i; j++)
+					{
+						in_range = in_range && (X_new.breakpoints[i] != X_new.breakpoints[j]);
+					}
+
+					// X_new.breakpoints[i] += mu * (rnd01() - rnd01());
+					// in_range = in_range && (X_new.breakpoints[i] > X_new.breakpoints[i - 1] && X_new.breakpoints[i] < range - size + i + 1);
+
+					std::cout << "mutate2";
+				}
+			}
 		} while (!in_range);
 		// std::cout<<std::endl;
-		for (int i = 1; i <= size - 1; i++)
-		{
-			do
-			{
-				X_new.breakpoints[i] = X_base.breakpoints[i] + mu * (rnd01() - rnd01());
-				in_range = in_range && (X_new.breakpoints[i] <= X_new.breakpoints[i - 1] || X_new.breakpoints[i] > range - (size + i));
-				std::cout << "mutate2";
-			} while (!in_range);
-			// std::cout<<"____"<<std::endl;
-		}
+		
 		// std::cout<<"end";
 
 		// X_new.breakpoint3+=mu*(rnd01()-rnd01());
@@ -221,7 +230,7 @@ namespace UniformOptimizer
 		ga_obj.multi_threading = false;
 		ga_obj.idle_delay_us = 10; // switch between threads quickly
 		ga_obj.dynamic_threading = true;
-		ga_obj.verbose = false;
+		ga_obj.verbose = true;
 		ga_obj.population = population;
 		ga_obj.generation_max = generation;
 		ga_obj.calculate_SO_total_fitness = calculate_SO_total_fitness;
@@ -233,7 +242,7 @@ namespace UniformOptimizer
 		ga_obj.crossover_fraction = 0.7;
 		ga_obj.mutation_rate = 0.2;
 		ga_obj.best_stall_max = best_stall_max;
-		ga_obj.elite_count = 10;
+		ga_obj.elite_count = std::max(1, int(population/4));
 		ga_obj.tol_stall_best = tol_stall_best;
 		ga_obj.early_exit = early_exit;
 		ga_obj.solve();
