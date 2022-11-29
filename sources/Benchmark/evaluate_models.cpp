@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <time.h>
 #include <onnxruntime_cxx_api.h>
 #include "Common/Drivers.h"
@@ -18,6 +19,8 @@ namespace evam
 {
     float TimeEvaluateChildModels_impl(std::string model_name, std::filesystem::path model_path, std::string key, std::string GPU_tag, int test_count, int default_batchsize)
     {
+        static std::mutex mutex;
+        std::unique_lock<std::mutex> lock(mutex);
         static nlohmann::json cache = [=]()
         {
             if (std::filesystem::exists(BenchmarkPathManager::GetModelTimeBenchmarkCacheSavePath(model_name, GPU_tag)))
@@ -30,19 +33,24 @@ namespace evam
             }
         }();
 
-        std::cout<<model_name<<", "<< model_path << ", "<<key<<std::endl;
         if (cache.contains(key))
         {
             return cache[key].get<float>();
         }
 
-        Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "evaluate"); // log id: "test"
+        static Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "evaluate"); // log id: "test"
 
-        Ort::SessionOptions session_options;
-        session_options.SetIntraOpNumThreads(1);
-        session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
-        session_options.AppendExecutionProvider_CUDA(Drivers::GPU_CUDA::GPU0);
+        static Ort::SessionOptions session_options;
+        static bool init_flag = []()
+        {
+            session_options.SetIntraOpNumThreads(1);
+            session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
+            session_options.AppendExecutionProvider_CUDA(Drivers::GPU_CUDA::GPU0);
+            return true;
+        }();
+        
         Ort::Session session(env, model_path.c_str(), session_options);
+        std::cout<<model_name<<", "<< model_path.c_str() << ", "<<key<<std::endl;
 
         ModelInfo modelInfo(session);
         // cout << modelInfo << endl;
@@ -64,54 +72,27 @@ namespace evam
             input_values.push_back(tensor);
         }
 
-        vector<TensorValue<float>> output_tensors;
         vector<const char *> output_labels;
         for (const ValueInfo &info : modelInfo.GetOutput().GetAllTensors())
         {
-            output_tensors.push_back(TensorValue(info, false));
             output_labels.push_back(info.GetName().c_str());
         }
 
-        // cout << "input values:" << endl;
-        // for (auto &tensor : input_tensors)
-        // {
-        //     tensor.Print();
-        // }
-
-        clock_t start = clock();
-        vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
-
-        // cout << endl
-        //     << "run-0(" << setiosflags(ios::fixed) << setprecision(2) << (clock() - start) * 1000.0 / CLOCKS_PER_SEC << "ms)." << endl;
-        // print with TensorValue
-        for (int i = 0; i < output_values.size(); i++)
-        {
-            output_tensors[i].RecordOrtValue(output_values[i]);
-        }
-
-        // for (auto &tensor : output_tensors)
-        // {
-        //     tensor.Print();
-        // }
-
         float time_cost = 0;
-        int cold_num = 2;
+        int cold_num = 3;
+        test_count+=cold_num;
         // start to test run time
-        clock_t end;
         for (int i = 0; i < test_count; i++)
         {
-            // for (auto &tensor : input_tensors)
-            // {
-            //     tensor.Random();
-            // }
-            start = clock();
+            clock_t start = clock();
             vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
-            // cout << "run-" << i << "(" << setiosflags(ios::fixed) << setprecision(2) << (clock() - start) * 1000.0 / CLOCKS_PER_SEC << "ms)."
-            //     << "=> [" << setprecision(6) << *output_values[0].GetTensorMutableData<float>() << " ...]" << endl;
-            end = clock();
+            clock_t end = clock();
+
+            std::cout<<(end - start) * 1000.0/CLOCKS_PER_SEC<<" ";
+
             if (i >= cold_num)
             {
-                time_cost += (end - start) * 1000.0 / CLOCKS_PER_SEC;
+                time_cost += (end - start) * 1000.0;
             }
             // release memory
             for (auto &value : output_values)
@@ -119,11 +100,14 @@ namespace evam
                 Ort::OrtRelease(value.release());
             }
         }
+        std::cout<<std::endl;
 
-        float result = time_cost / (test_count - cold_num);
+        float result = time_cost / (test_count - cold_num) /  CLOCKS_PER_SEC;
 
         cache[key] = result;
         JsonSerializer::StoreJson(cache, BenchmarkPathManager::GetModelTimeBenchmarkCacheSavePath(model_name, GPU_tag), true);
+
+        lock.unlock();
         return result;
     }
 
