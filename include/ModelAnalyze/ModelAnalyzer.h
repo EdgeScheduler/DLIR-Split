@@ -59,13 +59,17 @@ public:
 
     void ExtractModelByNodeWithWrite(nlohmann::json* value,std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,GraphNode* start_node, GraphNode* end_node, bool print_error = true);
 
+    void ExtractModelByNodeWithEvaluate(std::string model_name, std::string GPU_tag, nlohmann::json* value,std::filesystem::path raw_onnx_path, GraphNode* start_node, GraphNode* end_node, bool print_error = true);
+
     /// @brief
     void RecordDependency();
 
     /// @brief
     /// @param childs
     /// @return
-    nlohmann::json SplitAndStoreChilds(std::vector<GraphNode> childs);
+    nlohmann::json SplitAndStoreChilds(std::vector<GraphNode>  input_childs);
+
+    double SplitAndEvaluateChilds(std::vector<float> &costs, std::vector<GraphNode> input_childs, std::string GPU_tag="default");
 
     /// @brief
     /// @param onnx_path

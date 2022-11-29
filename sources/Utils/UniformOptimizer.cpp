@@ -19,25 +19,44 @@ namespace UniformOptimizer
 	typedef EA::GenerationType<SplitSolution, SplitVariance> Generation_Type;
 
 
-	// SplitSolution::SplitSolution()
-	// {
-
-	// }
-
 	SplitSolution::SplitSolution()
 	{
 		breakpoints = std::vector<int>(split_num);
 	}
-	
 
 	string SplitSolution::to_string() const
 	{
-		string result;
-		for(int i = 0; i < breakpoints.size(); i++)
+		string result = string("{");
+
+		for (int i = 0; i < breakpoints.size(); i++)
 		{
-			result += string("{") + "breakpoint" + std::to_string(i + 1) + ": " + std::to_string(breakpoints[i]) + ", ";
+			result += "breakpoint" + std::to_string(i + 1) + ": " + std::to_string(breakpoints[i]);
+			if (i < breakpoints.size() - 1)
+			{
+				result += ", ";
+			}
 		}
-		result += "}\n";
+		result += "}";
+
+		return result;
+		// return string("{") + "breakpoint1:" + std::to_string(breakpoint1) + ", breakpoint2:" + std::to_string(breakpoint2) /* +", breakpoint3:"+std::to_string(breakpoint3)*/ + "}";
+	}
+
+	std::string SplitVariance::to_string() const
+	{
+		std::string result = std::to_string(objective1);
+
+		if (costs.size() > 0)
+		{
+			result += " ==> { ";
+			for (auto cost : costs)
+			{
+				result += std::to_string(cost) + " ";
+			}
+			result += "}";
+		}
+
+		result += "\n";
 		return result;
 		// return string("{") + "breakpoint1:" + std::to_string(breakpoint1) + ", breakpoint2:" + std::to_string(breakpoint2) /* +", breakpoint3:"+std::to_string(breakpoint3)*/ + "}";
 	}
@@ -53,8 +72,8 @@ namespace UniformOptimizer
 			// std::cout<<"init_gene1";
 		} while (p.breakpoints[0] == 0 || p.breakpoints[0] > range - (size + 0));
 		// std::cout<<std::endl;
-		
-		for(int i = 1; i <= size - 1; i++)
+
+		for (int i = 1; i <= size - 1; i++)
 		{
 			do
 			{
@@ -77,14 +96,23 @@ namespace UniformOptimizer
 		// const int& breakpoint3=p.breakpoint3;
 
 		std::vector<GraphNode> splits;
-		for(auto &point : p.breakpoints)
+		for (auto &point : p.breakpoints)
 		{
 			splits.push_back(analyzer[point]);
 		}
 		// analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2], analyzer[breakpoint3]});
-		analyzer.SplitAndStoreChilds(splits);
 		// analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2]});
-		c.objective1 = evam::EvalStdCurrentModelSplit(analyzer.getName());
+		c.objective1 = analyzer.SplitAndEvaluateChilds(c.costs, splits, GPU_Tag);
+
+		std::cout<<"cost ==> ";
+		for(auto cost : c.costs)
+		{
+			std::cout<<cost <<" ";
+		}
+
+		std::cout<<std::endl;
+		// analyzer.SplitAndStoreChilds(splits);
+		// c.objective1 = evam::EvalStdCurrentModelSplit(analyzer.getName());
 		// evam::EvalStdCurrentModelSplit(analyzer.getName(), analyzer.getName());
 		return true; // solution is accepted
 	}
@@ -98,23 +126,25 @@ namespace UniformOptimizer
 		int size = split_num;
 		in_range = true;
 		X_new = X_base;
-		do{
+		do
+		{
 			X_new.breakpoints[0] = X_base.breakpoints[0] + mu * (rnd01() - rnd01());
 			in_range = in_range && (X_new.breakpoints[0] == 0 || X_new.breakpoints[0] > range - (size + 0));
-			std::cout<<"mutate1";
-		}while(!in_range);
+			std::cout << "mutate1";
+		} while (!in_range);
 		// std::cout<<std::endl;
-		for(int i = 1; i <= size - 1; i++)
+		for (int i = 1; i <= size - 1; i++)
 		{
-			do{
+			do
+			{
 				X_new.breakpoints[i] = X_base.breakpoints[i] + mu * (rnd01() - rnd01());
 				in_range = in_range && (X_new.breakpoints[i] <= X_new.breakpoints[i - 1] || X_new.breakpoints[i] > range - (size + i));
-				std::cout<<"mutate2";
-			}while(!in_range);
+				std::cout << "mutate2";
+			} while (!in_range);
 			// std::cout<<"____"<<std::endl;
 		}
 		// std::cout<<"end";
-		
+
 		// X_new.breakpoint3+=mu*(rnd01()-rnd01());
 		// in_range=in_range&&(X_new.breakpoint3>=0.0 && X_new.breakpoint3<range);
 		return X_new;
@@ -125,7 +155,7 @@ namespace UniformOptimizer
 		SplitSolution X_new;
 		double r;
 		int size = split_num;
-		for(int i = 0; i <= size; i++)
+		for (int i = 0; i <= size; i++)
 		{
 			r = rnd01();
 			X_new.breakpoints[i] = r * X1.breakpoints[i] + (1.0 - r) * X2.breakpoints[i];
@@ -165,13 +195,13 @@ namespace UniformOptimizer
 			<< best_genes.to_string() << "\n";
 	}
 
-	void optimize(ModelAnalyzer& analyzer, int num, std::string Tag, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
+	void optimize(ModelAnalyzer &analyzer, int num, std::string Tag, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
 	{
 		split_num = num;
 		GPU_Tag = Tag;
 		// std::cout<<num<<std::endl;
 		// std::cout<<split_num<<std::endl;
-		output_file.open(RootPathManager::GetRunRootFold()/"results.txt");
+		output_file.open(RootPathManager::GetRunRootFold() / "results.txt");
 		output_file << "step"
 					<< "\t"
 					<< "cost_avg"

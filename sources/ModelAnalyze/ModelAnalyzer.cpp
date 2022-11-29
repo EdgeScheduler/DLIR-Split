@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <iterator>
+#include <mutex>
 #include "openGA.hpp"
 #include "onnx/shape_inference/implementation.h"
 #include "Benchmark/evaluate_models.h"
@@ -104,6 +105,32 @@ void ModelAnalyzer::ExtractModelByNodeWithWrite(nlohmann::json* value,std::files
     (*value)["to"] = end_node->idx;
 }
 
+void ModelAnalyzer::ExtractModelByNodeWithEvaluate(std::string model_name, std::string GPU_tag, nlohmann::json* value,std::filesystem::path raw_onnx_path,GraphNode* start_node, GraphNode* end_node, bool print_error)
+{
+    static int global_flag=0;
+    static std::mutex mutex;
+    static std::mutex gpu_mutex;
+    int flag=0;
+    std::unique_lock<std::mutex> lock(mutex);
+
+    flag=global_flag;
+    global_flag++;
+    lock.unlock();
+
+    std::filesystem::create_directories(OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag));
+    
+    *value=ExtractModelByNode(raw_onnx_path,OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag)/"model.onnx",OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag)/"param.json",*start_node,*end_node,print_error);
+    (*value)["from"] = start_node->idx;
+    (*value)["to"] = end_node->idx;
+
+    std::unique_lock<std::mutex> gpu_lock(gpu_mutex);
+    (*value)["cost"] = evam::TimeEvaluateChildModels_impl(model_name,OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag)/"model.onnx",std::to_string(start_node->idx)+"-"+std::to_string(end_node->idx),GPU_tag);
+    gpu_lock.unlock();
+
+    //std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag));
+}
+
+
 nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path,GraphNode& start_node, GraphNode& end_node, bool print_error)
 {
 
@@ -174,6 +201,74 @@ void ModelAnalyzer::RecordDependency()
         if (idx > 0)
             nodes[idx - 1].dependencies_outputs = nodes[idx].dependencies_inputs;
     }
+}
+
+double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs,std::vector<GraphNode> input_childs, std::string GPU_tag)
+{
+    std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold() / this->getName() / "childs/");
+    std::vector<GraphNode> childs = std::vector<GraphNode>();
+    for (auto &child : input_childs)
+        if (EnableStart(child))
+            childs.emplace_back(child);
+    sort(childs.begin(), childs.end(), [](GraphNode x, GraphNode y)
+         { return x.idx <= y.idx; });
+    if (childs.size() < 1 || childs[0].idx != 0)
+        childs.emplace(childs.begin(), nodes[0]);
+
+    std::vector<GraphNode> childs_ = std::vector<GraphNode>();
+    int tmp = -1;
+    for (auto &child : childs)
+    {
+        if (child.idx > tmp)
+        {
+            childs_.emplace_back(child);
+            tmp = child.idx;
+        }
+    }
+    childs = childs_;
+
+
+    int childs_size = childs.size();
+    std::vector<nlohmann::json> infos(childs_size);
+    std::vector<std::shared_ptr<std::thread>> threads;
+    for (int child_idx = 0; child_idx < childs_size; child_idx++)
+    {
+        int start_index=childs[child_idx].idx;
+        int end_index=nodes.back().idx;
+        if (child_idx + 1 < childs.size())
+            end_index = childs[child_idx + 1].idx - 1;
+
+        std::cout << modelName << "-" << child_idx << " ==|> " << nodes[start_index].name << " --> " << nodes[end_index].name << std::endl;
+
+        //this->ExtractModelByNodeWithWrite(&infos[child_idx],onnxPath, child_onnx_path, child_params_path, &nodes[start_index], &nodes[end_index], true);
+
+        threads.push_back(std::make_shared<std::thread>(&ModelAnalyzer::ExtractModelByNodeWithEvaluate,this,modelName,GPU_tag, &infos[child_idx],onnxPath, &nodes[start_index], &nodes[end_index], true));
+    }
+
+    for(auto &th: threads)
+    {
+        th->join();
+    }
+    
+    // std::cout << "end split"<<std::endl;
+    costs.clear();
+    float total=0.0f;
+    for(int child_idx = 0; child_idx < childs_size; child_idx++)
+    {
+        float cost=infos[child_idx]["cost"].get<float>();
+        costs.push_back(cost);
+        total+=cost;
+    }
+
+    float avg = total / childs_size;
+    float var = 0.0f;
+    for (auto &cost : costs)
+    {
+        var += pow(cost - avg, 2);
+    }
+    float sigma = sqrt(var / childs_size);
+
+    return (double)sigma;
 }
 
 nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_childs)

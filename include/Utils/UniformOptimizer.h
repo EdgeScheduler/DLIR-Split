@@ -25,7 +25,9 @@ namespace UniformOptimizer
 	{
 		// This is where the results of simulation
 		// is stored but not yet finalized.
+		std::vector<float> costs;
 		double objective1;
+		std::string to_string() const;
 	};
 
 	typedef EA::Genetic<SplitSolution, SplitVariance> GA_Type;

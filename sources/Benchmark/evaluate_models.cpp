@@ -16,7 +16,7 @@ using namespace std;
 
 namespace evam
 {
-    float TimeEvaluateChildModels_impl(std::string model_name, int child_num, std::string GPU_tag, int test_count, int default_batchsize)
+    float TimeEvaluateChildModels_impl(std::string model_name, std::filesystem::path model_path, std::string key, std::string GPU_tag, int test_count, int default_batchsize)
     {
         static nlohmann::json cache = [=]()
         {
@@ -30,14 +30,12 @@ namespace evam
             }
         }();
 
-        nlohmann::json child_summary = JsonSerializer::LoadJson(OnnxPathManager::GetChildModelSumParamsSavePath(model_name));
-        std::string key = std::to_string(child_summary[std::to_string(child_num)]["from"].get<int>()) + "-" + std::to_string(child_summary[std::to_string(child_num)]["to"].get<int>());
+        std::cout<<model_name<<", "<< model_path << ", "<<key<<std::endl;
         if (cache.contains(key))
         {
             return cache[key].get<float>();
         }
 
-        std::filesystem::path model_path = OnnxPathManager::GetChildModelSavePath(model_name, child_num);
         Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "evaluate"); // log id: "test"
 
         Ort::SessionOptions session_options;
@@ -127,6 +125,14 @@ namespace evam
         cache[key] = result;
         JsonSerializer::StoreJson(cache, BenchmarkPathManager::GetModelTimeBenchmarkCacheSavePath(model_name, GPU_tag), true);
         return result;
+    }
+
+    float TimeEvaluateChildModels_impl(std::string model_name, int child_num, std::string GPU_tag, int test_count, int default_batchsize)
+    {
+        nlohmann::json child_summary = JsonSerializer::LoadJson(OnnxPathManager::GetChildModelSumParamsSavePath(model_name));
+        std::string key = std::to_string(child_summary[std::to_string(child_num)]["from"].get<int>()) + "-" + std::to_string(child_summary[std::to_string(child_num)]["to"].get<int>());
+        
+        return TimeEvaluateChildModels_impl(model_name,OnnxPathManager::GetChildModelSavePath(model_name, child_num), key, GPU_tag, test_count, default_batchsize);
     }
 
     nlohmann::json TimeEvaluateChildModels(std::string model_name, std::string GPU_tag, int test_count, int default_batchsize)
