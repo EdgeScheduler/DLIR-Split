@@ -316,7 +316,7 @@ bool ModelAnalyzer::UniformSplit(int count)
     {
         return false;
     }
-    std::cout<<count<<std::endl;
+    // std::cout<<count<<std::endl;
     UniformOptimizer::optimize(*this, count - 1);
     return true;
 }
