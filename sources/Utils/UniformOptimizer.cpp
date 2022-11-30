@@ -230,8 +230,13 @@ namespace UniformOptimizer
 			<< total << endl;
 	}
 
-	void optimize(ModelAnalyzer &analyzer, int num, std::string Tag, bool enable_muti_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
+	void optimize(ModelAnalyzer &analyzer, int num, std::string Tag, int n_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
 	{
+		if(n_thread<1)
+		{
+			n_thread=1;
+		}
+
 		split_num = num;
 		GPU_Tag = Tag;
 		// std::cout<<num<<std::endl;
@@ -253,11 +258,11 @@ namespace UniformOptimizer
 		ga_obj.split_num = num;
 		// ga_obj.analyzer=analyzer;
 		ga_obj.problem_mode = EA::GA_MODE::SOGA;
-		ga_obj.multi_threading = enable_muti_thread;
-		ga_obj.idle_delay_us = 10; // switch between threads quickly
-		ga_obj.dynamic_threading = true;
+		ga_obj.multi_threading = n_thread>1;
+		ga_obj.idle_delay_us = n_thread; // switch between threads quickly
+		ga_obj.dynamic_threading = false;
 		ga_obj.verbose = true;
-		ga_obj.N_threads=10;
+		ga_obj.N_threads=n_thread;
 		ga_obj.population = population;
 		ga_obj.generation_max = generation;
 		ga_obj.calculate_SO_total_fitness = calculate_SO_total_fitness;

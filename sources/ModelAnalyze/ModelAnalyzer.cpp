@@ -411,14 +411,14 @@ nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, 
     return params_dict;
 }
 
-bool ModelAnalyzer::UniformSplit(int count, std::string GPU_Tag, bool enable_muti_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
+bool ModelAnalyzer::UniformSplit(int count, std::string GPU_Tag, int n_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
 {
     if (count > this->size() || count <= 1)
     {
         return false;
     }
     // std::cout<<count<<std::endl;
-    UniformOptimizer::optimize(*this, count - 1, GPU_Tag, enable_muti_thread, early_exit, generation, population, tol_stall_best, best_stall_max);
+    UniformOptimizer::optimize(*this, count - 1, GPU_Tag, n_thread, early_exit, generation, population, tol_stall_best, best_stall_max);
     return true;
 }
 

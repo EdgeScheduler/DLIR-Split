@@ -1,0 +1,10 @@
+step, model-name, cost-avg, cost-best, solution-best, runtime-bench (ms), overhead, total cost (ms)
+0, resnet50, 5.90545, 2.89092, { breakpoint-1: 43; breakpoint-2: 55; breakpoint-3: 63; breakpoint-4: 101}, {13.355333 10.719000 9.019000 8.370667 4.564000 }, 1.48071, 46.028
+1, resnet50, 5.24612, 2.56413, { breakpoint-1: 42; breakpoint-2: 42; breakpoint-3: 61; breakpoint-4: 92}, {12.814333 9.217667 6.877000 6.287666 }, 0.896951, 35.1967
+2, resnet50, 4.78884, 1.65633, { breakpoint-1: 35; breakpoint-2: 46; breakpoint-3: 57; breakpoint-4: 79}, {12.425000 9.280000 8.916000 8.832333 7.400000 }, 1.5252, 46.8533
+3, resnet50, 4.28927, 1.65633, { breakpoint-1: 35; breakpoint-2: 46; breakpoint-3: 57; breakpoint-4: 79}, {12.425000 9.280000 8.916000 8.832333 7.400000 }, 1.5252, 46.8533
+4, resnet50, 3.98153, 1.65633, { breakpoint-1: 35; breakpoint-2: 46; breakpoint-3: 57; breakpoint-4: 79}, {12.425000 9.280000 8.916000 8.832333 7.400000 }, 1.5252, 46.8533
+5, resnet50, 3.90678, 1.08006, { breakpoint-1: 33; breakpoint-2: 43; breakpoint-3: 54; breakpoint-4: 71}, {11.440000 8.827667 9.433333 8.877333 8.365666 }, 1.53008, 46.944
+6, resnet50, 3.58631, 1.08006, { breakpoint-1: 33; breakpoint-2: 43; breakpoint-3: 54; breakpoint-4: 71}, {11.440000 8.827667 9.433333 8.877333 8.365666 }, 1.53008, 46.944
+7, resnet50, 3.25829, 1.08006, { breakpoint-1: 33; breakpoint-2: 43; breakpoint-3: 54; breakpoint-4: 71}, {11.440000 8.827667 9.433333 8.877333 8.365666 }, 1.53008, 46.944
+8, resnet50, 3.24681, 1.08006, { breakpoint-1: 33; breakpoint-2: 43; breakpoint-3: 54; breakpoint-4: 71}, {11.440000 8.827667 9.433333 8.877333 8.365666 }, 1.53008, 46.944

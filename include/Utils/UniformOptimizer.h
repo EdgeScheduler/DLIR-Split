@@ -73,7 +73,7 @@ namespace UniformOptimizer
 
 	/// @brief
 	/// @param analyzer
-	void optimize(ModelAnalyzer& analyzer, int split_num, std::string GPU_Tag, bool enable_muti_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max);
+	void optimize(ModelAnalyzer& analyzer, int split_num, std::string GPU_Tag, int n_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max);
 
 	extern std::string GPU_Tag;
 
