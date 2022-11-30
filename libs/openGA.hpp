@@ -608,6 +608,7 @@ protected:
 		if(is_single_objective())
 		{
 			double best=new_generation.chromosomes[0].total_cost;
+			// bool is_legal = (new_generation.chromosomes[0].middle_costs.objective1 < 0.05 * new_generation.chromosomes[0].middle_costs.raw_time && )
 			double sum=0;
 			new_generation.best_chromosome_index=0;
 
@@ -619,6 +620,7 @@ protected:
 				{
 					new_generation.best_chromosome_index=i;
 					best=current_cost;
+					// is_legal = 
 				}
 				best=std::min(best,current_cost);
 			}
