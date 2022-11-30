@@ -86,7 +86,7 @@ public:
     /// @return
     const std::vector<GraphNode> &GetAllNodes() const;
 
-    bool UniformSplit(int count, std::string GPU_Tag="default", int n_thread=1, bool early_exit=true, int generation=100, int population=50, double tol_stall_best=1e-2, int best_stall_max=3);
+    bool UniformSplit(int count, std::string GPU_Tag="default", bool enable_bench_cache=false, int n_thread=1, bool early_exit=true, int generation=100, int population=50, double tol_stall_best=1e-2, int best_stall_max=3);
 
     /// @brief
     /// @param i

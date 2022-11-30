@@ -12,6 +12,7 @@ namespace UniformOptimizer
 	std::string GPU_Tag;
 	int split_num;
 	std::ofstream output_file;
+	static bool enable_bench_cache;
 
 	using std::cout;
 	using std::endl;
@@ -132,7 +133,7 @@ namespace UniformOptimizer
 		// analyzer.SplitAndStoreChilds(splits);
 		// c.objective1 = evam::EvalStdCurrentModelSplit(analyzer.getName());
 
-		// evam::EvalStdCurrentModelSplit(analyzer.getName(), analyzer.getName());
+		// evam::EvalStdCurrentModelSplit(analyzer.getName(), analyzer.getName(),GPU_Tag,enable_bench_cache);
 		return true; // solution is accepted
 	}
 
@@ -164,7 +165,7 @@ namespace UniformOptimizer
 					// X_new.breakpoints[i] += mu * (rnd01() - rnd01());
 					// in_range = in_range && (X_new.breakpoints[i] > X_new.breakpoints[i - 1] && X_new.breakpoints[i] < range - size + i + 1);
 
-					std::cout << "mutate2";
+					// std::cout << "mutate2";
 				}
 			}
 		} while (!in_range);
@@ -231,8 +232,9 @@ namespace UniformOptimizer
 			<< best.total << endl;
 	}
 
-	void optimize(ModelAnalyzer &analyzer, int num, std::string Tag, int n_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
+	void optimize(ModelAnalyzer &analyzer, int num, std::string Tag, bool enable_bench_cache, int n_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
 	{
+		UniformOptimizer::enable_bench_cache=enable_bench_cache;
 		if(n_thread<1)
 		{
 			n_thread=1;
@@ -260,7 +262,7 @@ namespace UniformOptimizer
 		ga_obj.problem_mode = EA::GA_MODE::SOGA;
 		ga_obj.multi_threading = n_thread>1;
 		ga_obj.idle_delay_us = n_thread; // switch between threads quickly
-		ga_obj.dynamic_threading = false;
+		ga_obj.dynamic_threading = true;
 		ga_obj.verbose = true;
 		ga_obj.N_threads=n_thread;
 		ga_obj.population = population;

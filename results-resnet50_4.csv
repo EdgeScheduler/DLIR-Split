@@ -1,9 +1,0 @@
-step, model-name, cost-avg, cost-best, solution-best, runtime-bench (ms), overhead, total cost (ms)
-0, resnet50, 6.06123, 3.07568, { breakpoint-1: 37; breakpoint-2: 74; breakpoint-3: 93}, {12.766333 13.515333 8.951333 5.872666 }, 1.21542, 41.1057
-1, resnet50, 5.21119, 2.4357, { breakpoint-1: 40; breakpoint-2: 62; breakpoint-3: 67}, {12.391667 8.553667 5.579333 9.574000 }, 0.945565, 36.0987
-2, resnet50, 4.39609, 1.57084, { breakpoint-1: 33; breakpoint-2: 59; breakpoint-3: 81}, {11.440000 14.631000 11.847667 10.377333 }, 1.60295, 48.296
-3, resnet50, 3.75517, 1.09971, { breakpoint-1: 33; breakpoint-2: 58; breakpoint-3: 80}, {11.440000 10.772000 8.972000 8.944000 }, 1.16273, 40.128
-4, resnet50, 2.87631, 0.922174, { breakpoint-1: 39; breakpoint-2: 58; breakpoint-3: 81}, {12.377667 11.061667 9.938333 10.377333 }, 1.35821, 43.755
-5, resnet50, 2.6582, 0.922174, { breakpoint-1: 39; breakpoint-2: 58; breakpoint-3: 81}, {12.377667 11.061667 9.938333 10.377333 }, 1.35821, 43.755
-6, resnet50, 2.31289, 0.922174, { breakpoint-1: 39; breakpoint-2: 58; breakpoint-3: 81}, {12.377667 11.061667 9.938333 10.377333 }, 1.35821, 43.755
-7, resnet50, 2.18121, 0.922174, { breakpoint-1: 39; breakpoint-2: 58; breakpoint-3: 81}, {12.377667 11.061667 9.938333 10.377333 }, 1.35821, 43.755

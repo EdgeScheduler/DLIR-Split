@@ -111,7 +111,7 @@ void ModelAnalyzer::ExtractModelByNodeWithEvaluate(std::string model_name, std::
 {
     static int global_flag = 0;
     static std::mutex mutex;
-    static std::shared_mutex device_mutex;
+    // static std::shared_mutex device_mutex;
 
     std::unique_lock<std::mutex> lock(mutex);
     int flag = 0;
@@ -119,7 +119,9 @@ void ModelAnalyzer::ExtractModelByNodeWithEvaluate(std::string model_name, std::
     global_flag++;
     lock.unlock();
 
-    std::shared_lock<std::shared_mutex> share_lock(device_mutex);
+    // std::cout<<"---------------->"<<flag<<std::endl;
+
+    // std::shared_lock<std::shared_mutex> share_lock(device_mutex);
     std::filesystem::create_directories(OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag));
     std::filesystem::path model_path = OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) / "model.onnx";
     std::filesystem::path param_path = OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) / "param.json";
@@ -127,16 +129,19 @@ void ModelAnalyzer::ExtractModelByNodeWithEvaluate(std::string model_name, std::
     *value = ExtractModelByNode(raw_onnx_path, model_path, param_path, *start_node, *end_node, print_error);
     (*value)["from"] = start_node->idx;
     (*value)["to"] = end_node->idx;
-    share_lock.unlock();
+    (*value)["m_path"]=model_path;
+    (*value)["key"]= std::to_string(start_node->idx) + "-" + std::to_string(end_node->idx);
+    (*value)["fold"]=OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag);
+    // share_lock.unlock();
 
     //std::this_thread::sleep_for(std::chrono::milliseconds(6000));
 
-    std::unique_lock<std::shared_mutex> device_lock(device_mutex);
-    (*value)["cost"] = evam::TimeEvaluateChildModels_impl(model_name, model_path, std::to_string(start_node->idx) + "-" + std::to_string(end_node->idx), GPU_tag);
-    //std::cout << "rm: " << OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) << std::endl;
-    device_lock.unlock();
+    // std::unique_lock<std::shared_mutex> device_lock(device_mutex);
+    // (*value)["cost"] = evam::TimeEvaluateChildModels_impl(model_name, model_path, std::to_string(start_node->idx) + "-" + std::to_string(end_node->idx), GPU_tag);
+    // //std::cout << "rm: " << OnnxPathManager::GetOnnxRootFold() / "cache" / std::to_string(flag) << std::endl;
+    // device_lock.unlock();
 
-    std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag));
+    // std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold()/"cache"/std::to_string(flag));
 }
 
 nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path, GraphNode &start_node, GraphNode &end_node, bool print_error)
@@ -213,6 +218,9 @@ void ModelAnalyzer::RecordDependency()
 
 double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs, std::vector<GraphNode> input_childs, std::string GPU_tag)
 {
+    static std::shared_mutex device_mutex;
+
+    std::shared_lock<std::shared_mutex> share_lock(device_mutex);
     std::vector<GraphNode> childs = std::vector<GraphNode>();
     for (auto &child : input_childs)
         if (EnableStart(child))
@@ -256,14 +264,27 @@ double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs, std::vec
         th->join();
     }
 
+    share_lock.unlock();
+    std::unique_lock<std::shared_mutex> run_lock(device_mutex);
+
     // std::cout << "end split"<<std::endl;
     costs.clear();
+    
     float total = 0.0f;
     for (int child_idx = 0; child_idx < childs_size; child_idx++)
     {
-        float cost = infos[child_idx]["cost"].get<float>();
+        // float cost = infos[child_idx]["cost"].get<float>();
+       
+        float cost =  evam::TimeEvaluateChildModels_impl(modelName, infos[child_idx]["m_path"].get<std::filesystem::path>(), infos[child_idx]["key"].get<std::string>(), GPU_tag);
+        
+
         costs.push_back(cost);
         total += cost;
+
+        std::filesystem::remove_all(infos[child_idx]["fold"].get<std::filesystem::path>());
+        infos[child_idx].erase("m_path");
+        infos[child_idx].erase("key");
+        infos[child_idx].erase("fold");
     }
 
     float avg = total / childs_size;
@@ -272,6 +293,7 @@ double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs, std::vec
     {
         var += pow(cost - avg, 2);
     }
+    run_lock.unlock();
 
     return sqrt(var / childs_size);
 }
@@ -410,14 +432,14 @@ nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, 
     return params_dict;
 }
 
-bool ModelAnalyzer::UniformSplit(int count, std::string GPU_Tag, int n_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
+bool ModelAnalyzer::UniformSplit(int count, std::string GPU_Tag,bool enable_bench_cache, int n_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)
 {
     if (count > this->size() || count <= 1)
     {
         return false;
     }
     // std::cout<<count<<std::endl;
-    UniformOptimizer::optimize(*this, count - 1, GPU_Tag, n_thread, early_exit, generation, population, tol_stall_best, best_stall_max);
+    UniformOptimizer::optimize(*this, count - 1, GPU_Tag, enable_bench_cache, n_thread, early_exit, generation, population, tol_stall_best, best_stall_max);
     return true;
 }
 

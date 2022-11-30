@@ -1028,7 +1028,9 @@ protected:
 			return ;
 		}
 		if(verbose)
-			cout<<"Transfered elites: ";
+		{
+			// cout<<"Transfered elites: ";
+		}
 		vector<int> blocked;
 		for(int i=0;i<elite_count;i++)
 		{
@@ -1036,12 +1038,15 @@ protected:
 			blocked.push_back(g.sorted_indices[i]);
 			if(verbose)
 			{
-				cout<<(i==0?"":", ");
-				cout<<(g.sorted_indices[i]+1);
+				// cout<<(i==0?"":", ");
+				// cout<<(g.sorted_indices[i]+1);
 			}
 		}
 		if(verbose)
-			cout<<endl;
+		{
+			// cout<<endl;
+		}
+			
 		for(int i=0;i<int(population)-elite_count;i++)
 		{
 			int j;
@@ -1058,7 +1063,9 @@ protected:
 			blocked.push_back(g.sorted_indices[j]);
 		}
 		if(verbose)
-			cout<<"Selection done."<<endl;
+		{
+			// cout<<"Selection done."<<endl;
+		}
 	}
 
 	void rank_population(thisGenerationType &gen)
@@ -1580,7 +1587,7 @@ protected:
 
 		if(verbose)
 		{
-			cout<<"Initial population of "<<population<<" was created with "<<total_attempts<<" attemps."<<endl;
+			// cout<<"Initial population of "<<population<<" was created with "<<total_attempts<<" attemps."<<endl;
 		}
 	}
 
@@ -1628,7 +1635,9 @@ protected:
 				if(random01()<=mutation_rate)
 				{
 					if(verbose)
-						cout<<"Mutation of chromosome "<<endl;
+					{
+						// cout<<"Mutation of chromosome "<<endl;
+					}
 					double shrink_scale=get_shrink_scale(generation_step,[this](){return random01();});
 					X.genes=mutate(X.genes,[this](){return random01();},shrink_scale, analyzer);
 				}
@@ -1724,10 +1733,10 @@ protected:
 				best_stall_count++;
 			else
 				best_stall_count=0;
-			if(std::abs(g1.average_cost-g2.average_cost)<tol_stall_average)
-				average_stall_count++;
-			else
-				average_stall_count=0;
+			// if(std::abs(g1.average_cost-g2.average_cost)<tol_stall_average)
+			// 	average_stall_count++;
+			// else
+			// 	average_stall_count=0;
 		}
 
 		if(early_exit)
