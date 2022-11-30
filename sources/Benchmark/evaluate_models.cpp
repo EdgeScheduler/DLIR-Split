@@ -89,7 +89,7 @@ namespace evam
             vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
             clock_t end = clock();
 
-            // std::cout<<(end - start) * 1000.0/CLOCKS_PER_SEC<<" ";
+            std::cout<<(end - start) * 1000.0/CLOCKS_PER_SEC<<" ";
             if (i >= cold_num)
             {
                 time_cost += (end - start) * 1000.0;
@@ -100,7 +100,7 @@ namespace evam
                 Ort::OrtRelease(value.release());
             }
         }
-        // std::cout<<std::endl;
+        std::cout<<std::endl;
 
         float result = time_cost / (test_count - cold_num) /  CLOCKS_PER_SEC;
 
@@ -164,7 +164,7 @@ namespace evam
         std::cout << std::endl
                   << "sigma: " << sigma << std::endl;
         result["childs"]["Std"] = sigma;
-        result["childs"]["Improve"] = (raw - total) / raw;
+        result["childs"]["overhead"] = (total-raw) / raw;
         result["childs"]["total_time"] = total;
         return result;
     }

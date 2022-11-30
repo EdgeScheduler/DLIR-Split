@@ -1,0 +1,22 @@
+step, model-name, std, solution-best, runtime-bench (ms), overhead, total cost (ms)
+0, resnet50, 3.3836, { breakpoint-1: 33; breakpoint-2: 85; breakpoint-3: 96}, {11.655667 12.207667 5.202666 5.149000 }, 0.545416, 34.215
+1, resnet50, 2.94535, { breakpoint-1: 36; breakpoint-2: 65; breakpoint-3: 90}, {12.948667 11.110333 6.533333 6.054667 }, 0.655264, 36.647
+2, resnet50, 2.94535, { breakpoint-1: 36; breakpoint-2: 65; breakpoint-3: 90}, {12.948667 11.110333 6.533333 6.054667 }, 0.655264, 36.647
+3, resnet50, 2.76141, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 103}, {11.315000 9.311000 8.271334 3.777000 }, 0.475828, 32.6743
+4, resnet50, 2.76141, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 103}, {11.315000 9.311000 8.271334 3.777000 }, 0.475828, 32.6743
+5, resnet50, 2.40914, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 96}, {11.582000 9.515667 7.092667 5.214666 }, 0.50883, 33.405
+6, resnet50, 2.40914, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 96}, {11.582000 9.515667 7.092667 5.214666 }, 0.50883, 33.405
+7, resnet50, 2.40914, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 96}, {11.582000 9.515667 7.092667 5.214666 }, 0.50883, 33.405
+8, resnet50, 2.40914, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 96}, {11.582000 9.515667 7.092667 5.214666 }, 0.50883, 33.405
+9, resnet50, 2.40914, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 96}, {11.582000 9.515667 7.092667 5.214666 }, 0.50883, 33.405
+10, resnet50, 2.21417, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 100}, {11.140000 9.153333 7.868000 5.039667 }, 0.499616, 33.201
+11, resnet50, 2.00608, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 93}, {11.182667 9.664667 7.102000 6.135334 }, 0.539529, 34.0847
+12, resnet50, 2.03266, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 93}, {11.286667 9.287000 7.040667 6.042000 }, 0.520183, 33.6563
+13, resnet50, 2.03266, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 93}, {11.286667 9.287000 7.040667 6.042000 }, 0.520183, 33.6563
+14, resnet50, 2.06214, { breakpoint-1: 33; breakpoint-2: 62; breakpoint-3: 94}, {11.220333 9.294000 7.011333 5.882667 }, 0.508981, 33.4083
+15, resnet50, 2.00322, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 93}, {11.152000 9.182000 6.931666 6.004666 }, 0.502748, 33.2703
+16, resnet50, 2.00322, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 93}, {11.152000 9.182000 6.931666 6.004666 }, 0.502748, 33.2703
+17, resnet50, 2.00322, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 93}, {11.152000 9.182000 6.931666 6.004666 }, 0.502748, 33.2703
+18, resnet50, 2.00322, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 93}, {11.152000 9.182000 6.931666 6.004666 }, 0.502748, 33.2703
+19, resnet50, 2.00322, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 93}, {11.152000 9.182000 6.931666 6.004666 }, 0.502748, 33.2703
+20, resnet50, 2.00322, { breakpoint-1: 33; breakpoint-2: 61; breakpoint-3: 93}, {11.152000 9.182000 6.931666 6.004666 }, 0.502748, 33.2703
