@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     cout<<"=> split "<<model_name<<" to "<<count<<endl;
     ModelAnalyzer analyzer = ModelAnalyzer(model_name);
-    if(!analyzer.UniformSplit(count,"RTX-2080Ti",parser.get<int>("threads"),true,100,50, 0.01, 5))
+    if(!analyzer.UniformSplit(count,"RTX-2080Ti",parser.get<int>("threads"),true,100,4, 0.01, 5))
     {
         cout<<"bad aim"<<endl;
     }

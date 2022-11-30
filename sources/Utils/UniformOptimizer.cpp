@@ -94,17 +94,31 @@ namespace UniformOptimizer
 		// const int &breakpoint1 = p.breakpoint1;
 		// const int &breakpoint2 = p.breakpoint2;
 		// const int& breakpoint3=p.breakpoint3;
-
 		std::vector<GraphNode> splits;
 		for (auto &point : p.breakpoints)
 		{
 			splits.push_back(analyzer[point]);
 		}
+
+		static float raw_cost = [&]()
+		{
+			return evam::TimeEvaluateChildModels_impl(analyzer.getName(),-1, GPU_Tag);
+		}();
+
 		// analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2], analyzer[breakpoint3]});
 		// analyzer.SplitAndStoreChilds({analyzer[breakpoint1], analyzer[breakpoint2]});
 
 		c.model_name=analyzer.getName();
 		c.objective1 = analyzer.SplitAndEvaluateChilds(c.costs, splits, GPU_Tag);
+		
+		c.raw_time=raw_cost;
+		c.total=0.0f;
+		for(auto& cost: c.costs)
+		{
+			c.total+=cost;
+		}
+
+		c.overhead=(c.total-c.raw_time)/c.raw_time;
 
 		// std::cout<<"cost ==> ";
 		// for(auto cost : c.costs)
@@ -193,17 +207,6 @@ namespace UniformOptimizer
 	{
 		const SplitVariance &best = last_generation.chromosomes[last_generation.best_chromosome_index].middle_costs;
 
-		static float raw_cost = [&]()
-		{
-			return evam::TimeEvaluateChildModels_impl(best.model_name,-1, GPU_Tag);
-		}();
-
-		float total=0.0f;
-		for(auto& cost: best.costs)
-		{
-			total+=cost;
-		}
-
 		cout
 			<< "Generation [" << generation_number << "], "
 			<< "Best std=" << last_generation.best_total_cost << ", "
@@ -213,9 +216,9 @@ namespace UniformOptimizer
 			<< endl
 			<< "> Best:"<< endl
 			<< "bench =|> " << best.to_string() << endl
-			<< "total=" << total << "ms" << endl
-			<< "raw=" <<raw_cost << "ms" << endl
-			<< "overhead=" << (total-raw_cost)/raw_cost <<endl
+			<< "total=" << best.total << "ms" << endl
+			<< "raw=" <<best.raw_time << "ms" << endl
+			<< "overhead=" << best.overhead <<endl
 			<< "std=" << best.objective1 << endl
 			<< endl;
 
@@ -226,8 +229,8 @@ namespace UniformOptimizer
 			<< last_generation.best_total_cost << ", "
 			<< best_genes.to_string() << ", "
 			<< best.to_string() << ", "
-			<< (total-raw_cost)/raw_cost << ", "
-			<< total << endl;
+			<< best.overhead << ", "
+			<< best.total << endl;
 	}
 
 	void optimize(ModelAnalyzer &analyzer, int num, std::string Tag, int n_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max)

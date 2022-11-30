@@ -26,6 +26,9 @@ namespace UniformOptimizer
 		// This is where the results of simulation
 		// is stored but not yet finalized.
 		std::vector<float> costs;
+		double raw_time;
+		double overhead;
+		double total;
 		double objective1;
 		std::string model_name;
 		std::string to_string() const;
