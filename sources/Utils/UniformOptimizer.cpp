@@ -112,6 +112,7 @@ namespace UniformOptimizer
 		c.objective1 = analyzer.SplitAndEvaluateChilds(c.costs, splits, GPU_Tag);
 		
 		c.raw_time=raw_cost;
+		c.count=p.breakpoints.size()+1;
 		c.total=0.0f;
 		for(auto& cost: c.costs)
 		{

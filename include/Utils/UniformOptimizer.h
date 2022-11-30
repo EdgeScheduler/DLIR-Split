@@ -27,6 +27,7 @@ namespace UniformOptimizer
 		// is stored but not yet finalized.
 		std::vector<float> costs;
 		double raw_time;
+		int count;
 		double overhead;
 		double total;
 		double objective1;
