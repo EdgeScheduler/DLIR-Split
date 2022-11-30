@@ -198,10 +198,10 @@ namespace UniformOptimizer
 
 	double calculate_SO_total_fitness(const GA_Type::thisChromosomeType &X)
 	{
+		const SplitVariance &unit = X.middle_costs;
 		// finalize the cost
-		double final_cost = 0.0;
-		final_cost += X.middle_costs.objective1;
-		return final_cost;
+
+		return exp((unit.overhead/(0.08*unit.count)-1)*3)+exp((unit.objective1/(0.03*unit.raw_time)-1)*1);
 	}
 
 	void SO_report_generation(int generation_number, const EA::GenerationType<SplitSolution, SplitVariance> &last_generation, const SplitSolution &best_genes)
@@ -210,8 +210,6 @@ namespace UniformOptimizer
 
 		cout
 			<< "Generation [" << generation_number << "], "
-			<< "Best std=" << last_generation.best_total_cost << ", "
-			<< "Average std=" << last_generation.average_cost << ", "
 			<< "Best split=" << best_genes.to_string() << ", "
 			<< "Exe_time=" << last_generation.exe_time
 			<< endl
@@ -226,8 +224,7 @@ namespace UniformOptimizer
 		output_file
 			<< generation_number << ", "
 			<< best.model_name << ", "
-			<< last_generation.average_cost << ", "
-			<< last_generation.best_total_cost << ", "
+			<< best.objective1 << ", "
 			<< best_genes.to_string() << ", "
 			<< best.to_string() << ", "
 			<< best.overhead << ", "
@@ -248,8 +245,7 @@ namespace UniformOptimizer
 		output_file.open(RootPathManager::GetRunRootFold() / ("results-"+analyzer.getName()+"_"+std::to_string(num+1)+".csv"));
 		output_file << "step" << ", "
 					<< "model-name" << ", "
-					<< "cost-avg" << ", "
-					<< "cost-best" << ", "
+					<< "std" << ", "
 					<< "solution-best" << ", "
 					<< "runtime-bench (ms)" << ", "
 					<< "overhead" << ", "

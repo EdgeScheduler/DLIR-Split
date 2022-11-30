@@ -272,9 +272,8 @@ double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs, std::vec
     {
         var += pow(cost - avg, 2);
     }
-    float sigma = sqrt(var / childs_size);
 
-    return (double)sigma;
+    return sqrt(var / childs_size);
 }
 
 nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_childs)

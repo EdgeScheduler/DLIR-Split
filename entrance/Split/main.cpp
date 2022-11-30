@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
     parser.add<int>("count", 'c', "how many count to split [>0]", false, 3);
     parser.add<std::string>("model", 'm', "model name", false, "vgg19");
     parser.add<int>("threads", 't', "how many threads allowed, if value<1, default(1) will be valid.", false, 1);
+    parser.add<bool>("autoend", 'e', "allow early end.", false, true);
 
     parser.parse_check(argc, argv);
     int count = parser.get<int>("count") > 0 ? parser.get<int>("count") : 3;
@@ -16,7 +17,7 @@ int main(int argc, char *argv[])
 
     cout<<"=> split "<<model_name<<" to "<<count<<endl;
     ModelAnalyzer analyzer = ModelAnalyzer(model_name);
-    if(!analyzer.UniformSplit(count,"RTX-2080Ti",parser.get<int>("threads"),true,100,4, 0.01, 5))
+    if(!analyzer.UniformSplit(count,"RTX-2080Ti",parser.get<int>("threads"),parser.get<bool>("autoend"),100,50, 0.01, 5))
     {
         cout<<"bad aim"<<endl;
     }

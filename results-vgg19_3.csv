@@ -1,2 +1,3 @@
-step, model-name, cost-avg, cost-best, solution-best, runtime-bench (ms), overhead, total cost (ms)
-0, vgg19, 16.4333, 14.7807, { breakpoint-1: 8; breakpoint-2: 30}, {25.501333 42.659332 6.470334 }, 0.626267, 74.631
+step, model-name, std, solution-best, runtime-bench (ms), overhead, total cost (ms)
+0, vgg19, 2.44126, { breakpoint-1: 14; breakpoint-2: 21}, {24.843666 20.398001 19.157333 }, 0.329194, 64.399
+1, vgg19, 1.74785, { breakpoint-1: 12; breakpoint-2: 19}, {23.058666 18.806000 21.360666 }, 0.304969, 63.2253
