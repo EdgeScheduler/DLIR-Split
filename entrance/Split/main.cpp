@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     int count = parser.get<int>("count") > 0 ? parser.get<int>("count") : 3;
     std::string model_name=parser.get<std::string>("model");
 
-<<<<<<< Updated upstream
+// <<<<<<< Updated upstream
     int n_thread=parser.get<int>("threads");
     if(n_thread<1)
     {
@@ -33,11 +33,11 @@ int main(int argc, char *argv[])
     }
 
     cout<<"=> split "<<model_name<<" to "<<count<<" with threads="<<n_thread<<endl;
-=======
-    cout<<"=> split "<<model_name<<" to "<<count<<endl;
+// =======
+//     cout<<"=> split "<<model_name<<" to "<<count<<endl;
 
-    // 原代码
->>>>>>> Stashed changes
+//     // 原代码
+// >>>>>>> Stashed changes
     ModelAnalyzer analyzer = ModelAnalyzer(model_name);
     if(!analyzer.UniformSplit(count,parser.get<std::string>("GPU-Tag"),parser.get<bool>("enable-cache"),n_thread,parser.get<bool>("auto-end"),parser.get<int>("generation"),parser.get<int>("polution"), 0.01, parser.get<int>("stall-max")))
     {
