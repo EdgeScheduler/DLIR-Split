@@ -1,0 +1,78 @@
+{
+    "input": {
+        "data": [
+            {
+                "name": "ln_f.bias",
+                "shape": [
+                    768
+                ],
+                "type": 1
+            },
+            {
+                "name": "ln_f.weight",
+                "shape": [
+                    768
+                ],
+                "type": 1
+            },
+            {
+                "name": "onnx::Add_2622",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Pow_2619",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Reshape_3259",
+                "shape": [
+                    3
+                ],
+                "type": 7
+            }
+        ]
+    },
+    "model_path": "/home/onceas/Arantir/DLIR-Split/Onnxs/gpt128v2/childs/1115/gpt128v2-1115.onnx",
+    "output": {
+        "data": [
+            {
+                "name": "ln_f.bias",
+                "shape": [
+                    768
+                ],
+                "type": 1
+            },
+            {
+                "name": "ln_f.weight",
+                "shape": [
+                    768
+                ],
+                "type": 1
+            },
+            {
+                "name": "onnx::Add_2622",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Add_2623",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Pow_2619",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Reshape_3259",
+                "shape": [
+                    3
+                ],
+                "type": 7
+            }
+        ]
+    }
+}

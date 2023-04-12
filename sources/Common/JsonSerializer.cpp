@@ -16,6 +16,7 @@ namespace JsonSerializer
 {
     nlohmann::json LoadJson(const std::filesystem::path &path)
     {
+
         nlohmann::json obj = nlohmann::json::value_t::discarded;
         try
         {
@@ -30,12 +31,12 @@ namespace JsonSerializer
         {
             std::cout << "error while read json from " << path << ": unknown error." << std::endl;
         }
-
         return obj;
     }
 
     bool StoreJson(const nlohmann::json &json, const std::filesystem::path &path, bool enable_null_json)
     {
+        
         if (json == nullptr || json.is_discarded())
         {
             if (!enable_null_json)
@@ -74,7 +75,7 @@ namespace JsonSerializer
             std::cout << "error while write json to " << path << ": unknown error." << std::endl;
             return false;
         }
-
+        
         return true;
     }
 

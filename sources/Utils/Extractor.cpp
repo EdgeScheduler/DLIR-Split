@@ -23,6 +23,11 @@ onnx::ModelProto Extractor::extract_model(std::vector<std::string> input_names, 
     std::vector<onnx::ValueInfoProto> value_info = _collect_reachable_tensors_value_info(nodes);
     std::vector<onnx::FunctionProto> local_functions = _collect_referred_local_functions(nodes);
     onnx::ModelProto model = _make_model(nodes, inputs, outputs, initializer, value_info, local_functions);
+    // for( auto &o:outputs)
+    // {
+    //     std::cout<<o.name()<<"; ";
+    // }
+    // std::cout<<"____"<<std::endl;
     return model;
 }
 
@@ -31,8 +36,11 @@ std::map<std::string, onnx::ValueInfoProto> Extractor::_build_name2obj_dict(goog
     std::map<std::string, onnx::ValueInfoProto> result = std::map<std::string, onnx::ValueInfoProto>();
     for (auto &obj : objs)
     {
-        result.emplace(obj.name(), obj);
+        // std::cout<<"name: "<<obj.name()<<"; ";
+        if (obj.name() != "")
+            result.emplace(obj.name(), obj);
     }
+    // std::cout<<"___"<<std::endl;
     return result;
 }
 
@@ -80,24 +88,26 @@ std::vector<onnx::ValueInfoProto> Extractor::_collect_new_io_core(google::protob
 
     for (auto &name : io_names_to_keep)
     {
+        // std::cout<<"originalmap: "<<name<<"; ";
         new_io_vec.emplace_back(original_io_map[name]);
-        // std::cout<<"SSSSS"<<name<<std::endl;
     }
-        
+    // std::cout<<"___"<<std::endl;
     for (auto &name : new_io_names_to_add)
-    {
+    {// {   std::cout<<"vmap: "<<name<<"; ";
         new_io_vec.emplace_back(vimap[name]);
-        // std::cout<<"RRRRRR"<<name<<std::endl<<"_____"<<std::endl;
     }
-
+    // std::cout<<"____"<<std::endl;
     new_io_tensors = google::protobuf::RepeatedPtrField<onnx::ValueInfoProto>(new_io_vec.begin(), new_io_vec.end());
 
     std::map<std::string, onnx::ValueInfoProto> new_io_tensors_map = _build_name2obj_dict(new_io_tensors);
     std::vector<onnx::ValueInfoProto> result = std::vector<onnx::ValueInfoProto>();
     for (auto &name : io_names_to_extract)
-    {
-        result.emplace_back(new_io_tensors_map[name]);
+    {   
+        // std::cout<<"name: "<<new_io_tensors_map[name].name()<<"; ";
+        if (new_io_tensors_map[name].name() != "")
+            result.emplace_back(new_io_tensors_map[name]);
     }
+    // std::cout<<"____"<<std::endl;
     return result;
 }
 

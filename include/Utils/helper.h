@@ -7,6 +7,10 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <onnxruntime_cxx_api.h>
+#include "Tensor/ValueInfo.h"
+#include "Tensor/TensorValue.hpp"
+#include "Tensor/ModelTensorsInfo.h"
 
 // #include <nlohmann/json.hpp>
 // #include "onnx/shape_inference/implementation.h"
@@ -59,6 +63,15 @@ namespace onnxUtil
     /// @param onnx_path 
     /// @return 
     onnx::ModelProto load(const std::filesystem::path &onnx_path="");
+
+    /// @brief 
+    /// @param str 
+    /// @return 
+    ONNXTensorElementDataType IntToOnnxType(const int type);
+
+    /// @brief 
+    /// @param tensors 
+    void tensor_transform(std::vector<std::shared_ptr<TensorValueObject>> &tensors, const ValueInfo &info);
 }
 
 

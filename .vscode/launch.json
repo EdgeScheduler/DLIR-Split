@@ -4,8 +4,8 @@
             "name": "(gdb) 启动",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/bin/release/${fileBasenameNoExtension}",
-            "args": [],
+            "program": "${workspaceRoot}/bin/debug/${fileBasenameNoExtension}",
+            "args": ["-m", "googlenet"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
@@ -23,7 +23,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "C/C++: g++-8 build-release",
+            "preLaunchTask": "C/C++: g++-8 build-debug",
             "miDebuggerPath": "/usr/bin/gdb"
         },
         {
@@ -31,7 +31,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/bin/debug/${fileBasenameNoExtension}",
-            "args": [],
+            "args": ["-m", "gpt128v2"],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",
             "environment": [],

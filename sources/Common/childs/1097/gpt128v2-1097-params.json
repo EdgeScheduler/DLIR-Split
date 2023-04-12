@@ -1,0 +1,140 @@
+{
+    "input": {
+        "data": [
+            {
+                "name": "h.11.mlp.c_proj.bias",
+                "shape": [
+                    768
+                ],
+                "type": 1
+            },
+            {
+                "name": "input.283",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "ln_f.bias",
+                "shape": [
+                    768
+                ],
+                "type": 1
+            },
+            {
+                "name": "ln_f.weight",
+                "shape": [
+                    768
+                ],
+                "type": 1
+            },
+            {
+                "name": "onnx::Mul_2583",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Mul_2585",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Mul_2587",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Reshape_3251",
+                "shape": [
+                    2
+                ],
+                "type": 7
+            },
+            {
+                "name": "onnx::Reshape_3255",
+                "shape": [
+                    3
+                ],
+                "type": 7
+            },
+            {
+                "name": "onnx::Reshape_3259",
+                "shape": [
+                    3
+                ],
+                "type": 7
+            }
+        ]
+    },
+    "model_path": "/home/onceas/Arantir/DLIR-Split/Onnxs/gpt128v2/childs/1097/gpt128v2-1097.onnx",
+    "output": {
+        "data": [
+            {
+                "name": "h.11.mlp.c_proj.bias",
+                "shape": [
+                    768
+                ],
+                "type": 1
+            },
+            {
+                "name": "input.283",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "ln_f.bias",
+                "shape": [
+                    768
+                ],
+                "type": 1
+            },
+            {
+                "name": "ln_f.weight",
+                "shape": [
+                    768
+                ],
+                "type": 1
+            },
+            {
+                "name": "onnx::Mul_2583",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Mul_2585",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Mul_2587",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Mul_2588",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Reshape_3251",
+                "shape": [
+                    2
+                ],
+                "type": 7
+            },
+            {
+                "name": "onnx::Reshape_3255",
+                "shape": [
+                    3
+                ],
+                "type": 7
+            },
+            {
+                "name": "onnx::Reshape_3259",
+                "shape": [
+                    3
+                ],
+                "type": 7
+            }
+        ]
+    }
+}

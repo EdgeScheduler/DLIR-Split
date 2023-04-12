@@ -14,7 +14,7 @@ int main()
     // string modelname = "resnet";
     // ModelAnalyzer a = ModelAnalyzer(modelname, p);
 
-    ModelAnalyzer analyzer = ModelAnalyzer("vgg19");
+    ModelAnalyzer analyzer = ModelAnalyzer("googlenet");
     //onnx::ModelProto model = onnxUtil::load(analyzer.GetModelPath());
     //auto graph = model.graph();
 
@@ -22,7 +22,7 @@ int main()
 
     // graph.output();
     analyzer.SplitAndStoreChilds(analyzer.GetAllNodes());
-    // evam::EvalCurrentModelSplit("vgg19", "vgg19_0.json");
+    evam::TimeEvaluateChildModels("googlenet");
 
 
     // initializer

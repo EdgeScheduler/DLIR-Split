@@ -17,9 +17,9 @@ int main(int argc, char *argv[])
     parser.add<bool>("auto-end", 'e', "allow early end.", false, true);
     parser.add<bool>("enable-cache", 'h', "allow to use cache to speed bench.", false, false);
     parser.add<std::string>("GPU-Tag", 'g', "gpu tag.", false, "default");
-    parser.add<int>("polution", 'p', "polution.", false, 30);
-    parser.add<int>("generation", 'r', "generations.", false, 100);
-    parser.add<int>("stall-max", 's', "how may gens to end if fit.", false, 5);
+    parser.add<int>("polution", 'p', "polution.", false, 20); // 30
+    parser.add<int>("generation", 'r', "generations.", false, 100); // 100
+    parser.add<int>("stall-max", 's', "how may gens to end if fit.", false, 7); // 7
 
     parser.parse_check(argc, argv);
     int count = parser.get<int>("count") > 0 ? parser.get<int>("count") : 3;

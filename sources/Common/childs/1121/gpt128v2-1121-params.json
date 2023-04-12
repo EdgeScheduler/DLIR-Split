@@ -1,0 +1,32 @@
+{
+    "input": {
+        "data": [
+            {
+                "name": "onnx::Reshape_2628",
+                "shape": [],
+                "type": 1
+            },
+            {
+                "name": "onnx::Reshape_3259",
+                "shape": [
+                    3
+                ],
+                "type": 7
+            }
+        ]
+    },
+    "model_path": "/home/onceas/Arantir/DLIR-Split/Onnxs/gpt128v2/childs/1121/gpt128v2-1121.onnx",
+    "output": {
+        "data": [
+            {
+                "name": "output",
+                "shape": [
+                    1,
+                    128,
+                    768
+                ],
+                "type": 1
+            }
+        ]
+    }
+}

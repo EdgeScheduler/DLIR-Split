@@ -10,6 +10,7 @@ GraphNode::GraphNode()
     this->dependencies_outputs = std::vector<std::string>();
     this->params = std::set<std::string>();
     this->idx = 0;
+    this->input_info = nlohmann::json({});
 }
 
 GraphNode::GraphNode(onnx::NodeProto node, std::set<std::string> TotalParams, int index)
@@ -22,6 +23,7 @@ GraphNode::GraphNode(onnx::NodeProto node, std::set<std::string> TotalParams, in
     this->dependencies_outputs = std::vector<std::string>();
     this->params = std::set<std::string>();
     this->idx = index;
+    this->input_info = nlohmann::json({});
 
     int output_size = node.output_size();
     for (auto &output : node.output())
@@ -52,12 +54,14 @@ GraphNode::GraphNode(const GraphNode &node)
     this->dependencies_outputs = node.dependencies_outputs;
     this->params = node.params;
     this->idx = node.idx;
+    this->input_info = node.input_info;
 }
 
 bool GraphNode::operator==(GraphNode &node)
 {
     if (this->name == node.name && this->type == node.type && this->inputs == node.inputs && this->outputs == node.outputs &&
-        this->dependencies_inputs == node.dependencies_inputs && this->dependencies_outputs == node.dependencies_outputs && this->params == node.params && this->idx == node.idx)
+        this->dependencies_inputs == node.dependencies_inputs && this->dependencies_outputs == node.dependencies_outputs && this->params == node.params && this->idx == node.idx &&
+        this->input_info == node.input_info)
         return true;
     return false;
 }

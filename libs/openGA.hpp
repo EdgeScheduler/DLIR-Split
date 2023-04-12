@@ -325,6 +325,7 @@ public:
 	function<void(int,const thisGenerationType&,const vector<unsigned int>&)> MO_report_generation;
 	function<void(void)> custom_refresh;
 	function<double(int,const function<double(void)> &rnd01)> get_shrink_scale;
+	function<void(ModelAnalyzer&,const GeneType&)> split_with_result;
 	vector<thisGenSOAbs> generations_so_abs;
 	thisGenerationType last_generation;
 
@@ -369,6 +370,7 @@ public:
 		SO_report_generation(nullptr),
 		MO_report_generation(nullptr),
 		custom_refresh(nullptr),
+		split_with_result(nullptr),
 		get_shrink_scale(default_shrink_scale),
 		analyzer(analyzer)
 	{
@@ -491,7 +493,7 @@ public:
 			report_generation(new_generation);
 		}
 		last_generation=new_generation;
-		return stop_critera();
+		return stop_critera(new_generation);
 	}
 
 	StopReason solve()
@@ -1373,7 +1375,7 @@ protected:
 		thisGenerationType &generation,
 		unsigned int N_add, unsigned int &total_attempts)
 	{
-		vector<atomic<bool>> active_threads(N_threads);
+		vector<atomic<bool>> active_threads(N_threads);std::cout<<"0"<<std::endl;
 		for (auto& at : active_threads)
 			std::atomic_init(&at, false);
 
@@ -1405,7 +1407,7 @@ protected:
 
 		unsigned int x_index=0;
 		while(x_index<N_add && !user_request_stop)
-		{
+		{		
 			int free_thread=-1;
 			for(int i=0;i<N_threads && free_thread<0;i++)
 				if(!active_threads[i])
@@ -1415,9 +1417,9 @@ protected:
 					{
 						thread_pool[free_thread].join();
 					}
-				}
+				}		
 			if(free_thread>-1)
-			{
+			{		
 				active_threads[free_thread]=true;
 				thread_pool[free_thread]=
 					std::thread(
@@ -1565,20 +1567,20 @@ protected:
 
 		unsigned int total_attempts=0;
 		if(!multi_threading || N_threads==1 || is_interactive())
-		{
+		{	
 			sequential_action<&thisType::init_population_range>(
 				generation0,N_add,total_attempts);
 		}
 		else
 		{
 			if(dynamic_threading)
-			{
+			{	
 				// Perform the tasks by any available thread
 				dynamic_thread_action<&thisType::init_population_range>(
 					generation0,N_add,total_attempts);
 			}
 			else
-			{
+			{	
 				// Divide the tasks between threads equally
 				static_thread_action<&thisType::init_population_range>(
 					generation0,N_add,total_attempts);
@@ -1719,12 +1721,10 @@ protected:
 		}
 	}
 
-	StopReason stop_critera()
+	StopReason stop_critera(const thisGenerationType &new_generation)
 	{
 		if(generation_step<2 && !user_request_stop)
 			return StopReason::Undefined;
-
-
 
 		if(is_single_objective())
 		{
@@ -1740,21 +1740,31 @@ protected:
 			// else
 			// 	average_stall_count=0;
 		}
-
-		if(early_exit)
+		if (generation_step>=generation_max || best_stall_count>=best_stall_max || user_request_stop)
 		{
-			if(generation_step>=generation_max)
-				return StopReason::MaxGenerations;
+			if(early_exit)
+			{
+				// split_with_result(analyzer, new_generation.chromosomes[new_generation.best_chromosome_index].genes);
+				if(generation_step>=generation_max)
+				{
+					return StopReason::MaxGenerations;
+				}
+					
 
-			// if(average_stall_count>=average_stall_max)
-			// 	return StopReason::StallAverage;
+				// if(average_stall_count>=average_stall_max)
+				// 	return StopReason::StallAverage;
 
-			if(best_stall_count>=best_stall_max)
-				return StopReason::StallBest;
+				if(best_stall_count>=best_stall_max)
+				{
+					return StopReason::StallBest;
+				}
+					
+			}
+			if(user_request_stop)
+			{
+				return StopReason::UserRequest;
+			}
 		}
-		if(user_request_stop)
-			return StopReason::UserRequest;
-		
 		return StopReason::Undefined;
 	}
 

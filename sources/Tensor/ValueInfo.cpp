@@ -134,7 +134,9 @@ void ValueInfo::UpdateCount()
 {
     if (this->shape.size() < 1)
     {
-        this->dataCount = 0;
+        // experiment change: shape to 0
+        // this->dataCount = 0;
+        this->dataCount = 1;
         return;
     }
     else

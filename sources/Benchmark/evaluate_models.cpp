@@ -57,20 +57,31 @@ namespace evam
         // cout << modelInfo << endl;
 
         // cout << "input:" << endl;
-        vector<TensorValue<float>> input_tensors;
+        // vector<TensorValue<float>> input_tensors;
+        vector<std::shared_ptr<TensorValueObject>> input_tensors;
         vector<const char *> input_labels;
+
 
         for (const ValueInfo &info : modelInfo.GetInput().GetAllTensors())
         {
-            input_tensors.push_back(TensorValue(info, true));
+            // if(info.GetDataCount()<1)
+            // {
+            //     continue;
+            // }
+            // std::cout<<"info: "<<info.GetName()<<std::endl;
+            onnxUtil::tensor_transform(input_tensors, info);
+            // input_tensors.push_back(TensorValue(info, true));
             input_labels.push_back(info.GetName().c_str());
         }
-
+        // int i = 0;
         vector<Ort::Value> input_values;
         for (auto &tensor : input_tensors)
         {
-            input_values.push_back(tensor);
+            // std::cout<<i<<std::endl;
+            // i++;
+            input_values.push_back(*tensor);
         }
+        // std::cout<<"__"<<std::endl;
 
         vector<const char *> output_labels;
         for (const ValueInfo &info : modelInfo.GetOutput().GetAllTensors())
@@ -84,7 +95,7 @@ namespace evam
         // start to test run time
         // std::cout<<key<<"=>";
         for (int i = 0; i < test_count; i++)
-        {
+        {   
             clock_t start = clock();
             vector<Ort::Value> output_values = session.Run(Ort::RunOptions{nullptr}, input_labels.data(), input_values.data(), input_labels.size(), output_labels.data(), output_labels.size());
             clock_t end = clock();

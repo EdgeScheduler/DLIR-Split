@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <nlohmann/json.hpp>
 #include "openGA.hpp"
 #include "ModelAnalyze/ModelAnalyzer.h"
 
@@ -75,13 +76,21 @@ namespace UniformOptimizer
 	/// @param best_genes
 	void SO_report_generation(int generation_number, const EA::GenerationType<SplitSolution, SplitVariance> &last_generation, const SplitSolution &best_genes);
 
+	/// @brief 
+	/// @param analyzer 
+	/// @param best_genes 
+	void split_with_result(ModelAnalyzer& analyzer, std::vector<int> &best_genes);
+
 	/// @brief
 	/// @param analyzer
 	void optimize(ModelAnalyzer& analyzer, int split_num, std::string GPU_Tag, bool enable_bench_cache, int n_thread, bool early_exit, int generation, int population, double tol_stall_best, int best_stall_max);
 
 	extern std::string GPU_Tag;
 
+	/// @brief write log to json
+	/// @param path 
+	void AddSplitLog(int generation_number,const SplitVariance &best,const std::filesystem::path json_path=RootPathManager::GetRunRootFold()/"log"/"split-log.json");
+
 
 }
-
 #endif // __UNIFORMOPTIMIZER_H__

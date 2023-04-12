@@ -6,6 +6,7 @@
 #include <iterator>
 #include <shared_mutex>
 #include <mutex>
+#include <ctime>
 #include <condition_variable>
 #include "openGA.hpp"
 #include "onnx/shape_inference/implementation.h"
@@ -16,6 +17,8 @@
 #include "Common/PathManager.h"
 #include "Utils/helper.h"
 #include "Utils/UniformOptimizer.h"
+#include "Tensor/ValueInfo.h"
+#include "onnx/checker.h"
 
 ModelAnalyzer::ModelAnalyzer(std::string model_name, const std::filesystem::path &onnx_path)
 {
@@ -40,6 +43,7 @@ ModelAnalyzer::ModelAnalyzer(std::string model_name, const std::filesystem::path
     {
         std::cerr << "Error while initiating analyzer." << '\n';
     }
+    RuntimeAnalyze();
 }
 
 bool ModelAnalyzer::Init()
@@ -57,7 +61,7 @@ bool ModelAnalyzer::Init()
         int node_size = graph.node_size();
         for (int i = 0; i < node_size; i++)
             this->nodes.emplace_back(GraphNode(graph.node(i), params, i));
-        this->start_node = this->nodes[0];
+        // this->start_node = this->nodes[0];
 
         RecordDependency();
     }
@@ -77,7 +81,9 @@ void ModelAnalyzer::SetEnableCache(bool enable)
 
 bool ModelAnalyzer::EnableStart(GraphNode &node)
 {
-    if (node == this->nodes[0] || node.idx > this->start_node.idx)
+    // std::cout<<"name: "<<node.name<<std::endl;
+    // if ((node == this->nodes[0] || node.idx > this->start_node.idx) && (node.name.find("Constant") == std::string::npos))
+    if ((node == this->nodes[0] || node.idx > this->start_node.idx))
         return true;
     return false;
 }
@@ -98,6 +104,93 @@ nlohmann::json ModelAnalyzer::LoadCache()
         std::cerr << "Warning" << e.what() << '\n';
         return nlohmann::json({});
     }
+}
+
+void ModelAnalyzer::RuntimeAnalyze()
+{
+    std::cout<<"start to analyze model, it may cost some time."<<std::endl;
+    nlohmann::json cache = nlohmann::json({});
+    if (this->use_cache && std::filesystem::exists(OnnxPathManager::GetChildModelSumCacheSavePath(this->modelName)))
+        // cache = JsonSerializer::LoadJson(OnnxPathManager::GetChildModelSumCacheSavePath(this->modelName));
+        cache = LoadCache();
+
+    if (cache.empty() || !(cache.contains("data")) || cache["data"].size() != this->nodes.size())
+    {
+        // cache.clear();
+        cache["model-path"] = this->onnxPath;
+        cache["model-name"] = this->modelName;
+        time_t nowtime;
+        time(&nowtime);
+        tm p;
+        localtime_r(&nowtime, &p);
+
+        cache["create-time"] = std::to_string(p.tm_year + 1900) + "-" + std::to_string(p.tm_mon + 1) + "-" + std::to_string(p.tm_mday) + "-" + 
+        std::to_string(p.tm_hour) + "-" + std::to_string(p.tm_min) + "-" + std::to_string(p.tm_sec);
+        cache["data"] = nlohmann::json({});
+
+        std::filesystem::path tmp_onnx_path = OnnxPathManager::GetOnnxRootFold() / this->modelName / "childs" / "temp.onnx";
+        std::filesystem::path tmp_param_path = OnnxPathManager::GetOnnxRootFold() / this->modelName / "childs" / "temp.json";
+
+        for (int i = 0; i < this->nodes.size(); i++)
+        {
+            // std::cout<<"name: "<<nodes[i].name<<std::endl;
+            nlohmann::json info = this->ExtractModelByNode(this->onnxPath, tmp_onnx_path, tmp_param_path, nodes[i], nodes[i], false);
+            // std::cout<<i<<":"<<info.empty()<<":"<<info<<std::endl;
+            // std::cout<<i<<": "<<(info.empty() || (info["input"]["data"].empty() && info["output"]["data"].empty()))<<std::endl;
+            if (!(info.empty() || (info["input"]["data"].empty() && info["output"]["data"].empty())))
+            {
+                nodes[i].input_info = info["input"];
+                if (this->start_node.name == "")
+                {
+                    this->start_node = nodes[i];
+                }
+            }
+
+            cache["data"][std::to_string(i)] = info;
+        }
+        // std::cout<<"start node: "<<this->start_node<<std::endl;
+        std::filesystem::remove(tmp_onnx_path);
+        std::filesystem::remove(tmp_param_path);
+    }
+    else
+    {
+        std::cout<<"load cache created at "<<cache["create-time"]<<std::endl;
+        for (int i = 0; i < this->nodes.size(); i++)
+        {
+            nlohmann::json info = cache["data"][std::to_string(i)];
+            if (!info.empty())
+            {
+                if (info.contains("input"))
+                {
+                    nodes[i].input_info = info["input"];
+                }
+                // std::cout<<nodes[i].name<<";"<<info.contains("global")<<";"<<info["global"]<<std::endl;
+                if (this->start_node.name == "" && (!info.contains("global") || !info["global"]))
+                {
+                    this->start_node = nodes[i];
+                }
+            }
+        }
+    }
+    
+    if (this->nodes[0].input_info.empty() || this->nodes[0].input_info["data"].empty())
+    {
+        nlohmann::json info = CreateParamsInfo(this->onnxPath, OnnxPathManager::GetModelParamsSavePath(this->modelName));
+        this->nodes[0].input_info = info["input"];
+        cache["data"]["0"] = info;
+        cache["data"]["0"]["global"] = true;
+        if (cache["data"]["0"].contains("output"))
+        {
+            cache["data"]["0"].erase("output");
+        }
+    }
+    // std::cout<<OnnxPathManager::GetChildModelSumCacheSavePath(this->modelName)<<std::endl;
+    // std::cout<<cache<<std::endl;
+    if (JsonSerializer::StoreJson(cache, OnnxPathManager::GetChildModelSumCacheSavePath(this->modelName)))
+        std::cout<<"Model analyzation over."<<std::endl;
+    else
+        std::cout<<"There is something wrong when create cache."<<std::endl;
+
 }
 
 void ModelAnalyzer::ExtractModelByNodeWithWrite(nlohmann::json *value, std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path, GraphNode *start_node, GraphNode *end_node, bool print_error)
@@ -147,9 +240,23 @@ void ModelAnalyzer::ExtractModelByNodeWithEvaluate(std::string model_name, std::
 nlohmann::json ModelAnalyzer::ExtractModelByNode(std::filesystem::path raw_onnx_path, std::filesystem::path new_onnx_path, std::filesystem::path new_onnx_param_path, GraphNode &start_node, GraphNode &end_node, bool print_error)
 {
 
-    // c++!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    onnxUtil::extract_model(raw_onnx_path, new_onnx_path, start_node.dependencies_inputs, end_node.dependencies_outputs);
+    // std::cout<<start_node.name<<": "<<start_node.dependencies_inputs<<"; "<<end_node.name<<": "<<end_node.dependencies_outputs<<std::endl<<"____"<<std::endl;
+    try
+    {
+        onnxUtil::extract_model(raw_onnx_path, new_onnx_path, start_node.dependencies_inputs, end_node.dependencies_outputs);
+    }
+    catch(onnx::checker::ValidationError e)
+    {
+        // std::cout<<"QQQ"<<std::endl;
+        onnxUtil::extract_model(raw_onnx_path, new_onnx_path, start_node.dependencies_inputs, end_node.dependencies_outputs);
+    }
+    catch(...)
+    {
+        // std::cout<<"WWW"<<std::endl;
+        return nlohmann::json({});
+    }
+    
+    
 
     //
     //
@@ -196,16 +303,22 @@ void ModelAnalyzer::RecordDependency()
     {
         if (idx == node_size - 1)
             for (auto &out : nodes[idx].outputs)
+            {
+
+                // std::cout<<"out: "<<out<<std::endl;
                 if (std::find(params.begin(), params.end(), out) == params.end())
                     this->nodes[idx].dependencies_outputs.emplace_back(out);
+            }
 
         for (auto &input_name : nodes[idx].inputs)
         {
+            // std::cout<<"input_name: "<<input_name<<std::endl;
             dependency.emplace(input_name);
         }
 
         for (auto &output_name : nodes[idx].outputs)
         {
+            // std::cout<<"output_name: "<<output_name<<std::endl;
             dependency.erase(output_name);
         }
 
@@ -269,14 +382,14 @@ double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs, std::vec
 
     // std::cout << "end split"<<std::endl;
     costs.clear();
-    
+
     float total = 0.0f;
     for (int child_idx = 0; child_idx < childs_size; child_idx++)
     {
         // float cost = infos[child_idx]["cost"].get<float>();
-       
+
         float cost =  evam::TimeEvaluateChildModels_impl(modelName, infos[child_idx]["m_path"].get<std::filesystem::path>(), infos[child_idx]["key"].get<std::string>(), GPU_tag);
-        
+
 
         costs.push_back(cost);
         total += cost;
@@ -300,7 +413,16 @@ double ModelAnalyzer::SplitAndEvaluateChilds(std::vector<float> &costs, std::vec
 
 nlohmann::json ModelAnalyzer::SplitAndStoreChilds(std::vector<GraphNode> input_childs)
 {
-    std::filesystem::remove_all(OnnxPathManager::GetOnnxRootFold() / this->getName() / "childs/");
+    std::filesystem::path str(OnnxPathManager::GetOnnxRootFold() / this->getName() / "childs/");
+    std::filesystem::directory_entry entry(str);
+    std::filesystem::directory_iterator list(str);
+    for (const std::filesystem::directory_entry& it : list)
+    {
+        if (it.path().string().find("cache.json") == std::string::npos)
+            std::filesystem::remove_all(it.path());
+        // std::cout<<(it.path().string().find("cache.json")==std::string::npos)<<std::endl;
+    }
+
     nlohmann::json total_param;
     std::vector<GraphNode> childs = std::vector<GraphNode>();
     for (auto &child : input_childs)
@@ -385,14 +507,18 @@ nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, 
     auto CreateParamsDict = [weight_params, default_batch, params_path](nlohmann::json params_dict, google::protobuf::RepeatedPtrField<onnx::ValueInfoProto> tennsors) -> nlohmann::json
     {
         std::vector<nlohmann::json> k_data = std::vector<nlohmann::json>();
+        // ?std::cout<<"____"<<std::endl;
         for (auto &m : tennsors)
         {
             nlohmann::json param;
 
-            if (std::find(weight_params.begin(), weight_params.end(), m.name()) != weight_params.end())
+            if (std::find(weight_params.begin(), weight_params.end(), m.name()) != weight_params.end() || m.name()=="")
                 continue;
-
-            param["type"] = m.type().tensor_type().elem_type();
+            // param["type"] = OnnxValueType::OnnxTypeToString(onnxUtil::IntToOnnxType(m.type().tensor_type().elem_type()));
+            // std::cout<<"name: "<<m.name()<<"; ";
+            // std::cout<<"if: "<<(m.name()=="")<<"; ";
+            param["type"] = OnnxValueType::OnnxTypeToString(onnxUtil::IntToOnnxType(m.type().tensor_type().elem_type()));
+            // std::cout<<"type: "<<onnxUtil::IntToOnnxType(m.type().tensor_type().elem_type())<<std::endl;
             param["name"] = m.name();
 
             std::vector<int> shape_list = std::vector<int>();
@@ -424,9 +550,15 @@ nlohmann::json ModelAnalyzer::CreateParamsInfo(std::filesystem::path onnx_path, 
         }
         return k_data;
     };
-
+    // for (auto &o : graph.output())
+    // {
+    //     std::cout<<"output: "<<o.name()<<"; ";
+    //     std::cout<<"if: "<<(o.name()=="")<<"; ";
+    // }
+    // std::cout<<"________________"<<std::endl;
     params_dict["input"]["data"] = CreateParamsDict(params_dict, graph.input());
     params_dict["output"]["data"] = CreateParamsDict(params_dict, graph.output());
+    // params_dict.StoreJsonWithPath(params_path);
     JsonSerializer::StoreJson(params_dict, params_path, true);
 
     return params_dict;

@@ -11,6 +11,7 @@
 #include "Common/PathManager.h"
 #include "onnx/shape_inference/implementation.h"
 #include "ModelAnalyzerIterator.h"
+#include "Tensor/ModelTensorsInfo.h"
 
 /// @brief
 class ModelAnalyzer
@@ -43,8 +44,8 @@ public:
     /// @return
     nlohmann::json LoadCache();
 
-    // /// @brief
-    // void RuntimeAnalyze();
+    /// @brief
+    void RuntimeAnalyze();
 
     /// @brief
     /// @param raw_onnx_path
@@ -127,6 +128,8 @@ private:
     /// @brief
     bool use_cache;
 };
+
+
 
 // Overload
 
