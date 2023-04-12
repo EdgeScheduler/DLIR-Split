@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     parser.add<std::string>("GPU-Tag", 'g', "gpu tag.", false, "default");
     parser.add<int>("polution", 'p', "polution.", false, 20); // 30
     parser.add<int>("generation", 'r', "generations.", false, 100); // 100
-    parser.add<int>("stall-max", 's', "how may gens to end if fit.", false, 7); // 7
+    parser.add<int>("stall-max", 's', "how many gens to end if fit.", false, 7); // 7
 
     parser.parse_check(argc, argv);
     int count = parser.get<int>("count") > 0 ? parser.get<int>("count") : 3;

@@ -49,7 +49,8 @@ namespace onnxUtil
         {
             std::cerr << "Output tensor names shall not be empty!" << '\n';
         }
-        onnx::checker::check_model(input_path);
+
+        // onnx::checker::check_model(input_path);
         onnx::ModelProto model = onnxUtil::load(input_path);
 
         Extractor e = Extractor(model);
@@ -124,7 +125,8 @@ namespace onnxUtil
             google::protobuf::io::IstreamInputStream rawInput(&input);
             google::protobuf::io::CodedInputStream coded_input(&rawInput);
 
-            coded_input.SetTotalBytesLimit(std::numeric_limits<int>::max(), std::numeric_limits<int>::max() - 1); // cancel the limit
+            coded_input.SetTotalBytesLimit(std::numeric_limits<int>::max(), std::numeric_limits<int>::max() / 6 * 5); // cancel the limit
+            // coded_input.SetTotalBytesLimit(std::numeric_limits<int>::max(), std::numeric_limits<int>::max() - 1); // cancel the limit
 
             model.ParseFromCodedStream(&coded_input);
         }

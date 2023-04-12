@@ -21,6 +21,7 @@ int main(void) {
 
         google::protobuf::io::IstreamInputStream rawInput(&in);
         google::protobuf::io::CodedInputStream coded_input(&rawInput);
+        coded_input.SetTotalBytesLimit(std::numeric_limits<int>::max(), std::numeric_limits<int>::max() - 1); // cancel the limit
         model.ParseFromCodedStream(&coded_input);
         in.close();
 
