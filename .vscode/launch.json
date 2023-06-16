@@ -5,11 +5,11 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/bin/debug/${fileBasenameNoExtension}",
-<<<<<<< Updated upstream
-            "args": ["-m", "googlenet"],
-=======
+// <<<<<<< Updated upstream
+            // "args": ["-m", "googlenet"],
+// =======
             "args": ["-m", "vgg19"],
->>>>>>> Stashed changes
+// >>>>>>> Stashed changes
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
