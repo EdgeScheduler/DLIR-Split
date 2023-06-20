@@ -1,0 +1,3 @@
+[submodule "Onnx"]
+	path = Onnx
+	url = https://github.com/Arantir1028/Onnx.git
